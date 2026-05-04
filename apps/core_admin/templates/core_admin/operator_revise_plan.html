@@ -1,0 +1,452 @@
+{% extends 'core_admin/operator_base.html' %}
+{% block content %}
+
+<style>
+    .form-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .expert-note-box {
+        background: #fee2e2;
+        border-right: 4px solid #ef4444;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+    }
+    .expert-note-box .title {
+        font-weight: 700;
+        color: #991b1b;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .expert-note-box .content {
+        color: #7f1d1d;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    .form-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e5e7eb;
+        color: #1e3c72;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .form-section {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+    .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: #1e293b;
+        border-right: 3px solid #1e3c72;
+        padding-right: 10px;
+    }
+    .form-group {
+        margin-bottom: 16px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        color: #374151;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: #1e3c72;
+        box-shadow: 0 0 0 3px rgba(30,60,114,0.1);
+    }
+    .row-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .row-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+    }
+    .row-4 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 16px;
+    }
+    .btn-submit {
+        background: #1e3c72;
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.2s;
+    }
+    .btn-submit:hover {
+        background: #0f2d5e;
+        transform: translateY(-1px);
+    }
+    .btn-cancel {
+        background: #6b7280;
+        margin-top: 12px;
+    }
+    .btn-cancel:hover {
+        background: #4b5563;
+    }
+    .required-star {
+        color: #ef4444;
+    }
+    .photo-preview {
+        max-width: 200px;
+        border-radius: 10px;
+        margin-top: 10px;
+    }
+    @media (max-width: 768px) {
+        .row-2, .row-3, .row-4 {
+            grid-template-columns: 1fr;
+        }
+        .form-card {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-title">
+            ✏️ اصلاح طرح رد شده
+        </div>
+
+        <!-- نمایش نظر کارشناس -->
+        <div class="expert-note-box">
+            <div class="title">
+                🚫 نظر کارشناس
+            </div>
+            <div class="content">
+                {{ plan.expert_note }}
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if plan.plan_type == 'tafsili' %}
+                <!-- فرم طرح تفصیلی با تمام فیلدها -->
+
+                <div class="form-section">
+                    <div class="section-title">📋 اطلاعات پایه</div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>عنوان پروژه <span class="required-star">*</span></label>
+                            <input type="text" name="title" class="form-control" value="{{ plan.title }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>کد منطقه <span class="required-star">*</span></label>
+                            <input type="text" name="zone_code" class="form-control" value="{{ plan.tafsili_plan.zone_code }}" required>
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>نوع کاربری اراضی <span class="required-star">*</span></label>
+                            <select name="land_use_type" class="form-control" required>
+                                <option value="">انتخاب کنید...</option>
+                                <option value="مسکونی" {% if plan.tafsili_plan.land_use_type == 'مسکونی' %}selected{% endif %}>مسکونی</option>
+                                <option value="تجاری" {% if plan.tafsili_plan.land_use_type == 'تجاری' %}selected{% endif %}>تجاری</option>
+                                <option value="کشاورزی" {% if plan.tafsili_plan.land_use_type == 'کشاورزی' %}selected{% endif %}>کشاورزی</option>
+                                <option value="صنعتی" {% if plan.tafsili_plan.land_use_type == 'صنعتی' %}selected{% endif %}>صنعتی</option>
+                                <option value="خدماتی" {% if plan.tafsili_plan.land_use_type == 'خدماتی' %}selected{% endif %}>خدماتی</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>نام محله</label>
+                            <input type="text" name="neighborhood" class="form-control" value="{{ plan.tafsili_plan.neighborhood }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>کاربری تفصیلی</label>
+                        <textarea name="detailed_use" rows="2" class="form-control">{{ plan.tafsili_plan.detailed_use }}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">🏙️ اطلاعات شهری</div>
+                    <div class="row-3">
+                        <div class="form-group">
+                            <label>نام معبر</label>
+                            <input type="text" name="street_name" class="form-control" value="{{ plan.tafsili_plan.street_name }}">
+                        </div>
+                        <div class="form-group">
+                            <label>عرض معبر (متر)</label>
+                            <input type="number" step="0.1" name="street_width" class="form-control" value="{{ plan.tafsili_plan.street_width }}">
+                        </div>
+                        <div class="form-group">
+                            <label>نوع مالکیت</label>
+                            <select name="ownership_type" class="form-control">
+                                <option value="">انتخاب کنید...</option>
+                                <option value="خصوصی" {% if plan.tafsili_plan.ownership_type == 'خصوصی' %}selected{% endif %}>خصوصی</option>
+                                <option value="عمومی" {% if plan.tafsili_plan.ownership_type == 'عمومی' %}selected{% endif %}>عمومی</option>
+                                <option value="وقف" {% if plan.tafsili_plan.ownership_type == 'وقف' %}selected{% endif %}>وقف</option>
+                                <option value="دولتی" {% if plan.tafsili_plan.ownership_type == 'دولتی' %}selected{% endif %}>دولتی</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">🏗️ اطلاعات ساختمانی</div>
+                    <div class="row-3">
+                        <div class="form-group">
+                            <label>تراکم ساختمانی</label>
+                            <input type="number" step="0.1" name="density" class="form-control" value="{{ plan.tafsili_plan.density }}">
+                        </div>
+                        <div class="form-group">
+                            <label>حداکثر طبقات</label>
+                            <input type="number" name="floor_limit" class="form-control" value="{{ plan.tafsili_plan.floor_limit }}">
+                        </div>
+                        <div class="form-group">
+                            <label>مساحت اعیانی (متر مربع)</label>
+                            <input type="number" step="0.01" name="built_area" class="form-control" value="{{ plan.tafsili_plan.built_area }}">
+                        </div>
+                    </div>
+                    <div class="row-3">
+                        <div class="form-group">
+                            <label>قدمت بنا</label>
+                            <select name="building_age" class="form-control">
+                                <option value="">انتخاب کنید...</option>
+                                <option value="1_10" {% if plan.tafsili_plan.building_age == '1_10' %}selected{% endif %}>1-10 سال</option>
+                                <option value="10_20" {% if plan.tafsili_plan.building_age == '10_20' %}selected{% endif %}>10-20 سال</option>
+                                <option value="20_30" {% if plan.tafsili_plan.building_age == '20_30' %}selected{% endif %}>20-30 سال</option>
+                                <option value="30+" {% if plan.tafsili_plan.building_age == '30+' %}selected{% endif %}>بیش از 30 سال</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>نوع نما</label>
+                            <select name="facade_type" class="form-control">
+                                <option value="">انتخاب کنید...</option>
+                                <option value="سنگی" {% if plan.tafsili_plan.facade_type == 'سنگی' %}selected{% endif %}>سنگی</option>
+                                <option value="آجری" {% if plan.tafsili_plan.facade_type == 'آجری' %}selected{% endif %}>آجری</option>
+                                <option value="سیمانی" {% if plan.tafsili_plan.facade_type == 'سیمانی' %}selected{% endif %}>سیمانی</option>
+                                <option value="شیشه‌ای" {% if plan.tafsili_plan.facade_type == 'شیشه‌ای' %}selected{% endif %}>شیشه‌ای</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>مصالح ساختمانی</label>
+                            <select name="material_type" class="form-control">
+                                <option value="">انتخاب کنید...</option>
+                                <option value="بتنی" {% if plan.tafsili_plan.material_type == 'بتنی' %}selected{% endif %}>بتنی</option>
+                                <option value="اسکلت فلزی" {% if plan.tafsili_plan.material_type == 'اسکلت فلزی' %}selected{% endif %}>اسکلت فلزی</option>
+                                <option value="آجر و آهن" {% if plan.tafsili_plan.material_type == 'آجر و آهن' %}selected{% endif %}>آجر و آهن</option>
+                                <option value="خشتی" {% if plan.tafsili_plan.material_type == 'خشتی' %}selected{% endif %}>خشتی</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row-3">
+                        <div class="form-group">
+                            <label>کیفیت ابنیه</label>
+                            <select name="building_quality" class="form-control">
+                                <option value="">انتخاب کنید...</option>
+                                <option value="نوساز" {% if plan.tafsili_plan.building_quality == 'نوساز' %}selected{% endif %}>نوساز</option>
+                                <option value="قابل نگهداری" {% if plan.tafsili_plan.building_quality == 'قابل نگهداری' %}selected{% endif %}>قابل نگهداری</option>
+                                <option value="تعمیری" {% if plan.tafsili_plan.building_quality == 'تعمیری' %}selected{% endif %}>تعمیری</option>
+                                <option value="تخریبی" {% if plan.tafsili_plan.building_quality == 'تخریبی' %}selected{% endif %}>تخریبی</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>سطح عملکردی</label>
+                            <select name="functional_level" class="form-control">
+                                <option value="">انتخاب کنید...</option>
+                                <option value="محلی" {% if plan.tafsili_plan.functional_level == 'محلی' %}selected{% endif %}>محلی</option>
+                                <option value="ناحیه" {% if plan.tafsili_plan.functional_level == 'ناحیه' %}selected{% endif %}>ناحیه</option>
+                                <option value="منطقه" {% if plan.tafsili_plan.functional_level == 'منطقه' %}selected{% endif %}>منطقه</option>
+                                <option value="شهر" {% if plan.tafsili_plan.functional_level == 'شهر' %}selected{% endif %}>شهر</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>کد پلاک</label>
+                            <input type="text" name="parcel_code" class="form-control" value="{{ plan.tafsili_plan.parcel_code }}">
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>مساحت عرصه (متر مربع)</label>
+                            <input type="number" step="0.01" name="land_area" class="form-control" value="{{ plan.tafsili_plan.land_area }}">
+                        </div>
+                        <div class="form-group">
+                            <label>کد پلاک</label>
+                            <input type="text" name="parcel_code" class="form-control" value="{{ plan.tafsili_plan.parcel_code }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">🏪 اطلاعات کاربری</div>
+                    <div class="row-3">
+                        <div class="form-group">
+                            <label>کاربری طبقات بالای همکف</label>
+                            <select name="upper_floor_use" class="form-control">
+                                <option value="">انتخاب کنید...</option>
+                                <option value="مسکونی" {% if plan.tafsili_plan.upper_floor_use == 'مسکونی' %}selected{% endif %}>مسکونی</option>
+                                <option value="تجاری" {% if plan.tafsili_plan.upper_floor_use == 'تجاری' %}selected{% endif %}>تجاری</option>
+                                <option value="اداری" {% if plan.tafsili_plan.upper_floor_use == 'اداری' %}selected{% endif %}>اداری</option>
+                                <option value="آموزشی" {% if plan.tafsili_plan.upper_floor_use == 'آموزشی' %}selected{% endif %}>آموزشی</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>کاربری همکف</label>
+                            <select name="ground_floor_use" class="form-control">
+                                <option value="">انتخاب کنید...</option>
+                                <option value="مسکونی" {% if plan.tafsili_plan.ground_floor_use == 'مسکونی' %}selected{% endif %}>مسکونی</option>
+                                <option value="تجاری" {% if plan.tafsili_plan.ground_floor_use == 'تجاری' %}selected{% endif %}>تجاری</option>
+                                <option value="تجاری-خدماتی" {% if plan.tafsili_plan.ground_floor_use == 'تجاری-خدماتی' %}selected{% endif %}>تجاری-خدماتی</option>
+                                <option value="پذیرایی" {% if plan.tafsili_plan.ground_floor_use == 'پذیرایی' %}selected{% endif %}>پذیرایی</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>انواع کاربری (غالب)</label>
+                            <select name="dominant_use" class="form-control">
+                                <option value="">انتخاب کنید...</option>
+                                <option value="مسکونی" {% if plan.tafsili_plan.dominant_use == 'مسکونی' %}selected{% endif %}>مسکونی</option>
+                                <option value="تجاری" {% if plan.tafsili_plan.dominant_use == 'تجاری' %}selected{% endif %}>تجاری</option>
+                                <option value="تجاری-خدماتی" {% if plan.tafsili_plan.dominant_use == 'تجاری-خدماتی' %}selected{% endif %}>تجاری-خدماتی</option>
+                                <option value="آموزشی" {% if plan.tafsili_plan.dominant_use == 'آموزشی' %}selected{% endif %}>آموزشی</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>عکس طرح</label>
+                    {% if plan.tafsili_plan.photo %}
+                        <div>
+                            <img src="{{ plan.tafsili_plan.photo.url }}" class="photo-preview">
+                        </div>
+                    {% endif %}
+                    <input type="file" name="photo" class="form-control" accept="image/*">
+                    <small class="help-text">در صورت تمایل می‌توانید عکس جدیدی جایگزین کنید</small>
+                </div>
+
+            {% elif plan.plan_type == 'jame' %}
+                <!-- فرم طرح جامع -->
+                <div class="form-group">
+                    <label>عنوان پروژه <span class="required-star">*</span></label>
+                    <input type="text" name="title" class="form-control" value="{{ plan.title }}" required>
+                </div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>نوع پهنه <span class="required-star">*</span></label>
+                        <select name="zone_type" class="form-control" required>
+                            <option value="">انتخاب کنید...</option>
+                            <option value="residential" {% if plan.jame_plan.zone_type == 'residential' %}selected{% endif %}>مسکونی</option>
+                            <option value="commercial" {% if plan.jame_plan.zone_type == 'commercial' %}selected{% endif %}>تجاری</option>
+                            <option value="agricultural" {% if plan.jame_plan.zone_type == 'agricultural' %}selected{% endif %}>کشاورزی</option>
+                            <option value="industrial" {% if plan.jame_plan.zone_type == 'industrial' %}selected{% endif %}>صنعتی</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>درصد فضای سبز <span class="required-star">*</span></label>
+                        <input type="number" step="0.1" name="green_percent" class="form-control" value="{{ plan.jame_plan.green_percent }}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>مراکز خدماتی نزدیک</label>
+                    <textarea name="service_centers" rows="3" class="form-control">{{ plan.jame_plan.service_centers }}</textarea>
+                </div>
+
+            {% elif plan.plan_type == 'momayezi' %}
+                <!-- فرم ممیزی املاک -->
+                <div class="form-group">
+                    <label>عنوان پروژه <span class="required-star">*</span></label>
+                    <input type="text" name="title" class="form-control" value="{{ plan.title }}" required>
+                </div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>کد پلاک <span class="required-star">*</span></label>
+                        <input type="text" name="parcel_code" class="form-control" value="{{ plan.momayezi_plan.parcel_code }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>نوع مالکیت <span class="required-star">*</span></label>
+                        <select name="ownership_type" class="form-control" required>
+                            <option value="">انتخاب کنید...</option>
+                            <option value="private" {% if plan.momayezi_plan.ownership_type == 'private' %}selected{% endif %}>خصوصی</option>
+                            <option value="public" {% if plan.momayezi_plan.ownership_type == 'public' %}selected{% endif %}>دولتی</option>
+                            <option value="endowment" {% if plan.momayezi_plan.ownership_type == 'endowment' %}selected{% endif %}>وقف</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>نام مالک <span class="required-star">*</span></label>
+                        <input type="text" name="owner_name" class="form-control" value="{{ plan.momayezi_plan.owner_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>نوع بنا <span class="required-star">*</span></label>
+                        <select name="building_type" class="form-control" required>
+                            <option value="">انتخاب کنید...</option>
+                            <option value="residential" {% if plan.momayezi_plan.building_type == 'residential' %}selected{% endif %}>مسکونی</option>
+                            <option value="commercial" {% if plan.momayezi_plan.building_type == 'commercial' %}selected{% endif %}>تجاری</option>
+                            <option value="office" {% if plan.momayezi_plan.building_type == 'office' %}selected{% endif %}>اداری</option>
+                            <option value="industrial" {% if plan.momayezi_plan.building_type == 'industrial' %}selected{% endif %}>صنعتی</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>مساحت (متر مربع) <span class="required-star">*</span></label>
+                        <input type="number" step="0.01" name="area" class="form-control" value="{{ plan.momayezi_plan.area }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>سال ساخت <span class="required-star">*</span></label>
+                        <input type="number" name="construction_year" class="form-control" value="{{ plan.momayezi_plan.construction_year }}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>دارای پروانه ساخت</label>
+                    <input type="checkbox" name="is_licensed" {% if plan.momayezi_plan.is_licensed %}checked{% endif %}> بله
+                </div>
+                <div class="form-group">
+                    <label>فایل پیوست</label>
+                    {% if plan.momayezi_plan.attachment %}
+                        <div><a href="{{ plan.momayezi_plan.attachment.url }}" target="_blank">فایل فعلی</a></div>
+                    {% endif %}
+                    <input type="file" name="attachment" class="form-control">
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label>توضیحات تکمیلی</label>
+                <textarea name="description" rows="2" class="form-control">{{ plan.description }}</textarea>
+            </div>
+            
+            <button type="submit" class="btn-submit">✅ ارسال مجدد برای بررسی</button>
+            <a href="{% url 'core_admin:operator_my_plans' %}" class="btn-submit btn-cancel" style="text-align:center; display:block; text-decoration:none;">↩️ بازگشت</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

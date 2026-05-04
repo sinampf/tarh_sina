@@ -1,0 +1,555 @@
+{% extends 'core_admin/expert_base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .filter-bar {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: flex-end;
+    }
+    .filter-group {
+        flex: 1;
+        min-width: 150px;
+    }
+    .filter-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        font-size: 13px;
+    }
+    .filter-group select, .filter-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+    }
+    .btn-filter {
+        background: #166534;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .table-wrapper {
+        overflow-x: auto;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1100px;
+    }
+    .data-table th {
+        background: #1e3c72;
+        color: white;
+        padding: 14px 10px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+    .data-table td {
+        padding: 12px 8px;
+        text-align: center;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 12px;
+    }
+    .data-table tr:hover td {
+        background: #f1f5f9;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    .status-approved {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    .status-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    .btn-approve {
+        background: #10b981;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        margin: 2px;
+        transition: all 0.2s;
+    }
+    .btn-approve:hover {
+        background: #059669;
+    }
+    .btn-reject {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        margin: 2px;
+        transition: all 0.2s;
+    }
+    .btn-reject:hover {
+        background: #dc2626;
+    }
+    .btn-detail {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        margin: 2px;
+        transition: all 0.2s;
+    }
+    .btn-detail:hover {
+        background: #2563eb;
+    }
+    .action-cell {
+        white-space: nowrap;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        color: #9ca3af;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(3px);
+    }
+    .modal-content {
+        background: white;
+        border-radius: 24px;
+        padding: 28px;
+        max-width: 650px;
+        width: 90%;
+        max-height: 85vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+        animation: fadeInUp 0.3s ease;
+    }
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 15px;
+    }
+    .modal-header h3 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1e3c72;
+    }
+    .close-modal {
+        cursor: pointer;
+        font-size: 28px;
+        color: #6b7280;
+        transition: color 0.2s;
+    }
+    .close-modal:hover {
+        color: #ef4444;
+    }
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    .detail-item {
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 8px;
+    }
+    .detail-item.full-width {
+        grid-column: span 2;
+    }
+    .detail-label {
+        font-weight: 700;
+        color: #475569;
+        font-size: 12px;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .detail-value {
+        color: #1e293b;
+        font-size: 13px;
+        word-break: break-word;
+    }
+    .detail-photo {
+        margin-top: 10px;
+        text-align: center;
+    }
+    .detail-photo img {
+        max-width: 100%;
+        max-height: 250px;
+        border-radius: 12px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .rejection-box {
+        margin-top: 15px;
+        padding: 15px;
+        background: #fef2f2;
+        border-radius: 12px;
+        border-right: 4px solid #ef4444;
+        grid-column: span 2;
+    }
+    .rejection-box strong {
+        color: #991b1b;
+        display: block;
+        margin-bottom: 8px;
+    }
+    .rejection-box p {
+        color: #7f1d1d;
+        margin: 0;
+        line-height: 1.6;
+    }
+    .review-note-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        resize: vertical;
+        margin-top: 10px;
+    }
+    .modal-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+    @media (max-width: 768px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+        .detail-item.full-width {
+            grid-column: span 1;
+        }
+        .modal-content {
+            padding: 20px;
+        }
+    }
+</style>
+
+<h2 style="margin-bottom: 25px;">{{ title }} - اطلاعات ثبت شده توسط اپراتورها</h2>
+
+<div class="filter-bar">
+    <div class="filter-group">
+        <label>اپراتور</label>
+        <select id="filterOperator">
+            <option value="">همه اپراتورها</option>
+            {% for op in operators %}
+            <option value="{{ op.id }}" {% if filter_operator == op.id|stringformat:"s" %}selected{% endif %}>
+                {{ op.get_full_name|default:op.username }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>جستجو</label>
+        <input type="text" id="filterProject" value="{{ filter_project|default:'' }}" placeholder="عنوان پروژه...">
+    </div>
+    <div class="filter-group">
+        <label>وضعیت</label>
+        <select id="filterStatus">
+            <option value="">همه</option>
+            <option value="pending" {% if filter_status == 'pending' %}selected{% endif %}>در انتظار</option>
+            <option value="approved" {% if filter_status == 'approved' %}selected{% endif %}>تأیید شده</option>
+            <option value="rejected" {% if filter_status == 'rejected' %}selected{% endif %}>رد شده</option>
+        </select>
+    </div>
+    <button class="btn-filter" onclick="applyFilters()">اعمال فیلتر</button>
+</div>
+
+<div class="table-wrapper">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ردیف</th>
+                <th>اپراتور</th>
+                <th>عنوان پروژه</th>
+                <th>تاریخ ثبت</th>
+                <th>کد منطقه</th>
+                <th>نوع کاربری</th>
+                <th>نام معبر</th>
+                <th>نوع مالکیت</th>
+                <th>وضعیت</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in data_list %}
+            <tr>
+                <td style="text-align:center;">{{ forloop.counter }}</td>
+                <td>{{ plan.operator.get_full_name|default:plan.operator.username }}</td>
+                <td>{{ plan.title|truncatechars:25 }}</td>
+                <td>{{ plan.created_at|date:"Y/m/d H:i" }}</td>
+                <td>{{ plan.tafsili_plan.zone_code|default:"-" }}</td>
+                <td>{{ plan.tafsili_plan.land_use_type|default:"-" }}</td>
+                <td>{{ plan.tafsili_plan.street_name|default:"-" }}</td>
+                <td>{{ plan.tafsili_plan.ownership_type|default:"-" }}</td>
+                <td>
+                    {% if plan.status == 'pending' %}
+                        <span class="status-badge status-pending">در انتظار</span>
+                    {% elif plan.status == 'approved' %}
+                        <span class="status-badge status-approved">تأیید شده</span>
+                    {% else %}
+                        <span class="status-badge status-rejected">رد شده</span>
+                    {% endif %}
+                </td>
+                <td class="action-cell">
+                    <button onclick="showPlanDetail('{{ plan.id }}')" class="btn-detail" title="مشاهده جزئیات">🔍</button>
+                    {% if plan.status == 'pending' %}
+                        <button onclick="showApproveModal('{{ plan.id }}')" class="btn-approve" title="تأیید">✅</button>
+                        <button onclick="showRejectModal('{{ plan.id }}')" class="btn-reject" title="رد">❌</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10" class="empty-state">هیچ اطلاعاتی ثبت نشده است</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- مودال تأیید -->
+<div id="approveModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>تأیید طرح</h3>
+            <span class="close-modal" onclick="closeApproveModal()">&times;</span>
+        </div>
+        <p>آیا از تأیید این طرح مطمئن هستید؟</p>
+        <input type="hidden" id="approvePlanId">
+        <div class="modal-buttons">
+            <button onclick="confirmApprove()" class="btn-approve">بله، تأیید شود</button>
+            <button onclick="closeApproveModal()" style="padding:6px 12px; cursor:pointer;">انصراف</button>
+        </div>
+    </div>
+</div>
+
+<!-- مودال رد با دلیل -->
+<div id="rejectModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>رد طرح</h3>
+            <span class="close-modal" onclick="closeRejectModal()">&times;</span>
+        </div>
+        <p>لطفاً دلیل رد این طرح را وارد کنید:</p>
+        <textarea id="rejectReason" class="review-note-input" rows="4" placeholder="دلیل رد طرح ..."></textarea>
+        <input type="hidden" id="rejectPlanId">
+        <div class="modal-buttons">
+            <button onclick="confirmReject()" class="btn-reject">تأیید و رد شود</button>
+            <button onclick="closeRejectModal()" style="padding:6px 12px; cursor:pointer;">انصراف</button>
+        </div>
+    </div>
+</div>
+
+<!-- مودال جزئیات کامل -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>جزئیات کامل طرح</h3>
+            <span class="close-modal" onclick="closeDetailModal()">&times;</span>
+        </div>
+        <div id="modalBody">
+            <div style="text-align:center; padding:40px;">در حال بارگذاری...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPlanId = null;
+
+    function applyFilters() {
+        const params = new URLSearchParams();
+        const operator = document.getElementById('filterOperator')?.value;
+        const project = document.getElementById('filterProject')?.value;
+        const status = document.getElementById('filterStatus')?.value;
+        if(operator) params.append('operator', operator);
+        if(project) params.append('project', project);
+        if(status) params.append('status', status);
+        window.location.href = '?' + params.toString();
+    }
+
+    function showPlanDetail(planId) {
+        const modal = document.getElementById('detailModal');
+        const modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = '<div style="text-align:center; padding:40px;">در حال بارگذاری...</div>';
+        modal.style.display = 'flex';
+
+        fetch('/admin-panel/expert/plan-detail/' + planId + '/')
+            .then(response => response.json())
+            .then(data => {
+                let html = '<div class="detail-grid">';
+                html += '<div class="detail-item"><span class="detail-label">شناسه</span><span class="detail-value">' + (data.feature_id || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">عنوان پروژه</span><span class="detail-value">' + (data.project || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">اپراتور</span><span class="detail-value">' + (data.operator || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">تاریخ ثبت</span><span class="detail-value">' + (data.recorded_at || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">کد منطقه</span><span class="detail-value">' + (data.zone_code || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">نوع کاربری</span><span class="detail-value">' + (data.land_use_type || '-') + '</span></div>';
+                html += '<div class="detail-item full-width"><span class="detail-label">کاربری تفصیلی</span><span class="detail-value">' + (data.detailed_use || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">تراکم</span><span class="detail-value">' + (data.density || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">حداکثر طبقات</span><span class="detail-value">' + (data.floor_limit || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">نام معبر</span><span class="detail-value">' + (data.street_name || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">عرض معبر</span><span class="detail-value">' + (data.street_width || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">نوع مالکیت</span><span class="detail-value">' + (data.ownership_type || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">قدمت بنا</span><span class="detail-value">' + (data.building_age || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">نوع نما</span><span class="detail-value">' + (data.facade_type || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">مصالح ساختمانی</span><span class="detail-value">' + (data.material_type || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">کیفیت ابنیه</span><span class="detail-value">' + (data.building_quality || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">سطح عملکردی</span><span class="detail-value">' + (data.functional_level || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">کاربری طبقات بالا</span><span class="detail-value">' + (data.upper_floor_use || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">کاربری همکف</span><span class="detail-value">' + (data.ground_floor_use || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">کاربری غالب</span><span class="detail-value">' + (data.dominant_use || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">مساحت اعیانی</span><span class="detail-value">' + (data.built_area || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">مساحت عرصه</span><span class="detail-value">' + (data.land_area || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">نام محله</span><span class="detail-value">' + (data.neighborhood || '-') + '</span></div>';
+                html += '<div class="detail-item"><span class="detail-label">کد پلاک</span><span class="detail-value">' + (data.parcel_code || '-') + '</span></div>';
+                if(data.photo) {
+                    html += '<div class="detail-item full-width detail-photo"><span class="detail-label">عکس</span><img src="' + data.photo + '" onclick="window.open(this.src)"></div>';
+                }
+                if(data.review_note) {
+                    html += '<div class="rejection-box"><strong>نظر کارشناس</strong><p>' + data.review_note + '</p></div>';
+                }
+                html += '</div>';
+                modalBody.innerHTML = html;
+            })
+            .catch(error => {
+                modalBody.innerHTML = '<div style="text-align:center; padding:40px; color:#ef4444;">خطا در دریافت اطلاعات</div>';
+            });
+    }
+
+    function closeDetailModal() {
+        document.getElementById('detailModal').style.display = 'none';
+    }
+
+    function showApproveModal(planId) {
+        document.getElementById('approvePlanId').value = planId;
+        document.getElementById('approveModal').style.display = 'flex';
+    }
+
+    function closeApproveModal() {
+        document.getElementById('approveModal').style.display = 'none';
+    }
+
+    function confirmApprove() {
+        const planId = document.getElementById('approvePlanId').value;
+        updatePlanStatus(planId, 'approved', '');
+    }
+
+    function showRejectModal(planId) {
+        document.getElementById('rejectPlanId').value = planId;
+        document.getElementById('rejectReason').value = '';
+        document.getElementById('rejectModal').style.display = 'flex';
+    }
+
+    function closeRejectModal() {
+        document.getElementById('rejectModal').style.display = 'none';
+    }
+
+    function confirmReject() {
+        const planId = document.getElementById('rejectPlanId').value;
+        const reason = document.getElementById('rejectReason').value;
+        if(!reason.trim()) {
+            alert("لطفاً دلیل رد طرح را وارد کنید");
+            return;
+        }
+        updatePlanStatus(planId, 'rejected', reason);
+    }
+
+    function updatePlanStatus(planId, status, reviewNote) {
+        fetch('/admin-panel/expert/update-plan-status/' + planId + '/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({status: status, review_note: reviewNote})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                location.reload();
+            } else {
+                alert('خطا: ' + (data.error || 'نامشخص'));
+            }
+        })
+        .catch(error => {
+            console.error('خطا:', error);
+            alert('خطا در ارتباط با سرور');
+        });
+    }
+
+    // بستن مودال با کلیک خارج
+    window.onclick = function(event) {
+        if(event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    }
+
+    // بستن مودال با دکمه Escape
+    document.addEventListener('keydown', function(e) {
+        if(e.key === 'Escape') {
+            document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+        }
+    });
+
+    // جستجو با Enter
+    const filterProject = document.getElementById('filterProject');
+    if(filterProject) {
+        filterProject.addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') applyFilters();
+        });
+    }
+</script>
+
+
+{% endblock %}

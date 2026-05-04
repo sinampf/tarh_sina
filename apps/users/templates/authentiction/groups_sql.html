@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>SQL Output</title>
+</head>
+<body>
+
+<h1>گروه‌ها و کاربران (خروجی SQL مستقیم)</h1>
+
+{% for group, users in groups_data.items %}
+    <h2>{{ group }}</h2>
+
+    <ul>
+        {% for user in users %}
+            <li>{{ user }}</li>
+        {% endfor %}
+    </ul>
+
+{% endfor %}
+
+</body>
+</html>

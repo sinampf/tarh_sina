@@ -1,0 +1,218 @@
+{% extends 'core_admin/operator_base.html' %}
+{% block content %}
+
+<style>
+    .form-container { max-width: 1000px; margin: 0 auto; }
+    .form-card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .form-title { font-size: 22px; font-weight: 700; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #e5e7eb; color: #1e3c72; }
+    .form-section { background: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .section-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #1e293b; border-right: 3px solid #1e3c72; padding-right: 10px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #374151; }
+    .form-control { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-family: inherit; font-size: 13px; }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .btn-submit { background: #1e3c72; color: white; border: none; padding: 12px 28px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; }
+    .btn-submit:hover { background: #0f2d5e; }
+    @media (max-width: 768px) { .row-2, .row-3 { grid-template-columns: 1fr; } }
+</style>
+
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-title">📐 ثبت طرح تفصیلی جدید</div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- اطلاعات پایه -->
+            <div class="form-section">
+                <div class="section-title">📋 اطلاعات پایه</div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>عنوان پروژه</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>کد منطقه</label>
+                        <input type="text" name="zone_code" class="form-control">
+                    </div>
+                </div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>نوع کاربری اراضی</label>
+                        <select name="land_use_type" class="form-control">
+                            <option value="">انتخاب...</option>
+                            <option value="مسکونی">مسکونی</option>
+                            <option value="تجاری">تجاری</option>
+                            <option value="کشاورزی">کشاورزی</option>
+                            <option value="صنعتی">صنعتی</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>نام محله</label>
+                        <input type="text" name="neighborhood" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>کاربری تفصیلی</label>
+                    <textarea name="detailed_use" rows="2" class="form-control"></textarea>
+                </div>
+            </div>
+
+            <!-- اطلاعات شهری -->
+            <div class="form-section">
+                <div class="section-title">🏙️ اطلاعات شهری</div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>نام معبر</label>
+                        <input type="text" name="street_name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>عرض معبر (متر)</label>
+                        <input type="number" step="0.1" name="street_width" class="form-control">
+                    </div>
+                </div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>نوع مالکیت</label>
+                        <select name="ownership_type" class="form-control">
+                            <option value="">انتخاب...</option>
+                            <option value="خصوصی">خصوصی</option>
+                            <option value="عمومی">عمومی</option>
+                            <option value="وقف">وقف</option>
+                            <option value="دولتی">دولتی</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>مساحت عرصه (متر مربع)</label>
+                        <input type="number" step="0.01" name="land_area" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <!-- اطلاعات ساختمانی -->
+            <div class="form-section">
+                <div class="section-title">🏗️ اطلاعات ساختمانی</div>
+                <div class="row-3">
+                    <div class="form-group">
+                        <label>تراکم ساختمانی</label>
+                        <input type="number" step="0.1" name="density" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>حداکثر طبقات</label>
+                        <input type="number" name="floor_limit" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>مساحت اعیانی (متر مربع)</label>
+                        <input type="number" step="0.01" name="built_area" class="form-control">
+                    </div>
+                </div>
+                <div class="row-3">
+                    <div class="form-group">
+                        <label>قدمت بنا</label>
+                        <select name="building_age" class="form-control">
+                            <option value="">انتخاب...</option>
+                            <option value="1_10">1-10 سال</option>
+                            <option value="10_20">10-20 سال</option>
+                            <option value="20_30">20-30 سال</option>
+                            <option value="30+">بیش از 30 سال</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>نوع نما</label>
+                        <select name="facade_type" class="form-control">
+                            <option value="">انتخاب...</option>
+                            <option value="سنگی">سنگی</option>
+                            <option value="آجری">آجری</option>
+                            <option value="سیمانی">سیمانی</option>
+                            <option value="شیشه‌ای">شیشه‌ای</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>مصالح ساختمانی</label>
+                        <select name="material_type" class="form-control">
+                            <option value="">انتخاب...</option>
+                            <option value="بتنی">بتنی</option>
+                            <option value="اسکلت فلزی">اسکلت فلزی</option>
+                            <option value="آجر و آهن">آجر و آهن</option>
+                            <option value="خشتی">خشتی</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row-3">
+                    <div class="form-group">
+                        <label>کیفیت ابنیه</label>
+                        <select name="building_quality" class="form-control">
+                            <option value="">انتخاب...</option>
+                            <option value="نوساز">نوساز</option>
+                            <option value="قابل نگهداری">قابل نگهداری</option>
+                            <option value="تعمیری">تعمیری</option>
+                            <option value="تخریبی">تخریبی</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>سطح عملکردی</label>
+                        <select name="functional_level" class="form-control">
+                            <option value="">انتخاب...</option>
+                            <option value="محلی">محلی</option>
+                            <option value="ناحیه">ناحیه</option>
+                            <option value="منطقه">منطقه</option>
+                            <option value="شهر">شهر</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>کد پلاک</label>
+                        <input type="text" name="parcel_code" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <!-- اطلاعات کاربری -->
+            <div class="form-section">
+                <div class="section-title">🏪 اطلاعات کاربری</div>
+                <div class="row-3">
+                    <div class="form-group">
+                        <label>کاربری طبقات بالای همکف</label>
+                        <select name="upper_floor_use" class="form-control">
+                            <option value="">انتخاب...</option>
+                            <option value="مسکونی">مسکونی</option>
+                            <option value="تجاری">تجاری</option>
+                            <option value="اداری">اداری</option>
+                            <option value="آموزشی">آموزشی</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>کاربری همکف</label>
+                        <select name="ground_floor_use" class="form-control">
+                            <option value="">انتخاب...</option>
+                            <option value="مسکونی">مسکونی</option>
+                            <option value="تجاری">تجاری</option>
+                            <option value="تجاری-خدماتی">تجاری-خدماتی</option>
+                            <option value="پذیرایی">پذیرایی</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>انواع کاربری (غالب)</label>
+                        <select name="dominant_use" class="form-control">
+                            <option value="">انتخاب...</option>
+                            <option value="مسکونی">مسکونی</option>
+                            <option value="تجاری">تجاری</option>
+                            <option value="تجاری-خدماتی">تجاری-خدماتی</option>
+                            <option value="آموزشی">آموزشی</option>
+                            <option value="درمانی">درمانی</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>عکس طرح</label>
+                <input type="file" name="photo" class="form-control" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn-submit">✅ ارسال به کارشناس</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,248 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>ورود به سامانه</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Vazir', sans-serif;
+    background: radial-gradient(circle at top, #e0f2fe 0, #f3f4f6 45%, #e5e7eb 100%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-wrapper {
+    width: 100%;
+    max-width: 960px;
+    display: flex;
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+}
+
+/* پنل اطلاعات سمت راست */
+.login-side {
+    flex: 1.2;
+    padding: 28px 32px;
+    background: linear-gradient(145deg, #1d4ed8, #4f46e5);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.login-side-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.login-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.login-side-title {
+    margin: 0;
+    font-size: 20px;
+}
+
+.login-side-subtitle {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.login-side-content {
+    margin-top: 24px;
+    font-size: 13px;
+    line-height: 1.7;
+    opacity: 0.95;
+}
+
+.login-side-footer {
+    margin-top: 20px;
+    font-size: 11px;
+    opacity: 0.85;
+}
+
+/* پنل فرم لاگین */
+.login-form-panel {
+    flex: 1;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #f9fafb;
+}
+
+.login-form-header h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    color: #111827;
+}
+
+.login-form-header p {
+    margin: 0;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.login-form .form-group {
+    margin-bottom: 14px;
+}
+
+.login-form label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: #374151;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 9px;
+    border: 1px solid #d1d5db;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.16s ease-out;
+}
+
+.login-form input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+}
+
+.error-message {
+    margin-top: 4px;
+    margin-bottom: 10px;
+    padding: 8px 9px;
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 12px;
+    border: 1px solid #fecaca;
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 9px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-radius: 999px;
+    border: none;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.16s ease-out;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28);
+}
+
+button:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(37,99,235,0.38); }
+
+.back-link {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.back-link a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+@media (max-width: 820px) {
+    .login-wrapper { max-width: 420px; flex-direction: column-reverse; }
+    .login-side { display: none; }
+    .login-form-panel { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+<div class="login-wrapper">
+
+    <!-- پنل اطلاعات سمت راست -->
+    <aside class="login-side">
+        <header class="login-side-header">
+            <div class="login-logo">L</div>
+            <div>
+                <h1 class="login-side-title">سامانه مدیریت حدیشهر</h1>
+                <p class="login-side-subtitle">دسترسی امن برای کاربران سازمان</p>
+            </div>
+        </header>
+
+        <section class="login-side-content">
+            {% if role == "operator" %}
+                <p>شما در حال ورود به <strong>بخش اپراتور</strong> هستید. ثبت و مدیریت اطلاعات روزانه.</p>
+            {% elif role == "expert" %}
+                <p>شما در حال ورود به <strong>بخش کارشناس</strong> هستید. تحلیل و بررسی اطلاعات.</p>
+            {% else %}
+                <p>لطفاً از صفحه اصلی نقش خود را انتخاب کنید.</p>
+            {% endif %}
+        </section>
+
+        <footer class="login-side-footer">
+            استفاده فقط برای کاربران مجاز سازمان
+        </footer>
+    </aside>
+
+    <!-- فرم لاگین -->
+    <section class="login-form-panel">
+        <header class="login-form-header">
+            {% if role == "operator" %}
+                <h2>ورود اپراتور</h2>
+                <p>نام کاربری و رمز عبور اپراتور را وارد کنید.</p>
+            {% elif role == "expert" %}
+                <h2>ورود کارشناس</h2>
+                <p>نام کاربری و رمز عبور کارشناس را وارد کنید.</p>
+            {% else %}
+                <h2>ورود به سامانه</h2>
+                <p>نقش شما مشخص نیست. نقش را از صفحه اصلی انتخاب کنید.</p>
+            {% endif %}
+        </header>
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="id_username">نام کاربری</label>
+                {{ form.username }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">رمز عبور</label>
+                {{ form.password }}
+            </div>
+
+            <div class="submit-row">
+                <button type="submit">ورود</button>
+            </div>
+        </form>
+
+        <div class="back-link">
+            <a href="{% url 'home:index' %}">بازگشت به صفحه انتخاب نقش</a>
+        </div>
+    </section>
+</div>
+</body>
+</html>

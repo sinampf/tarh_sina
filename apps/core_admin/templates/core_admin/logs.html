@@ -1,0 +1,45 @@
+{% extends 'core_admin/base_admin.html' %}
+
+{% block content %}
+<style>
+    .logs-container { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    .logs-header { margin-bottom: 24px; }
+    .logs-header h2 { margin: 0; color: #1f2937; }
+    .logs-table { width: 100%; border-collapse: collapse; }
+    .logs-table th { text-align: right; padding: 12px; background: #f9fafb; font-weight: 600; color: #4b5563; }
+    .logs-table td { padding: 12px; border-bottom: 1px solid #f3f4f6; }
+    .log-user { font-weight: 600; color: #6366f1; }
+    .log-action { display: inline-block; padding: 2px 8px; background: #e5e7eb; border-radius: 6px; font-size: 12px; }
+    .log-time { font-size: 12px; color: #6b7280; }
+    @media (max-width: 768px) {
+        .logs-table { font-size: 13px; }
+        .logs-table th, .logs-table td { padding: 8px; }
+    }
+</style>
+
+<div class="logs-container">
+    <div class="logs-header">
+        <h2>📋 لاگ‌های سیستم</h2>
+        <p style="color: #6b7280; margin-top: 8px;">گزارش فعالیت‌های انجام شده در سیستم</p>
+    </div>
+
+    <table class="logs-table">
+        <thead>
+            <tr><th>کاربر</th><th>عملیات</th><th>جزئیات</th><th>زمان</th><th>آی پی</th></tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td><span class="log-user">{{ log.user.username }}</span></td>
+                <td><span class="log-action">{{ log.action }}</span></td>
+                <td>{{ log.details|default:'---' }}</td>
+                <td class="log-time">{{ log.created_at|date:"Y/m/d H:i" }}</td>
+                <td class="log-time">{{ log.ip_address|default:'---' }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center;padding:60px;">📭 لاگی وجود ندارد</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

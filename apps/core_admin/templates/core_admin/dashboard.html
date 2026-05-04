@@ -1,0 +1,950 @@
+{% extends 'core_admin/base_admin.html' %}
+
+{% block content %}
+<style>
+    /* ========== Dashboard Cards ========== */
+    .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .stat-icon {
+        font-size: 42px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        width: 65px;
+        height: 65px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-lg);
+        color: white;
+    }
+
+    .stat-info {
+        flex: 1;
+    }
+
+    .stat-info h3 {
+        margin: 0 0 8px 0;
+        color: var(--gray-600);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-info .num {
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--gray-800);
+        line-height: 1;
+    }
+
+    /* ========== Stats Grid ========== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .small-stat {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s ease;
+    }
+
+    .small-stat:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .small-stat .label {
+        font-size: 12px;
+        color: var(--gray-500);
+        margin-bottom: 8px;
+    }
+
+    .small-stat .value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--gray-800);
+    }
+
+    /* ========== Table Wrapper ========== */
+    .table-wrapper {
+        background: white;
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+
+    .table-header {
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--gray-100);
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .table-header h2 {
+        margin: 0;
+        font-size: 20px;
+        color: var(--gray-800);
+        font-weight: 600;
+    }
+
+    /* ========== Bulk Actions Bar ========== */
+    .bulk-bar {
+        padding: 12px 24px;
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .bulk-bar select {
+        padding: 8px 16px;
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-family: inherit;
+        background: white;
+        cursor: pointer;
+    }
+
+    .bulk-bar select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+
+    .btn-primary {
+        padding: 8px 20px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: black;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, var(--danger-color), var(--danger-dark));
+    }
+
+    /* ========== Search Box ========== */
+    .search-box {
+        position: relative;
+    }
+
+    .search-input {
+        padding: 10px 36px 10px 16px;
+        border: 1.5px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        font-size: 14px;
+        width: 260px;
+        transition: all 0.2s;
+        background: var(--gray-50);
+        font-family: inherit;
+
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        background: white;
+    }
+
+    .search-icon {
+        position: absolute;
+        right: 120px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.5;
+    }
+
+    /* ========== User Table ========== */
+    .user-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .user-table thead th {
+        text-align: right;
+        padding: 16px 24px;
+        background: var(--gray-50);
+        font-weight: 600;
+        color: var(--gray-600);
+        font-size: 13px;
+        letter-spacing: 0.5px;
+    }
+
+    .user-table tbody td {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .user-row {
+        transition: background 0.2s;
+    }
+
+    .user-row:hover {
+        background: var(--gray-50);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .user-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--gray-800);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 15px;
+        transition: color 0.2s;
+    }
+
+    .user-name:hover {
+        color: var(--primary-color);
+    }
+
+    .toggle-arrow {
+        transition: transform 0.2s;
+    }
+
+    .user-name[data-open="true"] .toggle-arrow {
+        transform: rotate(180deg);
+    }
+
+    .user-username {
+        font-size: 12px;
+        color: var(--gray-500);
+        margin-top: 4px;
+    }
+
+    /* ========== User Details ========== */
+    .user-details {
+        margin-top: 16px;
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        background: var(--gray-50);
+        padding: 16px;
+        border-radius: var(--radius-lg);
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        background: white;
+        border-radius: var(--radius-md);
+    }
+
+    .detail-icon {
+        font-size: 22px;
+    }
+
+    .detail-content {
+        flex: 1;
+    }
+
+    .detail-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: var(--gray-500);
+        margin-bottom: 2px;
+    }
+
+    .detail-value {
+        font-weight: 500;
+        color: var(--gray-800);
+        font-size: 13px;
+    }
+
+    /* ========== Role Badges ========== */
+    .role-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: black;
+        border-radius: var(--radius-md);
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .no-role {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--gray-200);
+        color: var(--gray-600);
+        border-radius: var(--radius-md);
+        font-size: 11px;
+    }
+
+    /* ========== Status Badges ========== */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: var(--radius-md);
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .status-badge.active {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-badge.inactive {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .status-badge.active .status-dot {
+        background: var(--secondary-color);
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    }
+
+    .status-badge.inactive .status-dot {
+        background: var(--danger-color);
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+    }
+
+    /* ========== Dropdown Menu ========== */
+    .actions-cell {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .menu-trigger {
+        background: var(--gray-100);
+        border: none;
+        width: 34px;
+        height: 34px;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gray-600);
+        transition: all 0.2s;
+        font-size: 18px;
+    }
+
+    .menu-trigger:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        left: 0;
+        top: 40px;
+        background: white;
+        border-radius: var(--radius-lg);
+        min-width: 170px;
+        box-shadow: var(--shadow-xl);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s;
+        z-index: 1000;
+        overflow: hidden;
+    }
+
+    .dropdown-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        color: var(--gray-700);
+        text-decoration: none;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background: var(--gray-50);
+        padding-right: 22px;
+    }
+
+    .dropdown-item.delete {
+        color: var(--danger-color);
+    }
+
+    .dropdown-item.delete:hover {
+        background: #fee2e2;
+    }
+
+    .dropdown-divider {
+        height: 1px;
+        background: var(--gray-200);
+        margin: 4px 0;
+    }
+
+    /* ========== Checkbox ========== */
+    .user-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    /* ========== Pagination ========== */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        padding: 20px;
+        border-top: 1px solid var(--gray-200);
+    }
+
+    .pagination a, .pagination span {
+        padding: 8px 14px;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        color: var(--gray-700);
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+    .pagination a:hover {
+        background: var(--gray-100);
+    }
+
+    .pagination .current {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+    }
+
+    /* ========== Empty State ========== */
+    .empty-state {
+        text-align: center;
+        padding: 60px !important;
+    }
+
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    .empty-text {
+        color: var(--gray-500);
+        font-size: 16px;
+    }
+
+    /* ========== Responsive ========== */
+    @media (max-width: 768px) {
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .table-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-input {
+            width: 100%;
+        }
+
+        .dashboard-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .bulk-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .bulk-bar select, .bulk-bar button {
+            width: 100%;
+        }
+
+        .user-table {
+            font-size: 13px;
+        }
+
+        .user-table thead th,
+        .user-table tbody td {
+            padding: 12px;
+        }
+
+        .user-info {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<!-- Dashboard Cards -->
+<div class="dashboard-cards">
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+            <h3>کل کاربران</h3>
+            <div class="num">{{ total_users }}</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">👨‍💼</div>
+        <div class="stat-info">
+            <h3>اپراتورها</h3>
+            <div class="num">{{ total_operators }}</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">👨‍🔬</div>
+        <div class="stat-info">
+            <h3>کارشناسان</h3>
+            <div class="num">{{ total_experts }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Grid -->
+<div class="stats-grid">
+    <div class="small-stat">
+        <div class="label">📅 کاربران جدید امروز</div>
+        <div class="value">{{ stats.new_users_today }}</div>
+    </div>
+    <div class="small-stat">
+        <div class="label">📆 کاربران جدید این هفته</div>
+        <div class="value">{{ stats.new_users_week }}</div>
+    </div>
+    <div class="small-stat">
+        <div class="label">✅ کاربران فعال</div>
+        <div class="value">{{ stats.active_users }}</div>
+    </div>
+    <div class="small-stat">
+        <div class="label">❌ کاربران غیرفعال</div>
+        <div class="value">{{ stats.inactive_users }}</div>
+    </div>
+    <div class="small-stat">
+        <div class="label">📋 لاگ‌های امروز</div>
+        <div class="value">{{ stats.recent_logs_count }}</div>
+    </div>
+    <div class="small-stat">
+        <div class="label">📊 کل لاگ‌ها</div>
+        <div class="value">{{ stats.total_logs }}</div>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="table-wrapper">
+    <div class="table-header">
+        <h2>📋 لیست کاربران</h2>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="جستجوی کاربر..." class="search-input">
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'core_admin:bulk_action' %}" id="bulkForm">
+        {% csrf_token %}
+        <div class="bulk-bar">
+            <input type="checkbox" id="selectAll" class="user-checkbox">
+            <select name="action" id="bulkAction" required>
+                <option value="">عملیات گروهی را انتخاب کنید...</option>
+                <option value="delete">🗑 حذف کاربران</option>
+                <option value="activate">✅ فعال کردن کاربران</option>
+                <option value="deactivate">❌ غیرفعال کردن کاربران</option>
+                <option value="make_operator">👨‍💼 تبدیل به اپراتور</option>
+                <option value="make_expert">👨‍🔬 تبدیل به کارشناس</option>
+                <option value="remove_role">🗑 حذف نقش کاربران</option>
+            </select>
+            <button type="submit" class="btn-primary">اجرا</button>
+            <a href="{% url 'core_admin:export_csv' %}" class="btn-primary">📥 خروجی Excel</a>
+        </div>
+
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th style="width: 40px;"><input type="checkbox" id="selectAllTable" class="user-checkbox"></th>
+                    <th>کاربر</th>
+                    <th style="width: 80px;">عملیات</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                {% for user in users %}
+                <tr class="user-row" data-user-name="{{ user.first_name }} {{ user.last_name }}" data-user-username="{{ user.username }}">
+                    <td style="text-align: center;">
+                        <input type="checkbox" name="user_ids" value="{{ user.id }}" class="user-checkbox user-checkbox-item">
+                    </td>
+                    <td>
+                        <div class="user-info">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, #{{ user.id|stringformat:'06x'|slice:':6' }}, #{{ user.id|stringformat:'06x'|slice:'3:9' }});">
+                                {{ user.first_name|first|default:'👤' }}{{ user.last_name|first|default:'' }}
+                            </div>
+                            <div>
+                                <div class="user-name" onclick="toggleDetails({{ user.id }})" data-open="false">
+                                    {{ user.first_name|default:'بدون نام' }} {{ user.last_name }}
+                                    <svg class="toggle-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <div class="user-username">@{{ user.username }}</div>
+                            </div>
+                        </div>
+
+                        <div id="details-{{ user.id }}" class="user-details">
+                            <div class="details-grid">
+                                <div class="detail-item">
+                                    <div class="detail-icon">📝</div>
+                                    <div class="detail-content">
+                                        <div class="detail-label">نام کاربری</div>
+                                        <div class="detail-value">{{ user.username }}</div>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">✉️</div>
+                                    <div class="detail-content">
+                                        <div class="detail-label">ایمیل</div>
+                                        <div class="detail-value">{{ user.email|default:'ثبت نشده' }}</div>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">🎭</div>
+                                    <div class="detail-content">
+                                        <div class="detail-label">نقش</div>
+                                        <div class="detail-value">
+                                            {% for group in user.groups.all %}
+                                                <span class="role-badge">{{ group.name }}</span>
+                                            {% empty %}
+                                                <span class="no-role">بدون نقش</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">📅</div>
+                                    <div class="detail-content">
+                                        <div class="detail-label">تاریخ عضویت</div>
+                                        <div class="detail-value">{{ user.date_joined|date:"Y/m/d" }}</div>
+                                        <div class="detail-label" style="margin-top: 2px;">ساعت</div>
+                                        <div class="detail-value">{{ user.date_joined|date:"H:i" }}</div>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">🕒</div>
+                                    <div class="detail-content">
+                                        <div class="detail-label">آخرین ورود</div>
+                                        <div class="detail-value">{{ user.last_login|date:"Y/m/d"|default:"---" }}</div>
+                                        <div class="detail-label" style="margin-top: 2px;">ساعت</div>
+                                        <div class="detail-value">{{ user.last_login|date:"H:i"|default:"" }}</div>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">⚡</div>
+                                    <div class="detail-content">
+                                        <div class="detail-label">وضعیت</div>
+                                        <div class="status-badge {% if user.is_active %}active{% else %}inactive{% endif %}">
+                                            <span class="status-dot"></span>
+                                            {% if user.is_active %}فعال{% else %}غیرفعال{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="actions-cell">
+                        <div class="dropdown">
+                            <button class="menu-trigger" onclick="toggleMenu({{ user.id }})">⋮</button>
+                            <div id="menu-{{ user.id }}" class="dropdown-menu">
+                                <a href="{% url 'core_admin:edit_user' user.id %}" class="dropdown-item">
+                                    ✏️ ویرایش اطلاعات
+                                </a>
+                                <a href="{% url 'core_admin:toggle_status' user.id %}" class="dropdown-item" onclick="return confirm('تغییر وضعیت کاربر؟')">
+                                    {% if user.is_active %}🔴 غیرفعال کردن{% else %}🟢 فعال کردن{% endif %}
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'core_admin:change_role' user.id 'operator' %}" class="dropdown-item">
+                                    👨‍💼 تبدیل به اپراتور
+                                </a>
+                                <a href="{% url 'core_admin:change_role' user.id 'expert' %}" class="dropdown-item">
+                                    👨‍🔬 تبدیل به کارشناس
+                                </a>
+                                <a href="{% url 'core_admin:change_role' user.id 'user' %}" class="dropdown-item">
+                                    🗑 حذف نقش
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'core_admin:delete_user' user.id %}" class="dropdown-item delete" onclick="return confirm('آیا از حذف کاربر «{{ user.first_name|default:user.username }} {{ user.last_name }}» مطمئن هستید؟')">
+                                    🗑 حذف کاربر
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">هیچ کاربری در سیستم ثبت نشده است</div>
+                        <div style="margin-top: 16px;">
+                            <a href="{% url 'core_admin:add_operator' %}" class="btn-primary">➕ افزودن اپراتور</a>
+                            <a href="{% url 'core_admin:add_expert' %}" class="btn-primary" style="background: linear-gradient(135deg, #10b981, #059669);">➕ افزودن کارشناس</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+
+    <!-- Pagination -->
+    {% if paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% if users.has_previous %}
+            <a href="?page=1">« اولین</a>
+            <a href="?page={{ users.previous_page_number }}">قبلی</a>
+        {% endif %}
+
+        <span class="current">
+            صفحه {{ users.number }} از {{ paginator.num_pages }}
+        </span>
+
+        {% if users.has_next %}
+            <a href="?page={{ users.next_page_number }}">بعدی</a>
+            <a href="?page={{ paginator.num_pages }}">آخرین »</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// ========== Toggle User Details ==========
+function toggleDetails(id) {
+    const detailsDiv = document.getElementById("details-" + id);
+    const userRow = detailsDiv.closest('.user-row');
+    const userName = userRow.querySelector('.user-name');
+
+    document.querySelectorAll('.user-details').forEach(div => {
+        if (div.id !== "details-" + id) {
+            div.style.display = "none";
+            const otherRow = div.closest('.user-row');
+            const otherName = otherRow?.querySelector('.user-name');
+            if (otherName) otherName.setAttribute('data-open', 'false');
+        }
+    });
+
+    if (detailsDiv.style.display === "block") {
+        detailsDiv.style.display = "none";
+        userName.setAttribute('data-open', 'false');
+    } else {
+        detailsDiv.style.display = "block";
+        userName.setAttribute('data-open', 'true');
+    }
+}
+
+// ========== Toggle Dropdown Menu ==========
+function toggleMenu(id) {
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        if (menu.id !== "menu-" + id) {
+            menu.classList.remove('show');
+        }
+    });
+
+    const menu = document.getElementById("menu-" + id);
+    menu.classList.toggle('show');
+}
+
+// ========== Close menus when clicking outside ==========
+document.addEventListener("click", function(e) {
+    if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// ========== Close with Escape key ==========
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// ========== Select All Checkboxes ==========
+const selectAllCheckbox = document.getElementById('selectAll');
+const selectAllTableCheckbox = document.getElementById('selectAllTable');
+const userCheckboxes = document.querySelectorAll('.user-checkbox-item');
+
+function updateSelectAll() {
+    const allChecked = userCheckboxes.length > 0 &&
+        Array.from(userCheckboxes).every(cb => cb.checked);
+
+    if (selectAllCheckbox) selectAllCheckbox.checked = allChecked;
+    if (selectAllTableCheckbox) selectAllTableCheckbox.checked = allChecked;
+}
+
+function selectAll(checked) {
+    userCheckboxes.forEach(cb => cb.checked = checked);
+    updateSelectAll();
+}
+
+if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', (e) => selectAll(e.target.checked));
+}
+if (selectAllTableCheckbox) {
+    selectAllTableCheckbox.addEventListener('change', (e) => selectAll(e.target.checked));
+}
+userCheckboxes.forEach(cb => {
+    cb.addEventListener('change', updateSelectAll);
+});
+
+// ========== Search Functionality ==========
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#userTableBody .user-row');
+
+        rows.forEach(row => {
+            const userName = row.getAttribute('data-user-name')?.toLowerCase() || '';
+            const userUsername = row.getAttribute('data-user-username')?.toLowerCase() || '';
+
+            if (userName.includes(searchTerm) || userUsername.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+}
+
+// ========== Bulk Action Confirmation ==========
+const bulkForm = document.getElementById('bulkForm');
+if (bulkForm) {
+    bulkForm.addEventListener('submit', function(e) {
+        const action = document.getElementById('bulkAction')?.value;
+        const checkedCount = document.querySelectorAll('.user-checkbox-item:checked').length;
+
+        if (checkedCount === 0) {
+            e.preventDefault();
+            alert('لطفاً حداقل یک کاربر را انتخاب کنید');
+            return false;
+        }
+
+        if (action === 'delete') {
+            if (!confirm(`آیا از حذف ${checkedCount} کاربر انتخاب شده مطمئن هستید؟`)) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        return true;
+    });
+}
+</script>
+{% endblock %}

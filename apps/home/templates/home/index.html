@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سامانه مدیریت شهری</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'home/img/favicon.ico' %}">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Vazirmatn', 'Vazir', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            overflow: hidden;
+        }
+        .left-panel {
+            flex: 2;
+            background: linear-gradient(135deg, #1a73e8, #2e7d32);
+            color: #fff;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .left-panel h1 { font-size: 28px; margin-bottom: 10px; font-weight: 700; }
+        .left-panel p { font-size: 14px; opacity: 0.9; line-height: 1.5; }
+        .left-panel img {
+            max-width: 80%;
+            border-radius: 16px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .right-panel {
+            flex: 1;
+            background: #f9fafb;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .role-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: #1f2937;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+        }
+        .role-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+            border-color: #cbd5e1;
+        }
+        .role-info { display: flex; align-items: center; gap: 14px; }
+        .role-icon {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: #e0f2fe; color: #1e40af;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; font-size: 20px;
+        }
+        .role-text .role-name { font-size: 18px; font-weight: 700; display: block; margin-bottom: 4px; }
+        .role-text .role-desc { font-size: 13px; color: #4b5563; }
+        .arrow { font-size: 24px; color: #9ca3af; transition: transform 0.2s; }
+        .role-card:hover .arrow { transform: translateX(-4px); color: #1a73e8; }
+        @media (max-width: 768px) {
+            .container { flex-direction: column-reverse; width: 95%; }
+            .left-panel { text-align: center; padding: 30px 20px; }
+            .left-panel img { margin: 20px auto 0; }
+            .right-panel { padding: 24px; }
+            .role-icon { width: 40px; height: 40px; font-size: 18px; }
+            .role-text .role-name { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="left-panel">
+        <div>
+            <h1>سامانه مدیریت شهری</h1>
+            <p>سامانه متمرکز برای مدیریت و پایش داده‌های شهری<br>ثبت میدانی اطلاعات توسط اپراتورها و تحلیل توسط کارشناسان</p>
+        </div>
+        <img src="{% static 'home/img/dashboard-illustration.png' %}" alt="داشبورد مدیریت">
+    </div>
+    <div class="right-panel">
+        <a href="/admin-panel/login/operator/" class="role-card">
+            <div class="role-info">
+                <div class="role-icon">👤</div>
+                <div class="role-text">
+                    <span class="role-name">اپراتور</span>
+                    <span class="role-desc">ثبت و مدیریت اطلاعات روزانه در میدان</span>
+                </div>
+            </div>
+            <span class="arrow">›</span>
+        </a>
+        <a href="/admin-panel/login/expert/" class="role-card">
+            <div class="role-info">
+                <div class="role-icon">📊</div>
+                <div class="role-text">
+                    <span class="role-name">کارشناس</span>
+                    <span class="role-desc">بررسی، تحلیل و تأیید اطلاعات ثبت‌شده</span>
+                </div>
+            </div>
+            <span class="arrow">›</span>
+        </a>
+    </div>
+</div>
+
+<script>
+// جلوگیری از برگشت و چک کردن نقش کاربر
+(function() {
+    // چک کردن اگر از خروج اومده باشیم
+    if (window.location.search.includes('logout=true')) {
+        if (window.history && window.history.pushState) {
+            window.history.pushState(null, null, window.location.pathname);
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // پوش کردن initial state
+    window.history.pushState(null, null, window.location.href);
+
+    // جلوگیری از برگشت
+    window.onpopstate = function() {
+        window.location.reload();
+    };
+
+    // جلوگیری از کش شدن صفحه
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+
+    // مهم: چک کن اگر کاربر لاگین هست، به پنل خودش هدایت کن
+    fetch('/admin-panel/check-session/')
+        .then(r => r.json())
+        .then(data => {
+            if (data.is_logged_in) {
+                // کاربر لاگین هست، ببر به پنل خودش
+                fetch('/admin-panel/check-user-role/')
+                    .then(r => r.json())
+                    .then(roleData => {
+                        if (roleData.role === 'operator') {
+                            window.location.href = '/admin-panel/operator/';
+                        } else if (roleData.role === 'expert') {
+                            window.location.href = '/admin-panel/expert/';
+                        } else if (roleData.role === 'admin') {
+                            window.location.href = '/admin-panel/';
+                        }
+                    })
+                    .catch(() => {});
+            }
+        })
+        .catch(() => {});
+})();
+</script>
+</body>
+</html>

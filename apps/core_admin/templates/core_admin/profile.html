@@ -1,0 +1,60 @@
+{% extends 'core_admin/base_admin.html' %}
+
+{% block content %}
+<style>
+    .profile-container { max-width: 600px; margin: 0 auto; }
+    .profile-card { background: white; border-radius: 20px; padding: 32px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    .profile-header { text-align: center; margin-bottom: 32px; }
+    .profile-avatar {
+        width: 80px; height: 80px; background: linear-gradient(135deg, #6366f1, #4f46e5);
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 16px; color: white; font-size: 32px;
+    }
+    .profile-header h2 { margin: 0; color: #1f2937; }
+    .profile-header p { color: #6b7280; margin-top: 8px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; color: #374151; font-weight: 500; }
+    .form-control {
+        width: 100%; padding: 12px 14px; border: 1.5px solid #e5e7eb;
+        border-radius: 12px; font-family: inherit; font-size: 14px;
+        transition: all 0.2s; background: #f9fafb;
+    }
+    .form-control:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); background: white; }
+    .btn-save {
+        width: 100%; padding: 12px; background: linear-gradient(135deg, #6366f1, #4f46e5);
+        color: white; border: none; border-radius: 12px; font-size: 15px;
+        font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-save:hover { transform: translateY(-2px); }
+    .section-title { font-size: 18px; font-weight: 600; margin: 24px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #f3f4f6; }
+</style>
+
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">👤</div>
+            <h2>{{ user.get_full_name|default:user.username }}</h2>
+            <p>{{ user.username }}</p>
+        </div>
+
+        <div class="section-title">📝 اطلاعات شخصی</div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group"><label>نام</label><input type="text" name="first_name" value="{{ user.first_name }}" class="form-control"></div>
+            <div class="form-group"><label>نام خانوادگی</label><input type="text" name="last_name" value="{{ user.last_name }}" class="form-control"></div>
+            <div class="form-group"><label>ایمیل</label><input type="email" name="email" value="{{ user.email }}" class="form-control"></div>
+            <button type="submit" class="btn-save">💾 بروزرسانی اطلاعات</button>
+        </form>
+
+        <div class="section-title">🔒 تغییر رمز عبور</div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="change_password" value="1">
+            <div class="form-group"><label>رمز عبور فعلی</label><input type="password" name="old_password" class="form-control" required></div>
+            <div class="form-group"><label>رمز عبور جدید</label><input type="password" name="new_password1" class="form-control" required></div>
+            <div class="form-group"><label>تکرار رمز جدید</label><input type="password" name="new_password2" class="form-control" required></div>
+            <button type="submit" class="btn-save">🔐 تغییر رمز عبور</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

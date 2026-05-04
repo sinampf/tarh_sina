@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>Groups & Members Overview</h1>
+
+<ul style="font-size: 18px;">
+    {% for group in groups %}
+        <li>
+            <strong>{{ group.name }}</strong>
+            <ul>
+                {% for user in group.user_set.all %}
+                    <li>{{ user.username }}</li>
+                {% empty %}
+                    <li>No users in this group</li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

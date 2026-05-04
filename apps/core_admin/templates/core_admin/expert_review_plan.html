@@ -1,0 +1,354 @@
+{% extends 'core_admin/expert_base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .review-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .plan-card {
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .plan-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .plan-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    .plan-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 20px;
+    }
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+        padding: 16px;
+        background: #f8fafc;
+        border-radius: 12px;
+    }
+    .info-item {
+        font-size: 14px;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 6px;
+    }
+    .info-value {
+        color: #1e293b;
+    }
+    .photo-preview {
+        max-width: 100%;
+        max-height: 250px;
+        border-radius: 12px;
+        margin-top: 12px;
+        cursor: pointer;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 16px;
+        margin-top: 24px;
+        flex-wrap: wrap;
+    }
+    .btn-approve {
+        background: #10b981;
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        flex: 1;
+        transition: all 0.2s;
+    }
+    .btn-approve:hover {
+        background: #059669;
+        transform: translateY(-1px);
+    }
+    .btn-reject {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        flex: 1;
+        transition: all 0.2s;
+    }
+    .btn-reject:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+    }
+    .btn-cancel {
+        background: #6b7280;
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        flex: 1;
+        transition: all 0.2s;
+    }
+    .btn-cancel:hover {
+        background: #4b5563;
+    }
+    .note-section {
+        margin-top: 24px;
+        padding: 16px;
+        background: #fef2f2;
+        border-radius: 12px;
+        border-right: 3px solid #ef4444;
+        display: none;
+    }
+    .note-section label {
+        font-weight: 600;
+        color: #991b1b;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .note-section textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #fca5a5;
+        border-radius: 8px;
+        font-family: inherit;
+        resize: vertical;
+    }
+    /* استایل نوتیفیکیشن بالای صفحه */
+    .notification-container {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10000;
+        min-width: 300px;
+        max-width: 500px;
+        text-align: center;
+        pointer-events: none;
+    }
+    .notification {
+        background: white;
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        animation: slideDown 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        pointer-events: auto;
+    }
+    .notification-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+    .notification-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+    .notification-error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        .action-buttons {
+            flex-direction: column;
+        }
+        .btn-approve, .btn-reject, .btn-cancel {
+            width: 100%;
+        }
+        .notification-container {
+            left: 20px;
+            right: 20px;
+            transform: none;
+            min-width: auto;
+        }
+    }
+</style>
+
+<div class="review-container">
+    <div class="plan-card">
+        <div class="plan-header">
+            <span class="plan-type">
+                {% if plan.plan_type == 'tafsili' %}📐 طرح تفصیلی/ جامع
+                {% else %}🗂️ ممیزی املاک{% endif %}
+            </span>
+            <span style="color: #6b7280; font-size: 13px;">
+                👤 اپراتور: {{ plan.operator.get_full_name|default:plan.operator.username }}
+            </span>
+        </div>
+
+        <div class="plan-title">{{ plan.title }}</div>
+
+        <div class="info-grid">
+            {% if plan.plan_type == 'tafsili' and plan.tafsili_plan %}
+                <div class="info-item"><div class="info-label">📌 کد منطقه</div><div class="info-value">{{ plan.tafsili_plan.zone_code|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🏷️ نوع کاربری اراضی</div><div class="info-value">{{ plan.tafsili_plan.land_use_type|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">📝 کاربری تفصیلی</div><div class="info-value">{{ plan.tafsili_plan.detailed_use|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">📐 تراکم ساختمانی</div><div class="info-value">{{ plan.tafsili_plan.density|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🏢 حداکثر طبقات</div><div class="info-value">{{ plan.tafsili_plan.floor_limit|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">📍 نام معبر</div><div class="info-value">{{ plan.tafsili_plan.street_name|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">📏 عرض معبر</div><div class="info-value">{{ plan.tafsili_plan.street_width|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🏷️ نوع مالکیت</div><div class="info-value">{{ plan.tafsili_plan.ownership_type|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">📅 قدمت بنا</div><div class="info-value">{{ plan.tafsili_plan.building_age|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🎨 نوع نما</div><div class="info-value">{{ plan.tafsili_plan.facade_type|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🏗️ مصالح ساختمانی</div><div class="info-value">{{ plan.tafsili_plan.material_type|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🔧 کیفیت ابنیه</div><div class="info-value">{{ plan.tafsili_plan.building_quality|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🏙️ سطح عملکردی</div><div class="info-value">{{ plan.tafsili_plan.functional_level|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🏪 کاربری طبقات بالا</div><div class="info-value">{{ plan.tafsili_plan.upper_floor_use|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🏬 کاربری همکف</div><div class="info-value">{{ plan.tafsili_plan.ground_floor_use|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">📊 کاربری غالب</div><div class="info-value">{{ plan.tafsili_plan.dominant_use|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">📐 مساحت اعیانی</div><div class="info-value">{{ plan.tafsili_plan.built_area|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">📍 مساحت عرصه</div><div class="info-value">{{ plan.tafsili_plan.land_area|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🏘️ نام محله</div><div class="info-value">{{ plan.tafsili_plan.neighborhood|default:"-" }}</div></div>
+                <div class="info-item"><div class="info-label">🔢 کد پلاک</div><div class="info-value">{{ plan.tafsili_plan.parcel_code|default:"-" }}</div></div>
+                {% if plan.tafsili_plan.photo %}
+                <div class="info-item"><div class="info-label">📷 عکس طرح</div><img src="{{ plan.tafsili_plan.photo.url }}" class="photo-preview" onclick="window.open(this.src)"></div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <form method="post" id="reviewForm">
+            {% csrf_token %}
+
+            <div class="action-buttons">
+                <button type="button" class="btn-approve" onclick="submitAction('approve')">✅ تأیید طرح</button>
+                <button type="button" class="btn-reject" onclick="showRejectNote()">❌ رد طرح</button>
+                <a href="{% url 'core_admin:expert_tafsili_list' %}" class="btn-cancel">↩️ بازگشت به لیست</a>
+            </div>
+
+            <div id="rejectNoteSection" class="note-section">
+                <label>📝 دلیل رد طرح <span class="required-star">*</span></label>
+                <textarea name="expert_note" id="expertNote" rows="3" placeholder="لطفاً دلیل رد این طرح را وارد کنید..."></textarea>
+                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button type="button" class="btn-reject" onclick="submitAction('reject')" style="flex:1;">✅ تأیید و رد شود</button>
+                    <button type="button" class="btn-approve" onclick="hideRejectNote()" style="background:#6b7280; flex:1;">❌ انصراف</button>
+                </div>
+            </div>
+
+            <input type="hidden" name="action" id="actionInput">
+        </form>
+    </div>
+</div>
+
+<!-- کانتینر نوتیفیکیشن بالای صفحه -->
+<div id="notificationContainer" class="notification-container"></div>
+
+<script>
+    // نمایش نوتیفیکیشن بالای صفحه
+    function showNotification(message, type) {
+        return new Promise((resolve) => {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = 'notification notification-' + type;
+            notification.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span><span>${message}</span>`;
+
+            // حذف نوتیفیکیشن‌های قبلی
+            const oldNotifications = container.querySelectorAll('.notification');
+            oldNotifications.forEach(n => n.remove());
+
+            container.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    notification.remove();
+                    resolve();
+                }, 300);
+            }, 2000);
+        });
+    }
+
+    function showRejectNote() {
+        document.getElementById('rejectNoteSection').style.display = 'block';
+        document.getElementById('expertNote').focus();
+    }
+
+    function hideRejectNote() {
+        document.getElementById('rejectNoteSection').style.display = 'none';
+        document.getElementById('expertNote').value = '';
+    }
+
+    async function submitAction(action) {
+        if (action === 'reject') {
+            const note = document.getElementById('expertNote').value.trim();
+            if (!note) {
+                await showNotification('⚠️ لطفاً دلیل رد طرح را وارد کنید', 'error');
+                return;
+            }
+            // نمایش نوتیفیکیشن رد
+            await showNotification('❌ طرح رد شد. نظر شما به اپراتور ارسال گردید.', 'warning');
+            // ارسال فرم بعد از نوتیفیکیشن
+            setTimeout(() => {
+                document.getElementById('actionInput').value = 'reject';
+                document.getElementById('reviewForm').submit();
+            }, 500);
+        } else {
+            // نمایش نوتیفیکیشن تأیید
+            await showNotification('✅ طرح با موفقیت تأیید و در پایگاه داده ذخیره شد.', 'success');
+            // ارسال فرم بعد از نوتیفیکیشن
+            setTimeout(() => {
+                document.getElementById('actionInput').value = 'approve';
+                document.getElementById('reviewForm').submit();
+            }, 500);
+        }
+    }
+</script>
+
+{% endblock %}

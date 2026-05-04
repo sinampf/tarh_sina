@@ -1,0 +1,247 @@
+{% extends 'core_admin/operator_base.html' %}
+{% block content %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .form-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e5e7eb;
+        color: #1e3c72;
+    }
+    .form-row {
+        margin-bottom: 18px;
+    }
+    .form-row label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        color: #374151;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: #1e3c72;
+        box-shadow: 0 0 0 3px rgba(30,60,114,0.1);
+    }
+    .btn-submit {
+        background: #1e3c72;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .btn-submit:hover {
+        background: #0f2d5e;
+        transform: translateY(-1px);
+    }
+
+    /* لیست داده‌های ثبت شده */
+    .data-list {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e5e7eb;
+        color: #1e3c72;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .data-card {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 16px;
+        border-right: 3px solid #1e3c72;
+        transition: all 0.2s;
+    }
+    .data-card:hover {
+        background: #f1f5f9;
+        transform: translateX(-3px);
+    }
+    .data-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .data-title {
+        font-weight: 700;
+        font-size: 16px;
+        color: #1e293b;
+    }
+    .data-date {
+        font-size: 11px;
+        color: #94a3b8;
+    }
+    .data-detail {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .detail-item {
+        font-size: 13px;
+    }
+    .detail-label {
+        font-weight: 600;
+        color: #475569;
+    }
+    .detail-value {
+        color: #1e293b;
+    }
+    .data-photo {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed #cbd5e1;
+    }
+    .data-photo img {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 12px;
+        margin-top: 8px;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #94a3b8;
+    }
+    .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    @media (max-width: 768px) {
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">📐 طرح تفصیلی</h1>
+    <p class="page-subtitle">تکمیل اطلاعات مربوط به طرح تفصیلی منطقه</p>
+</div>
+
+<div class="grid-2">
+    <!-- فرم ثبت اطلاعات -->
+    <div class="form-container">
+        <div class="form-title">➕ ثبت اطلاعات جدید</div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <label>نام پروژه <span style="color:#ef4444;">*</span></label>
+                <input type="text" name="project_name" class="form-control" required placeholder="مثال: طرح تفصیلی منطقه ۱">
+            </div>
+
+            <div class="form-row">
+                <label>کد منطقه <span style="color:#ef4444;">*</span></label>
+                <input type="text" name="zone_code" class="form-control" required placeholder="مثال: Z-101">
+            </div>
+
+            <div class="form-row">
+                <label>کاربری تفصیلی <span style="color:#ef4444;">*</span></label>
+                <textarea name="detailed_use" rows="3" class="form-control" required placeholder="توضیحات کاربری تفصیلی منطقه..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <label>تراکم ساختمانی <span style="color:#ef4444;">*</span></label>
+                <input type="number" step="0.1" name="density" class="form-control" required placeholder="مثال: 120">
+            </div>
+
+            <div class="form-row">
+                <label>حداکثر طبقات مجاز <span style="color:#ef4444;">*</span></label>
+                <input type="number" name="floor_limit" class="form-control" required placeholder="مثال: 4">
+            </div>
+
+            <div class="form-row">
+                <label>عکس طرح (اختیاری)</label>
+                <input type="file" name="photo" class="form-control" accept="image/*">
+                <small style="color:#6b7280;">فرمت‌های مجاز: jpg, jpeg, png</small>
+            </div>
+
+            <button type="submit" class="btn-submit">💾 ذخیره اطلاعات</button>
+        </form>
+    </div>
+
+    <!-- لیست اطلاعات ثبت شده -->
+    <div class="data-list">
+        <div class="section-title">
+            <span>📋</span> اطلاعات ثبت شده توسط من
+            <span style="font-size:13px; color:#6b7280;">({{ my_data|length }} مورد)</span>
+        </div>
+
+        {% if my_data %}
+            {% for item in my_data %}
+            <div class="data-card">
+                <div class="data-header">
+                    <span class="data-title">{{ item.project_name }}</span>
+                    <span class="data-date">{{ item.created_at|date:"Y/m/d H:i" }}</span>
+                </div>
+                <div class="data-detail">
+                    <div class="detail-item">
+                        <span class="detail-label">کد منطقه:</span>
+                        <span class="detail-value">{{ item.zone_code }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">تراکم:</span>
+                        <span class="detail-value">{{ item.density }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">حداکثر طبقات:</span>
+                        <span class="detail-value">{{ item.floor_limit }}</span>
+                    </div>
+                </div>
+                <div class="detail-item" style="margin-top:8px;">
+                    <span class="detail-label">کاربری تفصیلی:</span>
+                    <span class="detail-value">{{ item.detailed_use|truncatechars:100 }}</span>
+                </div>
+                {% if item.photo %}
+                <div class="data-photo">
+                    <span class="detail-label">عکس طرح:</span>
+                    <br>
+                    <img src="{{ item.photo.url }}" alt="عکس طرح تفصیلی" onclick="window.open(this.src)">
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                📭 هیچ اطلاعاتی ثبت نشده است.
+                <br>
+                <small>از فرم سمت راست برای ثبت اطلاعات استفاده کنید.</small>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

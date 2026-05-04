@@ -1,0 +1,26 @@
+{% extends 'core_admin/expert_base.html' %}
+{% block content %}
+
+<div class="page-header">
+    <h1 class="page-title">✅ طرح‌های تأیید شده</h1>
+    <p class="page-subtitle">لیست طرح‌هایی که توسط کارشناس تأیید شده‌اند</p>
+</div>
+
+<!-- دکمه‌های خروجی CSV -->
+<div class="export-buttons" style="margin-bottom: 20px; display: flex; gap: 12px;">
+    <a href="{% url 'core_admin:export_final_csv' %}" class="btn-export" style="background: #10b981; color: white; padding: 8px 20px; border-radius: 8px; text-decoration: none;">
+        📥 خروجی CSV (تأیید شده‌ها)
+    </a>
+    <a href="{% url 'core_admin:export_final_detailed_csv' %}" class="btn-export" style="background: #3b82f6; color: white; padding: 8px 20px; border-radius: 8px; text-decoration: none;">
+        📥 خروجی CSV (جزئیات کامل)
+    </a>
+</div>
+
+<!-- جدول نمایش طرح‌های تأیید شده -->
+<div class="table-container">
+    <table class="data-table">
+        <!-- ... -->
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'core_admin/base_admin.html' %}
+
+{% block content %}
+<style>
+    .settings-container { max-width: 600px; margin: 0 auto; }
+    .settings-card { background: white; border-radius: 20px; padding: 32px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    .settings-card h2 { margin: 0 0 8px; color: #1f2937; }
+    .settings-card .subtitle { color: #6b7280; font-size: 14px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #f3f4f6; }
+    .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f3f4f6; }
+    .setting-item:last-child { border-bottom: none; }
+    .setting-label { font-weight: 500; color: #374151; }
+    .setting-desc { font-size: 12px; color: #6b7280; margin-top: 4px; }
+    .form-control {
+        padding: 8px 12px; border: 1.5px solid #e5e7eb;
+        border-radius: 8px; font-family: inherit; font-size: 14px;
+        background: #f9fafb;
+    }
+    .btn-save {
+        width: 100%; padding: 12px; margin-top: 24px;
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        color: white; border: none; border-radius: 12px;
+        font-size: 15px; font-weight: 600; cursor: pointer;
+    }
+</style>
+
+<div class="settings-container">
+    <div class="settings-card">
+        <h2>⚙️ تنظیمات سیستم</h2>
+        <div class="subtitle">تنظیمات و پیکربندی سیستم</div>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="setting-item">
+                <div>
+                    <div class="setting-label">تعداد آیتم در هر صفحه</div>
+                    <div class="setting-desc">تعداد رکوردهای نمایش داده شده در جداول</div>
+                </div>
+                <select name="items_per_page" class="form-control">
+                    <option value="10" {% if settings.items_per_page.value == '10' %}selected{% endif %}>10</option>
+                    <option value="25" {% if settings.items_per_page.value == '25' %}selected{% endif %}>25</option>
+                    <option value="50" {% if settings.items_per_page.value == '50' %}selected{% endif %}>50</option>
+                    <option value="100" {% if settings.items_per_page.value == '100' %}selected{% endif %}>100</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <div>
+                    <div class="setting-label">تم سیستم</div>
+                    <div class="setting-desc">تم رنگی پنل مدیریت</div>
+                </div>
+                <select name="theme" class="form-control">
+                    <option value="light" {% if settings.theme.value == 'light' %}selected{% endif %}>روشن</option>
+                    <option value="dark" {% if settings.theme.value == 'dark' %}selected{% endif %}>تاریک</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-save">💾 ذخیره تنظیمات</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

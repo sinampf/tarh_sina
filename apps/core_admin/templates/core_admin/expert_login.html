@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ورود کارشناس</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Vazirmatn', 'Vazir', sans-serif;
+            background: linear-gradient(135deg, #14532d, #166534);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .login-icon { font-size: 50px; margin-bottom: 16px; }
+        h1 { font-size: 24px; margin-bottom: 8px; color: #1f2937; }
+        .sub { color: #6b7280; font-size: 14px; margin-bottom: 24px; }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: right;
+        }
+        .form-group { margin-bottom: 16px; text-align: right; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #166534;
+            box-shadow: 0 0 0 3px rgba(22,101,52,0.1);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #166534;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #14532d;
+            transform: translateY(-2px);
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #6366f1;
+            text-decoration: none;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <div class="login-icon">📊</div>
+    <h1>پنل کارشناس</h1>
+    <p class="sub">تحلیل و بررسی داده‌ها</p>
+
+    {% if error %}
+    <div class="error">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>نام کاربری</label>
+            <input type="text" name="username" class="form-control" required autofocus>
+        </div>
+        <div class="form-group">
+            <label>رمز عبور</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit">ورود کارشناس</button>
+    </form>
+    <a href="/" class="back-link">← بازگشت به صفحه اصلی</a>
+</div>
+</body>
+</html>

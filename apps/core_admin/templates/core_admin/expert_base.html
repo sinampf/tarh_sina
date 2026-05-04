@@ -1,0 +1,808 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, no-store, max-age=0, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل کارشناس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <!-- Cropper.js برای برش عکس -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary:        #14532d;
+            --primary-mid:    #166534;
+            --primary-light:  #15803d;
+            --primary-glow:   rgba(21, 128, 61, 0.12);
+            --primary-tint:   rgba(20, 83, 45, 0.06);
+
+            --surface:        #ffffff;
+            --surface-2:      #f7f8fc;
+            --bg:             #eef1f8;
+
+            --border:         rgba(0,0,0,0.07);
+            --border-md:      rgba(0,0,0,0.13);
+
+            --text-1:         #0d1626;
+            --text-2:         #4b5870;
+            --text-3:         #8d97aa;
+
+            --header-h:       60px;
+            --sidebar-w:      252px;
+            --radius-sm:      8px;
+            --radius-md:      12px;
+            --radius-lg:      16px;
+
+            --success:        #059669;
+            --success-bg:     #ecfdf5;
+            --success-border: #a7f3d0;
+            --warning:        #d97706;
+            --danger:         #dc2626;
+            --danger-bg:      #fef2f2;
+            --danger-border:  #fca5a5;
+            --info:           #2563eb;
+
+            --shadow-sm:  0 1px 3px rgba(20,83,45,0.06), 0 1px 2px rgba(20,83,45,0.04);
+            --shadow-md:  0 4px 12px rgba(20,83,45,0.08), 0 2px 4px rgba(20,83,45,0.05);
+            --shadow-lg:  0 10px 32px rgba(20,83,45,0.12), 0 4px 8px rgba(20,83,45,0.06);
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        /* ─────────── هدر ─────────── */
+        .expert-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--header-h);
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 200;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 4px 20px rgba(10,30,70,0.25);
+        }
+
+        .expert-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+        }
+
+        .expert-brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .expert-brand-icon {
+            width: 36px; height: 36px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%);
+            border: 0.5px solid rgba(255,255,255,0.22);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .expert-brand-name {
+            font-size: 14.5px;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 0.3px;
+        }
+
+        .expert-brand-sub {
+            font-size: 11px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.5);
+            display: block;
+            letter-spacing: 0.2px;
+            margin-top: -2px;
+        }
+
+        .expert-header-user {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .expert-user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .expert-username {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.92);
+        }
+
+        .expert-user-role {
+            font-size: 11px;
+            color: rgba(255,255,255,0.48);
+        }
+
+        .expert-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.1) 100%);
+            border: 1.5px solid rgba(255,255,255,0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .expert-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .expert-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ─────────── لایه اصلی ─────────── */
+        .expert-layout {
+            display: flex;
+            margin-top: var(--header-h);
+            min-height: calc(100vh - var(--header-h));
+        }
+
+        /* ─────────── سایدبار ─────────── */
+        .expert-sidebar {
+            width: var(--sidebar-w);
+            background: var(--surface);
+            border-left: 0.5px solid var(--border-md);
+            position: fixed;
+            right: 0;
+            top: var(--header-h);
+            bottom: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 18px 0 32px;
+            scrollbar-width: thin;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar-group-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            color: var(--text-3);
+            padding: 14px 18px 5px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav { list-style: none; padding: 0 10px; margin: 0; }
+        .sidebar-nav li { padding: 2px 0; }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+        .sidebar-link:hover {
+            background: var(--primary-tint);
+            color: var(--primary);
+        }
+        .sidebar-link.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(20,83,45,0.25);
+        }
+
+        .sidebar-icon-wrap {
+            width: 28px; height: 28px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+            background: rgba(0,0,0,0.04);
+            transition: background 0.15s;
+        }
+        .sidebar-link.active .sidebar-icon-wrap {
+            background: rgba(255,255,255,0.16);
+        }
+        .sidebar-link:hover:not(.active) .sidebar-icon-wrap {
+            background: rgba(20,83,45,0.1);
+        }
+
+        .sidebar-divider {
+            height: 0.5px;
+            background: var(--border);
+            margin: 10px 14px;
+        }
+
+        /* دکمه خروج در منو */
+        .logout-sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            color: #dc2626;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-top: 20px;
+        }
+        .logout-sidebar-link:hover {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .logout-icon-wrap {
+            width: 28px; height: 28px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+            background: rgba(220,38,38,0.1);
+        }
+        .logout-sidebar-link:hover .logout-icon-wrap {
+            background: rgba(220,38,38,0.2);
+        }
+
+        /* ─────────── محتوای اصلی ─────────── */
+        .expert-content {
+            flex: 1;
+            margin-right: var(--sidebar-w);
+            padding: 28px 28px 40px;
+            min-width: 0;
+        }
+
+        /* ─────────── استایل نوتیفیکیشن Toast ─────────── */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            min-width: 300px;
+            max-width: 400px;
+            background: white;
+            border-radius: 12px;
+            padding: 14px 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            animation: slideInRight 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-right: 4px solid;
+        }
+        .toast-success {
+            border-right-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        }
+        .toast-success .toast-icon { color: #10b981; }
+        .toast-error {
+            border-right-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        }
+        .toast-error .toast-icon { color: #ef4444; }
+        .toast-warning {
+            border-right-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        }
+        .toast-warning .toast-icon { color: #f59e0b; }
+        .toast-info {
+            border-right-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        }
+        .toast-info .toast-icon { color: #3b82f6; }
+        .toast-icon { font-size: 20px; }
+        .toast-content {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+        .toast-close {
+            cursor: pointer;
+            font-size: 18px;
+            color: #9ca3af;
+            transition: color 0.2s;
+            padding: 0 4px;
+        }
+        .toast-close:hover { color: #6b7280; }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* ─────────── مودال برش عکس ─────────── */
+        .crop-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .crop-modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: auto;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+            animation: modalFadeIn 0.3s ease;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .crop-modal h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: #1e293b;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 12px;
+        }
+        .crop-image-container {
+            margin-bottom: 20px;
+            text-align: center;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .crop-image-container img {
+            max-width: 100%;
+            max-height: 55vh;
+            display: block;
+            margin: 0 auto;
+        }
+        .crop-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .crop-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .crop-btn-primary { background: #2563eb; color: white; }
+        .crop-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+        .crop-btn-secondary { background: #6b7280; color: white; }
+        .crop-btn-secondary:hover { background: #4b5563; }
+        .crop-btn-success { background: #10b981; color: white; }
+        .crop-btn-success:hover { background: #059669; }
+        .crop-btn-danger { background: #ef4444; color: white; }
+        .crop-btn-danger:hover { background: #dc2626; }
+        .crop-note {
+            font-size: 12px;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* ─────────── دکمه منو موبایل ─────────── */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: calc(var(--header-h) + 14px);
+            right: 14px;
+            z-index: 201;
+            width: 40px; height: 40px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10,20,50,0.4);
+            backdrop-filter: blur(2px);
+            z-index: 199;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; }
+            .expert-sidebar {
+                transform: translateX(100%);
+                transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+                z-index: 200;
+                box-shadow: -8px 0 32px rgba(10,20,50,0.18);
+            }
+            .expert-sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .expert-content { margin-right: 0; padding: 18px 14px 32px; }
+            .expert-user-info { display: none; }
+            .expert-brand-sub { display: none; }
+            .toast-container { left: 20px; right: 20px; }
+            .toast { width: calc(100% - 40px); max-width: none; }
+            .crop-buttons { gap: 6px; }
+            .crop-btn { padding: 6px 12px; font-size: 11px; }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+</head>
+<body>
+
+<header class="expert-header">
+    <div class="expert-brand">
+        <div class="expert-brand-icon">📊</div>
+        <div>
+            <span class="expert-brand-name">پنل کارشناس</span>
+            <span class="expert-brand-sub">سامانه مدیریت اطلاعات شهری</span>
+        </div>
+    </div>
+    <div class="expert-header-user">
+        <div class="expert-user-info">
+            <span class="expert-username">{{ user.get_full_name|default:user.username }}</span>
+            <span class="expert-user-role">کارشناس</span>
+        </div>
+        <div class="expert-avatar" onclick="triggerAvatarUpload()">
+            {% if user.profile.avatar %}
+                <img src="{{ user.profile.avatar.url }}" alt="avatar" id="headerAvatar">
+            {% else %}
+                <span id="avatarText">{{ user.username|slice:":2"|upper }}</span>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<!-- فرم مخفی برای آپلود عکس -->
+<form id="avatarUploadForm" method="post" enctype="multipart/form-data" action="{% url 'core_admin:expert_profile' %}" style="display:none;">
+    {% csrf_token %}
+    <input type="file" id="avatarFileInput" name="avatar" accept="image/jpeg,image/png,image/jpg">
+</form>
+
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<div class="expert-layout">
+    <aside class="expert-sidebar" id="expertSidebar">
+        <div class="sidebar-group-label">📊 اصلی</div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{% url 'core_admin:expert_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'expert_dashboard' %}active{% endif %}">
+                    <span class="sidebar-icon-wrap">📊</span>
+                    <span>داشبورد</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-group-label">🗺️ داده‌های میدانی</div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{% url 'core_admin:expert_dashboard' %}" class="sidebar-link">
+                    <span class="sidebar-icon-wrap">📍</span>
+                    <span>قطعات و نقشه</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-group-label">📐 بررسی طرح‌های شهری</div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{% url 'core_admin:expert_tafsili_list' %}" class="sidebar-link">
+                    <span class="sidebar-icon-wrap">📐</span>
+                    <span>طرح تفصیلی / جامع</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'core_admin:expert_momayezi_list' %}" class="sidebar-link">
+                    <span class="sidebar-icon-wrap">🗂️</span>
+                    <span>ممیزی املاک</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-group-label">⚙️ تنظیمات</div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{% url 'core_admin:expert_profile' %}" class="sidebar-link">
+                    <span class="sidebar-icon-wrap">👤</span>
+                    <span>پروفایل</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-divider"></div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{% url 'core_admin:logout' %}" class="logout-sidebar-link" onclick="return confirm('آیا از خروج مطمئن هستید؟')">
+                    <span class="logout-icon-wrap">🚪</span>
+                    <span>خروج از سیستم</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="expert-content">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<!-- مودال برش عکس -->
+<div id="cropModal" class="crop-modal">
+    <div class="crop-modal-content">
+        <h3>✂️ تنظیم و برش عکس پروفایل</h3>
+        <div class="crop-image-container">
+            <img id="cropImage" src="" alt="پیش‌نمایش">
+        </div>
+        <div class="crop-buttons">
+            <button type="button" class="crop-btn crop-btn-primary" id="zoomInBtn">🔍 زوم +</button>
+            <button type="button" class="crop-btn crop-btn-primary" id="zoomOutBtn">🔍 زوم -</button>
+            <button type="button" class="crop-btn crop-btn-secondary" id="rotateLeftBtn">↩️ چرخش چپ</button>
+            <button type="button" class="crop-btn crop-btn-secondary" id="rotateRightBtn">↪️ چرخش راست</button>
+            <button type="button" class="crop-btn crop-btn-danger" id="resetBtn">⟳ ریست</button>
+            <button type="button" class="crop-btn crop-btn-success" id="cropConfirmBtn">✅ تأیید و برش</button>
+            <button type="button" class="crop-btn crop-btn-secondary" id="cropCancelBtn">❌ انصراف</button>
+        </div>
+        <div class="crop-note">
+            💡 نکته: عکس را بکشید و جابجا کنید. با زوم و چرخش تنظیم کنید تا در دایره قرار گیرد.
+        </div>
+    </div>
+</div>
+
+<!-- کانتینر نوتیفیکیشن Toast -->
+<div id="toastContainer" class="toast-container"></div>
+
+<script>
+    let cropper = null;
+    let currentFile = null;
+
+    // نمایش نوتیفیکیشن
+    function showToast(message, type) {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+
+        let icon = '';
+        if (type === 'success') icon = '✅';
+        else if (type === 'error') icon = '❌';
+        else if (type === 'warning') icon = '⚠️';
+        else icon = 'ℹ️';
+
+        toast.innerHTML = `
+            <div class="toast-icon">${icon}</div>
+            <div class="toast-content">${message}</div>
+            <div class="toast-close" onclick="this.parentElement.remove()">✕</div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, 4000);
+    }
+
+    // نمایش پیام‌های Django
+    function showMessagesFromDjango() {
+        {% if messages %}
+            {% for message in messages %}
+                showToast('{{ message|escapejs }}', '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}warning{% endif %}');
+            {% endfor %}
+        {% endif %}
+    }
+
+    // فعال کردن آپلود عکس
+    function triggerAvatarUpload() {
+        document.getElementById('avatarFileInput').click();
+    }
+
+    // آپلود عکس با Cropper
+    document.getElementById('avatarFileInput')?.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.match('image.*')) {
+            showToast('لطفاً فایل تصویری انتخاب کنید', 'error');
+            return;
+        }
+
+        currentFile = file;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const cropImage = document.getElementById('cropImage');
+            cropImage.src = event.target.result;
+            const modal = document.getElementById('cropModal');
+            modal.style.display = 'flex';
+
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(cropImage, {
+                aspectRatio: 1,
+                viewMode: 2,
+                dragMode: 'move',
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                zoomable: true,
+                movable: true,
+                rotatable: true,
+                scalable: true,
+                background: false,
+                center: true,
+                guides: true,
+                autoCropArea: 1,
+                minCropBoxWidth: 100,
+                minCropBoxHeight: 100,
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // دکمه‌های Cropper
+    document.getElementById('zoomInBtn')?.addEventListener('click', () => cropper?.zoom(0.1));
+    document.getElementById('zoomOutBtn')?.addEventListener('click', () => cropper?.zoom(-0.1));
+    document.getElementById('rotateLeftBtn')?.addEventListener('click', () => cropper?.rotate(-45));
+    document.getElementById('rotateRightBtn')?.addEventListener('click', () => cropper?.rotate(45));
+    document.getElementById('resetBtn')?.addEventListener('click', () => cropper?.reset());
+
+    document.getElementById('cropCancelBtn')?.addEventListener('click', () => {
+        const modal = document.getElementById('cropModal');
+        modal.style.display = 'none';
+        if (cropper) { cropper.destroy(); cropper = null; }
+        document.getElementById('avatarFileInput').value = '';
+    });
+
+    document.getElementById('cropConfirmBtn')?.addEventListener('click', () => {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+        canvas.toBlob(function(blob) {
+            const formData = new FormData();
+            formData.append('avatar', blob, 'avatar.jpg');
+            formData.append('cropped', 'true');
+            formData.append('ajax', '1');
+
+            fetch("{% url 'core_admin:expert_profile' %}", {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('عکس پروفایل با موفقیت بروزرسانی شد', 'success');
+                    // به‌روزرسانی عکس در هدر
+                    const headerAvatar = document.getElementById('headerAvatar');
+                    if (headerAvatar) {
+                        headerAvatar.src = data.url + '?t=' + new Date().getTime();
+                    } else {
+                        // اگر span بود، تبدیل به img کن
+                        const avatarDiv = document.querySelector('.expert-avatar');
+                        avatarDiv.innerHTML = `<img src="${data.url}?t=${new Date().getTime()}" alt="avatar" id="headerAvatar">`;
+                    }
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast('خطا: ' + (data.error || 'مشخص نیست'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('خطا در ارتباط با سرور', 'error');
+            });
+
+            document.getElementById('cropModal').style.display = 'none';
+            if (cropper) { cropper.destroy(); cropper = null; }
+        }, 'image/jpeg');
+    });
+
+    // بستن مودال با کلیک خارج
+    document.getElementById('cropModal')?.addEventListener('click', function(e) {
+        if (e.target === this) document.getElementById('cropCancelBtn').click();
+    });
+
+    // توابع منو
+    function toggleSidebar() {
+        const sidebar = document.getElementById('expertSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (sidebar) {
+            const isOpen = sidebar.classList.toggle('open');
+            if (overlay) overlay.classList.toggle('open', isOpen);
+        }
+    }
+    function closeSidebar() {
+        document.getElementById('expertSidebar')?.classList.remove('open');
+        document.getElementById('sidebarOverlay')?.classList.remove('open');
+    }
+
+    document.addEventListener('click', function(e) {
+        const sidebar = document.getElementById('expertSidebar');
+        const menuBtn = document.querySelector('.menu-toggle');
+        if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && !menuBtn?.contains(e.target)) {
+            sidebar.classList.remove('open');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        showMessagesFromDjango();
+    });
+</script>
+
+</body>
+</html>

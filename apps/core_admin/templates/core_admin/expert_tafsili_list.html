@@ -1,0 +1,73 @@
+{% extends 'core_admin/expert_base.html' %}
+{% block content %}
+
+<h2 style="margin-bottom: 20px;">📐 لیست اطلاعات طرح تفصیلی</h2>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>شناسه</th>
+                <th>اپراتور</th>
+                <th>نام پروژه</th>
+                <th>کد منطقه</th>
+                <th>کاربری تفصیلی</th>
+                <th>تراکم</th>
+                <th>حداکثر طبقات</th>
+                <th>تاریخ ثبت</th>
+                <th>عکس</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data_list %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.operator.get_full_name|default:item.operator.username }}</td>
+                <td>{{ item.project_name }}</td>
+                <td>{{ item.zone_code }}</td>
+                <td>{{ item.detailed_use|truncatechars:50 }}</td>
+                <td>{{ item.density }}</td>
+                <td>{{ item.floor_limit }}</td>
+                <td>{{ item.created_at|date:"Y/m/d H:i" }}</td>
+                <td>
+                    {% if item.photo %}
+                    <img src="{{ item.photo.url }}" style="width:40px; height:40px; border-radius:6px; cursor:pointer;" onclick="window.open(this.src)">
+                    {% else %}
+                    <span style="color:#9ca3af;">بدون عکس</span>
+                    {% endif %}
+                 </td>
+             </tr>
+            {% empty %}
+            <tr><td colspan="9" style="text-align:center; padding:40px;">هیچ اطلاعاتی ثبت نشده است</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .data-table th {
+        background: #1e3c72;
+        color: white;
+        padding: 12px;
+        text-align: center;
+    }
+    .data-table td {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .table-container {
+        background: white;
+        border-radius: 16px;
+        overflow-x: auto;
+        padding: 5px;
+    }
+</style>
+{% endblock %}

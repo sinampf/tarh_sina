@@ -1,0 +1,25 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+{{ block.super }}
+
+<div class="module">
+    <table>
+        <caption>
+            <a href="{% url 'admin:groups-overview' %}" class="section">
+                groups_overview
+            </a>
+        </caption>
+        <tbody>
+            <tr>
+                <th scope="row">
+                    <a href="{% url 'admin:groups-overview' %}">مشاهده تمام گروه‌ها و اعضا</a>
+                </th>
+                <td>
+                    <a href="{% url 'admin:groups-overview' %}" class="viewlink">مشاهده</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

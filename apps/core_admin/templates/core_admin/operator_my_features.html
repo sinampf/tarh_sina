@@ -1,0 +1,392 @@
+{% extends 'core_admin/operator_base.html' %}
+{% block content %}
+
+<style>
+    .page-header {
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    .page-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+    .page-subtitle {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 6px;
+    }
+
+    /* کارت‌های آماری */
+    .stats-row {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+    }
+    .stat-box {
+        flex: 1;
+        background: white;
+        border-radius: 16px;
+        padding: 18px;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: all 0.2s;
+    }
+    .stat-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .stat-number {
+        font-size: 32px;
+        font-weight: 800;
+    }
+    .stat-label {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 6px;
+    }
+    .stat-pending .stat-number { color: #f59e0b; }
+    .stat-approved .stat-number { color: #10b981; }
+    .stat-rejected .stat-number { color: #ef4444; }
+
+    /* کارت‌های طرح */
+    .plans-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .plan-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.2s;
+    }
+    .plan-card:hover {
+        transform: translateX(-3px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .card-pending {
+        border-right: 4px solid #f59e0b;
+    }
+    .card-approved {
+        border-right: 4px solid #10b981;
+    }
+    .card-rejected {
+        border-right: 4px solid #ef4444;
+    }
+    .plan-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .plan-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .type-tafsili { background: #dbeafe; color: #1e40af; }
+    .type-jame { background: #d1fae5; color: #065f46; }
+    .type-momayezi { background: #fef3c7; color: #92400e; }
+
+    .plan-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    .status-approved {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    .status-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    .plan-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 14px;
+    }
+    .plan-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 12px;
+    }
+    .info-item {
+        font-size: 13px;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #475569;
+    }
+    .info-value {
+        color: #1e293b;
+        margin-top: 4px;
+    }
+    .expert-note {
+        margin-top: 12px;
+        padding: 12px;
+        background: #fee2e2;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #991b1b;
+        border-right: 3px solid #ef4444;
+    }
+    .btn-revise {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        margin-top: 12px;
+        transition: all 0.2s;
+    }
+    .btn-revise:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+    }
+    .approved-badge {
+        margin-top: 12px;
+        padding: 8px 12px;
+        background: #d1fae5;
+        border-radius: 8px;
+        color: #065f46;
+        font-size: 13px;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        background: white;
+        border-radius: 16px;
+        color: #9ca3af;
+    }
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #1e3c72;
+        color: white;
+        padding: 10px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .btn-primary:hover {
+        background: #0f2d5e;
+        transform: translateY(-1px);
+    }
+    .photo-preview {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    @media (max-width: 768px) {
+        .stats-row {
+            flex-direction: column;
+        }
+        .plan-info {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">📋 طرح‌های ارسالی من</h1>
+    <p class="page-subtitle">وضعیت طرح‌های ثبت شده و مشاهده نظرات کارشناس</p>
+</div>
+
+<!-- کارت‌های آماری -->
+<div class="stats-row">
+    <div class="stat-box">
+        <div class="stat-number">{{ total_count }}</div>
+        <div class="stat-label">کل طرح‌ها</div>
+    </div>
+    <div class="stat-box stat-pending">
+        <div class="stat-number">{{ pending_count }}</div>
+        <div class="stat-label">در انتظار بررسی</div>
+    </div>
+    <div class="stat-box stat-approved">
+        <div class="stat-number">{{ approved_count }}</div>
+        <div class="stat-label">تأیید شده</div>
+    </div>
+    <div class="stat-box stat-rejected">
+        <div class="stat-number">{{ rejected_count }}</div>
+        <div class="stat-label">رد شده</div>
+    </div>
+</div>
+
+<div class="plans-grid">
+    {% if plans %}
+        {% for plan in plans %}
+            <div class="plan-card card-{{ plan.status }}">
+                <div class="plan-header">
+                    <div>
+                        <span class="plan-type type-{{ plan.plan_type }}">
+                            {% if plan.plan_type == 'tafsili' %}📐 طرح تفصیلی / جامع
+                            {% else %}🗂️ ممیزی املاک{% endif %}
+                        </span>
+                        <span class="plan-status status-{{ plan.status }}">
+                            {% if plan.status == 'pending' %}⏳ در انتظار بررسی
+                            {% elif plan.status == 'approved' %}✅ تأیید شده
+                            {% else %}❌ رد شده{% endif %}
+                        </span>
+                    </div>
+                    <div class="plan-date">
+                        {{ plan.created_at|date:"Y/m/d H:i" }}
+                    </div>
+                </div>
+
+                <div class="plan-title">{{ plan.title }}</div>
+
+                <div class="plan-info">
+                    {% if plan.plan_type == 'tafsili' and plan.tafsili_plan %}
+                        <div class="info-item">
+                            <div class="info-label">📌 کد منطقه</div>
+                            <div class="info-value">{{ plan.tafsili_plan.zone_code }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🏷️ نوع کاربری</div>
+                            <div class="info-value">{{ plan.tafsili_plan.land_use_type }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">📐 تراکم</div>
+                            <div class="info-value">{{ plan.tafsili_plan.density }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🏢 حداکثر طبقات</div>
+                            <div class="info-value">{{ plan.tafsili_plan.floor_limit }}</div>
+                        </div>
+                        {% if plan.tafsili_plan.photo %}
+                        <div class="info-item">
+                            <div class="info-label">📷 عکس</div>
+                            <img src="{{ plan.tafsili_plan.photo.url }}" class="photo-preview">
+                        </div>
+                        {% endif %}
+
+                    {% elif plan.plan_type == 'jame' and plan.jame_plan %}
+                        <div class="info-item">
+                            <div class="info-label">🗺️ نوع پهنه</div>
+                            <div class="info-value">{{ plan.jame_plan.get_zone_type_display }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🌿 فضای سبز</div>
+                            <div class="info-value">{{ plan.jame_plan.green_percent }}%</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🏥 مراکز خدماتی</div>
+                            <div class="info-value">{{ plan.jame_plan.service_centers|truncatechars:50 }}</div>
+                        </div>
+
+                    {% elif plan.plan_type == 'momayezi' and plan.momayezi_plan %}
+                        <div class="info-item">
+                            <div class="info-label">🔢 کد پلاک</div>
+                            <div class="info-value">{{ plan.momayezi_plan.parcel_code }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">👤 نام مالک</div>
+                            <div class="info-value">{{ plan.momayezi_plan.owner_name }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🏷️ نوع مالکیت</div>
+                            <div class="info-value">{{ plan.momayezi_plan.get_ownership_type_display }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🏢 نوع بنا</div>
+                            <div class="info-value">{{ plan.momayezi_plan.get_building_type_display }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">📏 مساحت</div>
+                            <div class="info-value">{{ plan.momayezi_plan.area|floatformat:2 }} m²</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">📅 سال ساخت</div>
+                            <div class="info-value">{{ plan.momayezi_plan.construction_year }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">📜 پروانه ساخت</div>
+                            <div class="info-value">{% if plan.momayezi_plan.is_licensed %}✅ دارد{% else %}❌ ندارد{% endif %}</div>
+                        </div>
+                        {% if plan.momayezi_plan.attachment %}
+                        <div class="info-item">
+                            <div class="info-label">📎 فایل پیوست</div>
+                            <a href="{{ plan.momayezi_plan.attachment.url }}" target="_blank" style="color:#3b82f6;">دانلود</a>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                {% if plan.description %}
+                <div class="info-item" style="margin-bottom: 12px;">
+                    <div class="info-label">📝 توضیحات</div>
+                    <div class="info-value">{{ plan.description }}</div>
+                </div>
+                {% endif %}
+
+                <!-- نمایش نظر کارشناس در صورت رد شدن -->
+                {% if plan.status == 'rejected' and plan.expert_note %}
+                    <div class="expert-note">
+                        <strong>🚫 نظر کارشناس:</strong><br>
+                        {{ plan.expert_note }}
+                    </div>
+                    {% if plan.plan_type == 'tafsili' %}
+                        <a href="{% url 'core_admin:operator_revise_plan' plan.id %}" class="btn-revise">
+                            ✏️ اصلاح و ارسال مجدد
+                        </a>
+                    {% endif %}
+                {% endif %}
+
+                <!-- نمایش پیام تأیید نهایی -->
+                {% if plan.status == 'approved' %}
+                    <div class="approved-badge">
+                        ✅ این طرح تأیید شده و در پایگاه داده ثبت گردید.
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-text">هیچ طرحی ثبت نشده است.</div>
+            <div style="margin-top: 20px;">
+                <a href="{% url 'core_admin:operator_select_plan' %}" class="btn-primary">➕ ثبت طرح جدید</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

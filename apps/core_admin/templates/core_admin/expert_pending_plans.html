@@ -1,0 +1,366 @@
+{% extends 'core_admin/expert_base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .page-header {
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    .page-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+    .page-subtitle {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 6px;
+    }
+    .plans-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .plan-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border-right: 4px solid #f59e0b;
+        transition: all 0.2s;
+    }
+    .plan-card:hover {
+        transform: translateX(-3px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .plan-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .plan-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .type-tafsili { background: #dbeafe; color: #1e40af; }
+    .type-jame { background: #d1fae5; color: #065f46; }
+    .type-momayezi { background: #fef3c7; color: #92400e; }
+    
+    .plan-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #fef3c7;
+        color: #92400e;
+    }
+    .plan-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 12px;
+    }
+    .plan-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 12px;
+    }
+    .info-item {
+        font-size: 13px;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #475569;
+    }
+    .info-value {
+        color: #1e293b;
+        margin-top: 4px;
+    }
+    .btn-review {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .btn-review:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        background: white;
+        border-radius: 16px;
+        color: #9ca3af;
+    }
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+    .photo-preview {
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        object-fit: cover;
+        cursor: pointer;
+    }
+    /* ========== استایل نوتیفیکیشن Toast ========== */
+    .toast-container {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .toast {
+        min-width: 280px;
+        max-width: 380px;
+        background: white;
+        border-radius: 12px;
+        padding: 14px 18px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        animation: slideInRight 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-right: 4px solid;
+    }
+    .toast-success {
+        border-right-color: #10b981;
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    }
+    .toast-success .toast-icon { color: #10b981; }
+    .toast-warning {
+        border-right-color: #f59e0b;
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    }
+    .toast-warning .toast-icon { color: #f59e0b; }
+    .toast-error {
+        border-right-color: #ef4444;
+        background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    }
+    .toast-error .toast-icon { color: #ef4444; }
+    .toast-icon { font-size: 22px; }
+    .toast-content {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 500;
+        color: #1f2937;
+        line-height: 1.5;
+    }
+    .toast-close {
+        cursor: pointer;
+        font-size: 18px;
+        color: #9ca3af;
+        transition: color 0.2s;
+        padding: 0 4px;
+    }
+    .toast-close:hover { color: #6b7280; }
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+    @media (max-width: 768px) {
+        .toast-container {
+            left: 20px;
+            right: 20px;
+            top: 70px;
+        }
+        .toast {
+            width: calc(100% - 40px);
+            max-width: none;
+        }
+        .plan-info {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">⏳ طرح‌های در انتظار بررسی</h1>
+    <p class="page-subtitle">طرح‌هایی که توسط اپراتورها ارسال شده و نیاز به بررسی دارند</p>
+</div>
+
+<div class="plans-grid">
+    {% if plans %}
+        {% for plan in plans %}
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div>
+                        <span class="plan-type type-{{ plan.plan_type }}">
+                            {% if plan.plan_type == 'tafsili' %}📐 طرح تفصیلی/ جامع
+                            {% else %}🗂️ ممیزی املاک{% endif %}
+                        </span>
+                        <span class="plan-status">⏳ در انتظار بررسی</span>
+                    </div>
+                    <div class="plan-date">
+                        {{ plan.created_at|date:"Y/m/d H:i" }}
+                    </div>
+                </div>
+
+                <div class="plan-title">{{ plan.title }}</div>
+
+                <div class="plan-info">
+                    {% if plan.plan_type == 'tafsili' and plan.tafsili_plan %}
+                        <div class="info-item">
+                            <div class="info-label">📌 کد منطقه</div>
+                            <div class="info-value">{{ plan.tafsili_plan.zone_code|default:"-" }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🏷️ نوع کاربری</div>
+                            <div class="info-value">{{ plan.tafsili_plan.land_use_type|default:"-" }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">📐 تراکم</div>
+                            <div class="info-value">{{ plan.tafsili_plan.density|default:"-" }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🏢 حداکثر طبقات</div>
+                            <div class="info-value">{{ plan.tafsili_plan.floor_limit|default:"-" }}</div>
+                        </div>
+                        {% if plan.tafsili_plan.photo %}
+                        <div class="info-item">
+                            <div class="info-label">📷 عکس</div>
+                            <img src="{{ plan.tafsili_plan.photo.url }}" class="photo-preview" onclick="window.open(this.src)">
+                        </div>
+                        {% endif %}
+
+                    {% elif plan.plan_type == 'jame' and plan.jame_plan %}
+                        <div class="info-item">
+                            <div class="info-label">🗺️ نوع پهنه</div>
+                            <div class="info-value">{{ plan.jame_plan.get_zone_type_display|default:"-" }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🌿 فضای سبز</div>
+                            <div class="info-value">{{ plan.jame_plan.green_percent|default:"-" }}%</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🏥 مراکز خدماتی</div>
+                            <div class="info-value">{{ plan.jame_plan.service_centers|default:"-"|truncatechars:50 }}</div>
+                        </div>
+
+                    {% elif plan.plan_type == 'momayezi' and plan.momayezi_plan %}
+                        <div class="info-item">
+                            <div class="info-label">🔢 کد پلاک</div>
+                            <div class="info-value">{{ plan.momayezi_plan.parcel_code|default:"-" }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">👤 مالک</div>
+                            <div class="info-value">{{ plan.momayezi_plan.owner_name|default:"-" }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">📏 مساحت</div>
+                            <div class="info-value">{{ plan.momayezi_plan.area|default:"-"|floatformat:2 }} m²</div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if plan.description %}
+                <div class="info-item" style="margin-bottom: 16px;">
+                    <div class="info-label">📝 توضیحات</div>
+                    <div class="info-value">{{ plan.description|default:"-" }}</div>
+                </div>
+                {% endif %}
+
+                <a href="{% url 'core_admin:expert_review_plan' plan.id %}" class="btn-review">
+                    📋 بررسی و تصمیم‌گیری
+                </a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">✅</div>
+            <div class="empty-text">هیچ طرحی در انتظار بررسی وجود ندارد.</div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- کانتینر نوتیفیکیشن Toast -->
+<div id="toastContainer" class="toast-container"></div>
+
+<script>
+    // نمایش نوتیفیکیشن
+    function showToast(message, type) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+
+        let icon = '';
+        if (type === 'success') icon = '✅';
+        else if (type === 'error') icon = '❌';
+        else icon = '⚠️';
+
+        toast.innerHTML = `
+            <div class="toast-icon">${icon}</div>
+            <div class="toast-content">${message}</div>
+            <div class="toast-close" onclick="this.parentElement.remove()">✕</div>
+        `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, 4000);
+    }
+
+    // نمایش پیام‌های Django (messages) به صورت نوتیفیکیشن
+    function showMessagesFromDjango() {
+        {% if messages %}
+            {% for message in messages %}
+                showToast('{{ message|escapejs }}', '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}warning{% endif %}');
+            {% endfor %}
+        {% endif %}
+    }
+
+    // نمایش نوتیفیکیشن هنگام بارگذاری صفحه
+    document.addEventListener('DOMContentLoaded', function() {
+        showMessagesFromDjango();
+    });
+</script>
+
+{% endblock %}
