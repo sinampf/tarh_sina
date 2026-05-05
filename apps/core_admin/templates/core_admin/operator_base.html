@@ -49,6 +49,54 @@
             --shadow-sm:  0 1px 3px rgba(37,99,235,0.06), 0 1px 2px rgba(37,99,235,0.04);
             --shadow-md:  0 4px 12px rgba(37,99,235,0.08), 0 2px 4px rgba(37,99,235,0.05);
             --shadow-lg:  0 10px 32px rgba(37,99,235,0.12), 0 4px 8px rgba(37,99,235,0.06);
+
+            --card-bg:        #ffffff;
+            --card-bg-2:      #f8fafc;
+            --input-bg:       #ffffff;
+            --table-head-bg:  #f1f5f9;
+            --table-row-hover:#f8fafc;
+
+            /* رنگ‌های hardcode که در child template ها استفاده میشن */
+            --dk-card:        #1a1f2e;
+            --dk-card2:       #141824;
+            --dk-input:       #1e2538;
+            --dk-text:        #e8edf5;
+            --dk-text2:       #8d9ab0;
+            --dk-border:      rgba(255,255,255,0.08);
+        }
+
+        [data-theme="dark"] {
+            --primary:        #3b82f6;
+            --primary-mid:    #2563eb;
+            --primary-light:  #60a5fa;
+            --primary-glow:   rgba(59, 130, 246, 0.15);
+            --primary-tint:   rgba(59, 130, 246, 0.08);
+
+            --surface:        #1a1f2e;
+            --surface-2:      #141824;
+            --bg:             #0f1219;
+
+            --border:         rgba(255,255,255,0.06);
+            --border-md:      rgba(255,255,255,0.1);
+
+            --text-1:         #e8edf5;
+            --text-2:         #8d9ab0;
+            --text-3:         #4f5d73;
+
+            --success-bg:     #052e1a;
+            --success-border: #065f35;
+            --danger-bg:      #2d0a0a;
+            --danger-border:  #7f1d1d;
+
+            --shadow-sm:  0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+            --shadow-md:  0 4px 12px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+            --shadow-lg:  0 10px 32px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.3);
+
+            --card-bg:        #1a1f2e;
+            --card-bg-2:      #141824;
+            --input-bg:       #1e2538;
+            --table-head-bg:  #141824;
+            --table-row-hover:#1e2538;
         }
 
         body {
@@ -58,7 +106,139 @@
             min-height: 100vh;
             font-size: 14px;
             line-height: 1.65;
+            transition: background 0.3s ease, color 0.3s ease;
         }
+
+        /* ══════════════════════════════════════
+           GLOBAL CSS DARK MODE — همه child ها
+        ══════════════════════════════════════ */
+
+        /* هر المان با بکگراند سفید/روشن */
+        [data-theme="dark"] .operator-content *:not(img):not(svg):not(canvas):not(video):not(iframe):not(.theme-toggle) {
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        /* کانتینرهای اصلی */
+        [data-theme="dark"] .operator-content > *,
+        [data-theme="dark"] .operator-content div,
+        [data-theme="dark"] .operator-content section,
+        [data-theme="dark"] .operator-content article,
+        [data-theme="dark"] .operator-content aside,
+        [data-theme="dark"] .operator-content form,
+        [data-theme="dark"] .operator-content fieldset,
+        [data-theme="dark"] .operator-content .card,
+        [data-theme="dark"] .operator-content .box,
+        [data-theme="dark"] .operator-content .panel,
+        [data-theme="dark"] .operator-content .container,
+        [data-theme="dark"] .operator-content .wrapper {
+            color: var(--text-1);
+        }
+
+        /* تمام کلاس‌هایی که احتمالاً بکگراند سفید دارن */
+        [data-theme="dark"] .stat-card,
+        [data-theme="dark"] .stat-box,
+        [data-theme="dark"] .metric-card,
+        [data-theme="dark"] .info-card,
+        [data-theme="dark"] .plan-card,
+        [data-theme="dark"] .type-card,
+        [data-theme="dark"] .select-card,
+        [data-theme="dark"] .option-card,
+        [data-theme="dark"] .choice-card,
+        [data-theme="dark"] .feature-card,
+        [data-theme="dark"] .summary-card,
+        [data-theme="dark"] .dashboard-card,
+        [data-theme="dark"] .widget-card,
+        [data-theme="dark"] .data-card,
+        [data-theme="dark"] .content-card,
+        [data-theme="dark"] .section-card,
+        [data-theme="dark"] .form-card,
+        [data-theme="dark"] .form-container,
+        [data-theme="dark"] .form-wrapper,
+        [data-theme="dark"] .form-box,
+        [data-theme="dark"] .form-section,
+        [data-theme="dark"] .form-group-box,
+        [data-theme="dark"] .card-body,
+        [data-theme="dark"] .card-header,
+        [data-theme="dark"] .card-footer,
+        [data-theme="dark"] .widget,
+        [data-theme="dark"] .box,
+        [data-theme="dark"] .panel,
+        [data-theme="dark"] .block,
+        [data-theme="dark"] .section-block,
+        [data-theme="dark"] .info-block,
+        [data-theme="dark"] .detail-block,
+        [data-theme="dark"] .empty-state,
+        [data-theme="dark"] .result-box,
+        [data-theme="dark"] .report-box,
+        [data-theme="dark"] .table-wrapper,
+        [data-theme="dark"] .table-container,
+        [data-theme="dark"] .recent-section,
+        [data-theme="dark"] .list-section,
+        [data-theme="dark"] .header-section,
+        [data-theme="dark"] .plans-header,
+        [data-theme="dark"] .plan-info,
+        [data-theme="dark"] .zone-info,
+        [data-theme="dark"] .location-info {
+            background: var(--card-bg) !important;
+            color: var(--text-1) !important;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+        }
+
+        /* فرم‌ها و input ها */
+        [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background: var(--input-bg) !important;
+            color: var(--text-1) !important;
+            border-color: rgba(255,255,255,0.12) !important;
+        }
+        [data-theme="dark"] input::placeholder,
+        [data-theme="dark"] textarea::placeholder { color: var(--text-3) !important; }
+        [data-theme="dark"] label { color: var(--text-2) !important; }
+        [data-theme="dark"] select option { background: #1a1f2e; color: var(--text-1); }
+
+        /* جداول */
+        [data-theme="dark"] table { background: var(--card-bg) !important; color: var(--text-1) !important; }
+        [data-theme="dark"] thead, [data-theme="dark"] th { background: var(--table-head-bg) !important; color: var(--text-2) !important; border-color: rgba(255,255,255,0.08) !important; }
+        [data-theme="dark"] td { color: var(--text-1) !important; border-color: rgba(255,255,255,0.06) !important; }
+        [data-theme="dark"] tbody tr:hover td { background: var(--table-row-hover) !important; }
+
+        /* بج‌های وضعیت */
+        [data-theme="dark"] .status-pending,
+        [data-theme="dark"] .badge-pending  { background: rgba(245,158,11,0.15) !important; color: #fbbf24 !important; }
+        [data-theme="dark"] .status-approved,
+        [data-theme="dark"] .badge-approved { background: rgba(16,185,129,0.15) !important; color: #34d399 !important; }
+        [data-theme="dark"] .status-rejected,
+        [data-theme="dark"] .badge-rejected { background: rgba(239,68,68,0.15) !important; color: #f87171 !important; }
+        [data-theme="dark"] .plan-type      { background: rgba(37,99,235,0.2) !important; color: #93c5fd !important; }
+
+        /* بردر رنگی کارت‌ها */
+        [data-theme="dark"] .card-pending   { border-right-color: #f59e0b !important; }
+        [data-theme="dark"] .card-approved  { border-right-color: #10b981 !important; }
+        [data-theme="dark"] .card-rejected  { border-right-color: #ef4444 !important; }
+
+        /* اعداد وضعیت داشبورد */
+        [data-theme="dark"] .stat-pending  .stat-number { color: #fbbf24 !important; }
+        [data-theme="dark"] .stat-approved .stat-number { color: #34d399 !important; }
+        [data-theme="dark"] .stat-rejected .stat-number { color: #f87171 !important; }
+        [data-theme="dark"] .stat-label    { color: var(--text-2) !important; }
+
+        /* متن‌های عمومی */
+        [data-theme="dark"] h1,[data-theme="dark"] h2,[data-theme="dark"] h3,
+        [data-theme="dark"] h4,[data-theme="dark"] h5,[data-theme="dark"] h6 { color: var(--text-1) !important; }
+        [data-theme="dark"] p  { color: var(--text-2) !important; }
+        [data-theme="dark"] .text-muted, [data-theme="dark"] small { color: var(--text-3) !important; }
+        [data-theme="dark"] .page-title    { color: var(--text-1) !important; }
+        [data-theme="dark"] .page-subtitle { color: var(--text-2) !important; }
+        [data-theme="dark"] .page-header   { border-bottom-color: rgba(255,255,255,0.08) !important; }
+        [data-theme="dark"] .info-label    { color: var(--text-2) !important; }
+        [data-theme="dark"] .info-value    { color: var(--text-1) !important; }
+        [data-theme="dark"] .plan-title    { color: var(--text-1) !important; }
+
+        /* expert/approved badges */
+        [data-theme="dark"] .expert-note   { background: rgba(239,68,68,0.1) !important; color: #f87171 !important; border-right-color: #ef4444 !important; }
+        [data-theme="dark"] .approved-badge{ background: rgba(16,185,129,0.12) !important; color: #34d399 !important; }
+        [data-theme="dark"] .plan-info, [data-theme="dark"] .card-inner { background: var(--card-bg-2) !important; }
 
         /* ─────────── هدر ─────────── */
         .operator-header {
@@ -72,8 +252,12 @@
             padding: 0 24px;
             z-index: 200;
             box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 4px 20px rgba(10,30,70,0.25);
+            transition: background 0.3s ease;
         }
-
+        [data-theme="dark"] .operator-header {
+            background: #161c2d;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 4px 20px rgba(0,0,0,0.4);
+        }
         .operator-header::before {
             content: '';
             position: absolute;
@@ -84,319 +268,115 @@
             background-size: 32px 32px;
             pointer-events: none;
         }
-
-        .operator-brand {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            position: relative;
-            z-index: 1;
-        }
-
+        .operator-brand { display: flex; align-items: center; gap: 11px; position: relative; z-index: 1; }
         .operator-brand-icon {
-            width: 36px; height: 36px;
-            border-radius: 9px;
+            width: 36px; height: 36px; border-radius: 9px;
             background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%);
             border: 0.5px solid rgba(255,255,255,0.22);
             display: flex; align-items: center; justify-content: center;
-            font-size: 17px;
-            flex-shrink: 0;
+            font-size: 17px; flex-shrink: 0;
         }
-
-        .operator-brand-name {
-            font-size: 14.5px;
-            font-weight: 600;
-            color: white;
-            letter-spacing: 0.3px;
-        }
-
-        .operator-brand-sub {
-            font-size: 11px;
-            font-weight: 400;
-            color: rgba(255,255,255,0.5);
-            display: block;
-            letter-spacing: 0.2px;
-            margin-top: -2px;
-        }
-
-        .operator-header-user {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .operator-user-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-        .operator-username {
-            font-size: 13px;
-            font-weight: 500;
-            color: rgba(255,255,255,0.92);
-        }
-
-        .operator-user-role {
-            font-size: 11px;
-            color: rgba(255,255,255,0.48);
-        }
-
+        .operator-brand-name { font-size: 14.5px; font-weight: 600; color: white; letter-spacing: 0.3px; }
+        .operator-brand-sub  { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.5); display: block; letter-spacing: 0.2px; margin-top: -2px; }
+        .operator-header-user { display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; }
+        .operator-user-info  { display: flex; flex-direction: column; align-items: flex-end; }
+        .operator-username   { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.92); }
+        .operator-user-role  { font-size: 11px; color: rgba(255,255,255,0.48); }
         .operator-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
+            width: 38px; height: 38px; border-radius: 50%;
             background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.1) 100%);
             border: 1.5px solid rgba(255,255,255,0.28);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 600;
-            color: white;
-            flex-shrink: 0;
-            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 600; color: white; flex-shrink: 0; overflow: hidden;
         }
+        .operator-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        .operator-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        /* ─── دکمه تم ─── */
+        .theme-toggle {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 16px;
+            transition: all 0.25s ease;
+            flex-shrink: 0; position: relative; overflow: hidden;
         }
+        .theme-toggle:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.35); transform: rotate(20deg) scale(1.08); }
+        .theme-toggle:active { transform: scale(0.93); }
+        .theme-icon { position: absolute; transition: opacity 0.25s ease, transform 0.3s ease; line-height: 1; }
+        .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+        .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+        [data-theme="dark"] .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.5); }
+        [data-theme="dark"] .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
 
         /* ─────────── لایه اصلی ─────────── */
-        .operator-layout {
-            display: flex;
-            margin-top: var(--header-h);
-            min-height: calc(100vh - var(--header-h));
-        }
+        .operator-layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
 
         /* ─────────── سایدبار ─────────── */
         .operator-sidebar {
-            width: var(--sidebar-w);
-            background: var(--surface);
+            width: var(--sidebar-w); background: var(--surface);
             border-left: 0.5px solid var(--border-md);
-            position: fixed;
-            right: 0;
-            top: var(--header-h);
-            bottom: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 18px 0 32px;
-            scrollbar-width: thin;
+            position: fixed; right: 0; top: var(--header-h); bottom: 0;
+            overflow-y: auto; overflow-x: hidden;
+            padding: 18px 0 32px; scrollbar-width: thin;
             box-shadow: var(--shadow-sm);
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
-
-        .sidebar-group-label {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            color: var(--text-3);
-            padding: 14px 18px 5px;
-            text-transform: uppercase;
-        }
-
+        .sidebar-group-label { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; color: var(--text-3); padding: 14px 18px 5px; text-transform: uppercase; }
         .sidebar-nav { list-style: none; padding: 0 10px; margin: 0; }
         .sidebar-nav li { padding: 2px 0; }
+        .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-sm); color: var(--text-2); text-decoration: none; font-size: 13px; font-weight: 400; transition: all 0.2s; }
+        .sidebar-link:hover { background: var(--primary-tint); color: var(--primary); }
+        .sidebar-link.active { background: var(--primary); color: white; font-weight: 500; box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
+        .sidebar-icon-wrap { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; background: rgba(0,0,0,0.04); transition: background 0.15s; }
+        [data-theme="dark"] .sidebar-icon-wrap { background: rgba(255,255,255,0.06); }
+        .sidebar-link.active .sidebar-icon-wrap { background: rgba(255,255,255,0.16); }
+        .sidebar-link:hover:not(.active) .sidebar-icon-wrap { background: rgba(37,99,235,0.1); }
+        .sidebar-divider { height: 0.5px; background: var(--border); margin: 10px 14px; }
 
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 12px;
-            border-radius: var(--radius-sm);
-            color: var(--text-2);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 400;
-            transition: all 0.2s;
-        }
-        .sidebar-link:hover {
-            background: var(--primary-tint);
-            color: var(--primary);
-        }
-        .sidebar-link.active {
-            background: var(--primary);
-            color: white;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(37,99,235,0.25);
-        }
-
-        .sidebar-icon-wrap {
-            width: 28px; height: 28px;
-            border-radius: 7px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            flex-shrink: 0;
-            background: rgba(0,0,0,0.04);
-            transition: background 0.15s;
-        }
-        .sidebar-link.active .sidebar-icon-wrap {
-            background: rgba(255,255,255,0.16);
-        }
-        .sidebar-link:hover:not(.active) .sidebar-icon-wrap {
-            background: rgba(37,99,235,0.1);
-        }
-
-        .sidebar-divider {
-            height: 0.5px;
-            background: var(--border);
-            margin: 10px 14px;
-        }
-
-        /* دکمه خروج در منو */
-        .logout-sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 12px;
-            border-radius: var(--radius-sm);
-            color: #dc2626;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.2s;
-            margin-top: 20px;
-        }
-        .logout-sidebar-link:hover {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-        .logout-icon-wrap {
-            width: 28px; height: 28px;
-            border-radius: 7px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            flex-shrink: 0;
-            background: rgba(220,38,38,0.1);
-        }
-        .logout-sidebar-link:hover .logout-icon-wrap {
-            background: rgba(220,38,38,0.2);
-        }
+        .logout-sidebar-link { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-sm); color: #dc2626; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; margin-top: 20px; }
+        .logout-sidebar-link:hover { background: #fee2e2; color: #b91c1c; }
+        [data-theme="dark"] .logout-sidebar-link { color: #f87171; }
+        [data-theme="dark"] .logout-sidebar-link:hover { background: rgba(220,38,38,0.15); color: #f87171; }
+        .logout-icon-wrap { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; background: rgba(220,38,38,0.1); }
+        .logout-sidebar-link:hover .logout-icon-wrap { background: rgba(220,38,38,0.2); }
 
         /* ─────────── محتوای اصلی ─────────── */
-        .operator-content {
-            flex: 1;
-            margin-right: var(--sidebar-w);
-            padding: 28px 28px 40px;
-            min-width: 0;
-        }
+        .operator-content { flex: 1; margin-right: var(--sidebar-w); padding: 28px 28px 40px; min-width: 0; }
 
-        /* ─────────── استایل نوتیفیکیشن Toast ─────────── */
-        .toast-container {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .toast {
-            min-width: 300px;
-            max-width: 400px;
-            background: white;
-            border-radius: 12px;
-            padding: 14px 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            animation: slideInRight 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-right: 4px solid;
-        }
-        .toast-success {
-            border-right-color: #10b981;
-            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-        }
+        /* ─────────── Toast ─────────── */
+        .toast-container { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { min-width: 300px; max-width: 400px; background: white; border-radius: 12px; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); animation: slideInRight 0.3s ease; display: flex; align-items: center; gap: 12px; border-right: 4px solid; }
+        [data-theme="dark"] .toast { background: #1e2538; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        [data-theme="dark"] .toast-content { color: #e2e8f0; }
+        .toast-success { border-right-color: #10b981; background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
+        [data-theme="dark"] .toast-success { background: linear-gradient(135deg, #052e1a, #064e2a); }
         .toast-success .toast-icon { color: #10b981; }
-        .toast-error {
-            border-right-color: #ef4444;
-            background: linear-gradient(135deg, #fef2f2, #fee2e2);
-        }
+        .toast-error { border-right-color: #ef4444; background: linear-gradient(135deg, #fef2f2, #fee2e2); }
+        [data-theme="dark"] .toast-error { background: linear-gradient(135deg, #2d0a0a, #450e0e); }
         .toast-error .toast-icon { color: #ef4444; }
-        .toast-warning {
-            border-right-color: #f59e0b;
-            background: linear-gradient(135deg, #fffbeb, #fef3c7);
-        }
+        .toast-warning { border-right-color: #f59e0b; background: linear-gradient(135deg, #fffbeb, #fef3c7); }
+        [data-theme="dark"] .toast-warning { background: linear-gradient(135deg, #2d1a00, #3d2400); }
         .toast-warning .toast-icon { color: #f59e0b; }
-        .toast-info {
-            border-right-color: #3b82f6;
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-        }
+        .toast-info { border-right-color: #3b82f6; background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+        [data-theme="dark"] .toast-info { background: linear-gradient(135deg, #0f1f3d, #162a50); }
         .toast-info .toast-icon { color: #3b82f6; }
         .toast-icon { font-size: 20px; }
-        .toast-content {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 500;
-            color: #1f2937;
-            line-height: 1.5;
-        }
-        .toast-close {
-            cursor: pointer;
-            font-size: 18px;
-            color: #9ca3af;
-            transition: color 0.2s;
-            padding: 0 4px;
-        }
+        .toast-content { flex: 1; font-size: 13px; font-weight: 500; color: #1f2937; line-height: 1.5; }
+        .toast-close { cursor: pointer; font-size: 18px; color: #9ca3af; transition: color 0.2s; padding: 0 4px; }
         .toast-close:hover { color: #6b7280; }
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
 
-        /* ─────────── دکمه منو موبایل ─────────── */
-        .menu-toggle {
-            display: none;
-            position: fixed;
-            top: calc(var(--header-h) + 14px);
-            right: 14px;
-            z-index: 201;
-            width: 40px; height: 40px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 18px;
-            cursor: pointer;
-            box-shadow: var(--shadow-md);
-            align-items: center;
-            justify-content: center;
-        }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(10,20,50,0.4);
-            backdrop-filter: blur(2px);
-            z-index: 199;
-            animation: fadeIn 0.2s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
+        /* ─── موبایل ─── */
+        .menu-toggle { display: none; position: fixed; top: calc(var(--header-h) + 14px); right: 14px; z-index: 201; width: 40px; height: 40px; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); font-size: 18px; cursor: pointer; box-shadow: var(--shadow-md); align-items: center; justify-content: center; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(10,20,50,0.4); backdrop-filter: blur(2px); z-index: 199; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         @media (max-width: 768px) {
             .menu-toggle { display: flex; }
-            .operator-sidebar {
-                transform: translateX(100%);
-                transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-                z-index: 200;
-                box-shadow: -8px 0 32px rgba(10,20,50,0.18);
-            }
+            .operator-sidebar { transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 200; box-shadow: -8px 0 32px rgba(10,20,50,0.18); }
             .operator-sidebar.open { transform: translateX(0); }
             .sidebar-overlay.open { display: block; }
             .operator-content { margin-right: 0; padding: 18px 14px 32px; }
@@ -418,6 +398,10 @@
         </div>
     </div>
     <div class="operator-header-user">
+        <button class="theme-toggle" onclick="toggleTheme()" title="تغییر تم">
+            <span class="theme-icon icon-sun">☀️</span>
+            <span class="theme-icon icon-moon">🌙</span>
+        </button>
         <div class="operator-user-info">
             <span class="operator-username">{{ user.get_full_name|default:user.username }}</span>
             <span class="operator-user-role">اپراتور</span>
@@ -437,7 +421,6 @@
 
 <div class="operator-layout">
     <aside class="operator-sidebar" id="operatorSidebar">
-        <!-- داشبورد -->
         <div class="sidebar-group-label">📊 اصلی</div>
         <ul class="sidebar-nav">
             <li>
@@ -447,10 +430,7 @@
                 </a>
             </li>
         </ul>
-
         <div class="sidebar-divider"></div>
-
-        <!-- داده‌های میدانی -->
         <div class="sidebar-group-label">🗺️ داده‌های میدانی</div>
         <ul class="sidebar-nav">
             <li>
@@ -460,10 +440,7 @@
                 </a>
             </li>
         </ul>
-
         <div class="sidebar-divider"></div>
-
-        <!-- طرح‌های شهری -->
         <div class="sidebar-group-label">📐 طرح‌های شهری</div>
         <ul class="sidebar-nav">
             <li>
@@ -473,10 +450,7 @@
                 </a>
             </li>
         </ul>
-
         <div class="sidebar-divider"></div>
-
-        <!-- تنظیمات -->
         <div class="sidebar-group-label">⚙️ تنظیمات</div>
         <ul class="sidebar-nav">
             <li>
@@ -486,8 +460,6 @@
                 </a>
             </li>
         </ul>
-
-        <!-- دکمه خروج در منو -->
         <div class="sidebar-divider"></div>
         <ul class="sidebar-nav">
             <li>
@@ -504,32 +476,134 @@
     </main>
 </div>
 
-<!-- کانتینر نوتیفیکیشن Toast -->
 <div id="toastContainer" class="toast-container"></div>
 
 <script>
-    // نمایش نوتیفیکیشن
+    /* ══════════════════════════════════════════════
+       JS DARK MODE SCANNER
+       تمام المان‌های سفید/روشن رو در runtime پیدا و fix میکنه
+    ══════════════════════════════════════════════ */
+
+    const LIGHT_BG_REGEX = /^(rgb\(255,\s*255,\s*255\)|rgba\(255,\s*255,\s*255[^)]*\)|rgb\(24[89],\s*2[45]\d,\s*2[45]\d\)|rgb\(24[0-7],\s*24[0-7],\s*24[0-7]\)|rgb\(25[0-5],\s*25[0-5],\s*25[0-5]\))$/;
+
+    // رنگ‌هایی که باید در dark mode جایگزین بشن
+    const DARK_REPLACEMENTS = [
+        { bg: [255, 255, 255], newBg: '#1a1f2e', newColor: '#e8edf5' },           // سفید خالص
+        { bg: [248, 250, 252], newBg: '#141824', newColor: '#e8edf5' },           // f8fafc
+        { bg: [247, 248, 252], newBg: '#141824', newColor: '#e8edf5' },           // f7f8fc
+        { bg: [241, 245, 249], newBg: '#141824', newColor: '#8d9ab0' },           // f1f5f9
+        { bg: [238, 241, 248], newBg: '#0f1219', newColor: '#e8edf5' },           // eef1f8 (bg اصلی)
+        { bg: [249, 250, 251], newBg: '#1a1f2e', newColor: '#e8edf5' },           // f9fafb
+        { bg: [243, 244, 246], newBg: '#141824', newColor: '#e8edf5' },           // f3f4f6
+    ];
+
+    function rgbToArray(rgb) {
+        const m = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        return m ? [+m[1], +m[2], +m[3]] : null;
+    }
+
+    function colorsClose(a, b, threshold = 10) {
+        return Math.abs(a[0]-b[0]) < threshold && Math.abs(a[1]-b[1]) < threshold && Math.abs(a[2]-b[2]) < threshold;
+    }
+
+    function isLightBackground(rgb) {
+        const arr = rgbToArray(rgb);
+        if (!arr) return false;
+        if (arr[0] === 0 && arr[1] === 0 && arr[2] === 0) return false; // transparent/black
+        // محاسبه luminance
+        const r = arr[0]/255, g = arr[1]/255, b = arr[2]/255;
+        const luminance = 0.299*r + 0.587*g + 0.114*b;
+        return luminance > 0.85;
+    }
+
+    function getReplacementBg(rgb) {
+        const arr = rgbToArray(rgb);
+        if (!arr) return null;
+        for (const rep of DARK_REPLACEMENTS) {
+            if (colorsClose(arr, rep.bg, 15)) return rep;
+        }
+        // اگه هیچ match دقیقی نبود ولی روشن بود
+        if (isLightBackground(rgb)) return DARK_REPLACEMENTS[0];
+        return null;
+    }
+
+    const SKIP_TAGS = new Set(['HTML','BODY','HEADER','NAV','ASIDE','SCRIPT','STYLE','SVG','IMG','VIDEO','CANVAS','IFRAME','BR','HR','SPAN','A','BUTTON','I','STRONG','EM','B']);
+    const SKIP_CLASSES = ['operator-header','operator-sidebar','theme-toggle','sidebar-link','logout-sidebar-link','sidebar-icon-wrap','logout-icon-wrap','operator-brand-icon','operator-avatar'];
+
+    function shouldSkip(el) {
+        if (SKIP_TAGS.has(el.tagName)) return true;
+        if (SKIP_CLASSES.some(c => el.classList.contains(c))) return true;
+        if (el.closest('.operator-header') || el.closest('.operator-sidebar')) return true;
+        return false;
+    }
+
+    function scanAndFixDarkMode() {
+        if (document.documentElement.getAttribute('data-theme') !== 'dark') return;
+
+        const content = document.querySelector('.operator-content');
+        if (!content) return;
+
+        const elements = content.querySelectorAll('*');
+        elements.forEach(el => {
+            if (shouldSkip(el)) return;
+
+            const computed = window.getComputedStyle(el);
+            const bg = computed.backgroundColor;
+            const color = computed.color;
+
+            // اگه transparent باشه skip کن
+            if (!bg || bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') return;
+
+            const rep = getReplacementBg(bg);
+            if (rep) {
+                el.style.setProperty('background-color', rep.newBg, 'important');
+                el.style.setProperty('background', rep.newBg, 'important');
+
+                // متن رو هم تنظیم کن
+                const colorArr = rgbToArray(color);
+                if (colorArr) {
+                    const lum = 0.299*colorArr[0]/255 + 0.587*colorArr[1]/255 + 0.114*colorArr[2]/255;
+                    if (lum < 0.4) {  // متن تاریک روی بکگراند روشن بود
+                        el.style.setProperty('color', rep.newColor, 'important');
+                    }
+                }
+            }
+        });
+    }
+
+    /* ─── تم ─── */
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('operator-theme', theme);
+        if (theme === 'dark') {
+            // کمی صبر تا DOM رندر بشه بعد اسکن کن
+            requestAnimationFrame(() => setTimeout(scanAndFixDarkMode, 80));
+        }
+    }
+
+    function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme');
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    // اعمال فوری قبل از رندر
+    (function () {
+        const saved = localStorage.getItem('operator-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('operator-theme', theme);
+    })();
+
+    /* ─── Toast ─── */
     function showToast(message, type) {
         const container = document.getElementById('toastContainer');
         if (!container) return;
-
         const toast = document.createElement('div');
         toast.className = 'toast toast-' + type;
-
-        let icon = '';
-        if (type === 'success') icon = '✅';
-        else if (type === 'error') icon = '❌';
-        else if (type === 'warning') icon = '⚠️';
-        else icon = 'ℹ️';
-
-        toast.innerHTML = `
-            <div class="toast-icon">${icon}</div>
-            <div class="toast-content">${message}</div>
-            <div class="toast-close" onclick="this.parentElement.remove()">✕</div>
-        `;
-
+        const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        toast.innerHTML = `<div class="toast-icon">${icons[type]||'ℹ️'}</div><div class="toast-content">${message}</div><div class="toast-close" onclick="this.parentElement.remove()">✕</div>`;
         container.appendChild(toast);
-
         setTimeout(() => {
             if (toast.parentElement) {
                 toast.style.animation = 'fadeOut 0.3s ease';
@@ -538,7 +612,6 @@
         }, 4000);
     }
 
-    // نمایش پیام‌های Django (messages) به صورت نوتیفیکیشن
     function showMessagesFromDjango() {
         {% if messages %}
             {% for message in messages %}
@@ -547,34 +620,30 @@
         {% endif %}
     }
 
+    /* ─── سایدبار ─── */
     function toggleSidebar() {
         const sidebar = document.getElementById('operatorSidebar');
         const overlay = document.getElementById('sidebarOverlay');
-        if (sidebar) {
-            const isOpen = sidebar.classList.toggle('open');
-            if (overlay) overlay.classList.toggle('open', isOpen);
-        }
+        if (sidebar) { const isOpen = sidebar.classList.toggle('open'); if (overlay) overlay.classList.toggle('open', isOpen); }
     }
-
     function closeSidebar() {
         const sidebar = document.getElementById('operatorSidebar');
         const overlay = document.getElementById('sidebarOverlay');
         if (sidebar) sidebar.classList.remove('open');
         if (overlay) overlay.classList.remove('open');
     }
-
-    // بستن منو با کلیک خارج
     document.addEventListener('click', function(e) {
         const sidebar = document.getElementById('operatorSidebar');
         const menuBtn = document.querySelector('.menu-toggle');
-        if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && !menuBtn?.contains(e.target)) {
-            sidebar.classList.remove('open');
-        }
+        if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && !menuBtn?.contains(e.target)) sidebar.classList.remove('open');
     });
 
-    // اجرا هنگام بارگذاری صفحه
     document.addEventListener('DOMContentLoaded', function() {
         showMessagesFromDjango();
+        // اسکن بعد از لود کامل
+        if (document.documentElement.getAttribute('data-theme') === 'dark') {
+            setTimeout(scanAndFixDarkMode, 100);
+        }
     });
 </script>
 
