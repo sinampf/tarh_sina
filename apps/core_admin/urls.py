@@ -67,11 +67,15 @@ urlpatterns = [
 
     # ===================== خروجی CSV =====================
     path('export-csv/', admin_views.export_users_csv, name='export_csv'),
-    path('export-final-csv/', admin_views.export_final_csv, name='export_final_csv'),
     path('export-final-detailed-csv/', admin_views.export_final_detailed_csv, name='export_final_detailed_csv'),
     path('export-full-tafsili-csv/', admin_views.export_full_tafsili_csv, name='export_full_tafsili_csv'),
 
     # ===================== خروج =====================
     path('logout/', admin_views.admin_logout, name='logout'),
     path("settings/", admin_views.settings_view, name="settings"),
+    path('operator/edit-plan/<uuid:plan_id>/', admin_views.operator_edit_plan, name='operator_edit_plan'),
+    # در urls.py
+    path('expert/update-plan-status/<int:plan_id>/', admin_views.expert_update_plan_status, name='expert_update_plan_status'),
+    path('export-arcgis-csv/', admin_views.export_arcgis_csv, name='export_arcgis_csv'),
+    path('export-arcgis-csv/', admin_views.export_arcgis_csv, name='export_arcgis_csv'),
 ]

@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -10,49 +11,159 @@
     <title>پنل کارشناس</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
-    <!-- Cropper.js برای برش عکس -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    <style>
+        /* ============================================
+           RESET & BASE
+        ============================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ============================================
+           LIGHT MODE (پیش‌فرض)
+        ============================================ */
         :root {
             --primary:        #14532d;
             --primary-mid:    #166534;
             --primary-light:  #15803d;
-            --primary-glow:   rgba(21, 128, 61, 0.12);
-            --primary-tint:   rgba(20, 83, 45, 0.06);
+            --primary-pale:   #dcfce7;
+            --primary-glow:   rgba(21,128,61,0.14);
+            --primary-tint:   rgba(20,83,45,0.07);
 
             --surface:        #ffffff;
             --surface-2:      #f7f8fc;
             --bg:             #eef1f8;
+            --bg-noise:       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
 
             --border:         rgba(0,0,0,0.07);
-            --border-md:      rgba(0,0,0,0.13);
+            --border-md:      rgba(0,0,0,0.12);
+            --border-strong:  rgba(0,0,0,0.18);
 
             --text-1:         #0d1626;
             --text-2:         #4b5870;
             --text-3:         #8d97aa;
+            --text-inv:       #ffffff;
 
             --header-h:       60px;
             --sidebar-w:      252px;
             --radius-sm:      8px;
             --radius-md:      12px;
             --radius-lg:      16px;
+            --radius-xl:      22px;
 
             --success:        #059669;
             --success-bg:     #ecfdf5;
             --success-border: #a7f3d0;
             --warning:        #d97706;
+            --warning-bg:     #fffbeb;
             --danger:         #dc2626;
             --danger-bg:      #fef2f2;
             --danger-border:  #fca5a5;
             --info:           #2563eb;
+            --info-bg:        #eff6ff;
 
-            --shadow-sm:  0 1px 3px rgba(20,83,45,0.06), 0 1px 2px rgba(20,83,45,0.04);
-            --shadow-md:  0 4px 12px rgba(20,83,45,0.08), 0 2px 4px rgba(20,83,45,0.05);
-            --shadow-lg:  0 10px 32px rgba(20,83,45,0.12), 0 4px 8px rgba(20,83,45,0.06);
+            --shadow-xs:      0 1px 2px rgba(0,0,0,0.06);
+            --shadow-sm:      0 1px 4px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md:      0 4px 14px rgba(0,0,0,0.09), 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-lg:      0 10px 36px rgba(0,0,0,0.11), 0 4px 8px rgba(0,0,0,0.05);
+            --shadow-focus:   0 0 0 3px rgba(21,128,61,0.22);
+
+            --card-bg:        #ffffff;
+            --card-bg-2:      #f8fafc;
+            --input-bg:       #ffffff;
+            --input-border:   rgba(0,0,0,0.14);
+            --table-head-bg:  #f1f5f9;
+            --table-row-even: #fafbfc;
+            --table-row-hover:#f0fdf4;
+            --modal-bg:       rgba(15,25,60,0.45);
+            --scrollbar-track:#f1f5f9;
+            --scrollbar-thumb:#c8d0de;
+
+            /* Header gradient */
+            --header-bg:      linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%);
+            --sidebar-logo-bg:rgba(20,83,45,0.08);
+
+            /* Badge */
+            --badge-pending-bg:  #fef9c3;
+            --badge-pending-txt: #92400e;
+            --badge-approved-bg: #dcfce7;
+            --badge-approved-txt:#166534;
+            --badge-rejected-bg: #fee2e2;
+            --badge-rejected-txt:#991b1b;
         }
 
+        /* ============================================
+           DARK MODE — دارک مود قوی و زیبا
+        ============================================ */
+        [data-theme="dark"] {
+            --primary:        #4ade80;
+            --primary-mid:    #22c55e;
+            --primary-light:  #86efac;
+            --primary-pale:   rgba(74,222,128,0.12);
+            --primary-glow:   rgba(74,222,128,0.18);
+            --primary-tint:   rgba(74,222,128,0.08);
+
+            --surface:        #161d2e;
+            --surface-2:      #111827;
+            --bg:             #0b1120;
+
+            --border:         rgba(255,255,255,0.055);
+            --border-md:      rgba(255,255,255,0.1);
+            --border-strong:  rgba(255,255,255,0.16);
+
+            --text-1:         #e2e8f4;
+            --text-2:         #8b97b0;
+            --text-3:         #485469;
+            --text-inv:       #0b1120;
+
+            --success:        #34d399;
+            --success-bg:     rgba(52,211,153,0.1);
+            --success-border: rgba(52,211,153,0.25);
+            --warning:        #fbbf24;
+            --warning-bg:     rgba(251,191,36,0.1);
+            --danger:         #f87171;
+            --danger-bg:      rgba(248,113,113,0.1);
+            --danger-border:  rgba(248,113,113,0.25);
+            --info:           #60a5fa;
+            --info-bg:        rgba(96,165,250,0.1);
+
+            --shadow-xs:      0 1px 2px rgba(0,0,0,0.35);
+            --shadow-sm:      0 2px 6px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+            --shadow-md:      0 6px 20px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+            --shadow-lg:      0 16px 48px rgba(0,0,0,0.65), 0 6px 12px rgba(0,0,0,0.4);
+            --shadow-focus:   0 0 0 3px rgba(74,222,128,0.25);
+
+            --card-bg:        #161d2e;
+            --card-bg-2:      #111827;
+            --input-bg:       #1a2236;
+            --input-border:   rgba(255,255,255,0.1);
+            --table-head-bg:  #111827;
+            --table-row-even: rgba(255,255,255,0.018);
+            --table-row-hover:rgba(74,222,128,0.07);
+            --modal-bg:       rgba(0,0,0,0.75);
+            --scrollbar-track:#111827;
+            --scrollbar-thumb:#2a3550;
+
+            /* Header در دارک مود */
+            --header-bg:      linear-gradient(135deg, #0d1525 0%, #111d35 50%, #0f1b30 100%);
+            --sidebar-logo-bg:rgba(74,222,128,0.08);
+
+            /* Badge */
+            --badge-pending-bg:  rgba(251,191,36,0.12);
+            --badge-pending-txt: #fbbf24;
+            --badge-approved-bg: rgba(52,211,153,0.12);
+            --badge-approved-txt:#34d399;
+            --badge-rejected-bg: rgba(248,113,113,0.12);
+            --badge-rejected-txt:#f87171;
+        }
+
+        /* ============================================
+           BODY & SCROLLBAR
+        ============================================ */
         body {
             font-family: 'Vazirmatn', sans-serif;
             background: var(--bg);
@@ -60,71 +171,101 @@
             min-height: 100vh;
             font-size: 14px;
             line-height: 1.65;
+            transition: background 0.35s ease, color 0.35s ease;
         }
 
-        /* ─────────── هدر ─────────── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+        /* ============================================
+           HEADER
+        ============================================ */
         .expert-header {
             position: fixed;
             top: 0; left: 0; right: 0;
             height: var(--header-h);
-            background: var(--primary);
+            background: var(--header-bg);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 24px;
             z-index: 200;
-            box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 4px 20px rgba(10,30,70,0.25);
+            box-shadow: 0 1px 0 rgba(255,255,255,0.06),
+                        0 4px 24px rgba(0,0,0,0.28);
+            transition: background 0.35s ease, box-shadow 0.35s ease;
         }
 
+        /* خطوط شبکه‌ای پشت هدر */
         .expert-header::before {
             content: '';
             position: absolute;
             inset: 0;
             background-image:
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
             background-size: 32px 32px;
             pointer-events: none;
+        }
+
+        /* خط پایینی گلو */
+        .expert-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255,255,255,0.15) 30%,
+                rgba(255,255,255,0.15) 70%,
+                transparent);
         }
 
         .expert-brand {
             display: flex;
             align-items: center;
-            gap: 11px;
+            gap: 12px;
             position: relative;
             z-index: 1;
         }
 
         .expert-brand-icon {
-            width: 36px; height: 36px;
-            border-radius: 9px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%);
-            border: 0.5px solid rgba(255,255,255,0.22);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 17px;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg,
+                rgba(255,255,255,0.2) 0%,
+                rgba(255,255,255,0.08) 100%);
+            border: 1px solid rgba(255,255,255,0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
             flex-shrink: 0;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
         }
 
         .expert-brand-name {
-            font-size: 14.5px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 700;
             color: white;
             letter-spacing: 0.3px;
         }
 
         .expert-brand-sub {
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 400;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255,255,255,0.48);
             display: block;
-            letter-spacing: 0.2px;
             margin-top: -2px;
         }
 
         .expert-header-user {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             position: relative;
             z-index: 1;
         }
@@ -142,16 +283,18 @@
         }
 
         .expert-user-role {
-            font-size: 11px;
-            color: rgba(255,255,255,0.48);
+            font-size: 10.5px;
+            color: rgba(255,255,255,0.45);
         }
 
         .expert-avatar {
             width: 38px;
             height: 38px;
             border-radius: 50%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.1) 100%);
-            border: 1.5px solid rgba(255,255,255,0.28);
+            background: linear-gradient(135deg,
+                rgba(255,255,255,0.24) 0%,
+                rgba(255,255,255,0.1) 100%);
+            border: 2px solid rgba(255,255,255,0.28);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -161,11 +304,12 @@
             flex-shrink: 0;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .expert-avatar:hover {
-            transform: scale(1.05);
+            transform: scale(1.07);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
         }
 
         .expert-avatar img {
@@ -174,40 +318,164 @@
             object-fit: cover;
         }
 
-        /* ─────────── لایه اصلی ─────────── */
+        /* ============================================
+           THEME TOGGLE BUTTON — دکمه تغییر تم
+        ============================================ */
+        .theme-toggle {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            border-radius: 99px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.22);
+            cursor: pointer;
+            transition: background 0.35s ease, border-color 0.35s ease;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.18);
+        }
+
+        /* گوی داخل toggle */
+        .toggle-knob {
+            position: absolute;
+            right: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: right 0.35s cubic-bezier(0.34,1.56,0.64,1),
+                        background 0.35s ease;
+            line-height: 1;
+        }
+
+        [data-theme="dark"] .toggle-knob {
+            right: calc(100% - 25px);
+            background: #1a2236;
+        }
+
+        .icon-sun, .icon-moon {
+            position: absolute;
+            transition: opacity 0.25s ease, transform 0.35s ease;
+        }
+
+        .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+        .icon-moon { opacity: 0; transform: rotate(-30deg) scale(0.7); }
+
+        [data-theme="dark"] .icon-sun  { opacity: 0; transform: rotate(30deg) scale(0.7); }
+        [data-theme="dark"] .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+
+        /* متن کوچک کنار toggle */
+        .toggle-label {
+            position: absolute;
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 0.5px;
+            left: 6px;
+            transition: opacity 0.25s ease;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        [data-theme="dark"] .toggle-label {
+            right: 6px;
+            left: auto;
+            opacity: 0.6;
+        }
+
+        /* ============================================
+           LAYOUT
+        ============================================ */
         .expert-layout {
             display: flex;
             margin-top: var(--header-h);
             min-height: calc(100vh - var(--header-h));
         }
 
-        /* ─────────── سایدبار ─────────── */
+        /* ============================================
+           SIDEBAR
+        ============================================ */
         .expert-sidebar {
             width: var(--sidebar-w);
             background: var(--surface);
-            border-left: 0.5px solid var(--border-md);
+            border-left: 1px solid var(--border-md);
             position: fixed;
             right: 0;
             top: var(--header-h);
             bottom: 0;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 18px 0 32px;
+            padding: 16px 0 36px;
             scrollbar-width: thin;
             box-shadow: var(--shadow-sm);
+            transition: background 0.35s ease, border-color 0.35s ease,
+                        box-shadow 0.35s ease, transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* لوگو / نام سیستم در سایدبار */
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px 16px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--sidebar-logo-bg);
+            border: 1px solid var(--border-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-1);
+        }
+
+        .sidebar-header-sub {
+            font-size: 10px;
+            color: var(--text-3);
         }
 
         .sidebar-group-label {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.8px;
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: 0.9px;
             color: var(--text-3);
-            padding: 14px 18px 5px;
+            padding: 14px 18px 4px;
             text-transform: uppercase;
+            transition: color 0.3s;
         }
 
-        .sidebar-nav { list-style: none; padding: 0 10px; margin: 0; }
-        .sidebar-nav li { padding: 2px 0; }
+        .sidebar-nav {
+            list-style: none;
+            padding: 0 10px;
+            margin: 0;
+        }
+
+        .sidebar-nav li {
+            padding: 1.5px 0;
+        }
 
         .sidebar-link {
             display: flex;
@@ -219,241 +487,500 @@
             text-decoration: none;
             font-size: 13px;
             font-weight: 400;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
+
+        .sidebar-link::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--primary-glow);
+            opacity: 0;
+            transition: opacity 0.2s;
+            border-radius: var(--radius-sm);
+        }
+
         .sidebar-link:hover {
-            background: var(--primary-tint);
             color: var(--primary);
         }
+
+        .sidebar-link:hover::before {
+            opacity: 1;
+        }
+
         .sidebar-link.active {
             background: var(--primary);
             color: white;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(20,83,45,0.25);
+            font-weight: 600;
+            box-shadow: 0 3px 10px var(--primary-glow);
         }
 
+        [data-theme="dark"] .sidebar-link.active {
+            background: var(--primary-glow);
+            color: var(--primary);
+            box-shadow: 0 2px 12px var(--primary-glow);
+            border: 1px solid rgba(74,222,128,0.2);
+        }
+
+        .sidebar-link.active::before { display: none; }
+
         .sidebar-icon-wrap {
-            width: 28px; height: 28px;
+            width: 28px;
+            height: 28px;
             border-radius: 7px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 13px;
             flex-shrink: 0;
-            background: rgba(0,0,0,0.04);
-            transition: background 0.15s;
+            background: var(--border);
+            transition: background 0.2s;
         }
+
+        [data-theme="dark"] .sidebar-icon-wrap {
+            background: rgba(255,255,255,0.05);
+        }
+
         .sidebar-link.active .sidebar-icon-wrap {
-            background: rgba(255,255,255,0.16);
+            background: rgba(255,255,255,0.18);
         }
+
+        [data-theme="dark"] .sidebar-link.active .sidebar-icon-wrap {
+            background: rgba(74,222,128,0.15);
+        }
+
         .sidebar-link:hover:not(.active) .sidebar-icon-wrap {
-            background: rgba(20,83,45,0.1);
+            background: var(--primary-tint);
         }
 
         .sidebar-divider {
-            height: 0.5px;
+            height: 1px;
             background: var(--border);
-            margin: 10px 14px;
+            margin: 8px 14px;
+            transition: background 0.3s;
         }
 
-        /* دکمه خروج در منو */
         .logout-sidebar-link {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: 9px 12px;
             border-radius: var(--radius-sm);
-            color: #dc2626;
+            color: var(--danger);
             text-decoration: none;
             font-size: 13px;
             font-weight: 500;
             transition: all 0.2s;
-            margin-top: 20px;
+            margin-top: 16px;
         }
+
         .logout-sidebar-link:hover {
-            background: #fee2e2;
-            color: #b91c1c;
+            background: var(--danger-bg);
         }
+
+        [data-theme="dark"] .logout-sidebar-link:hover {
+            background: rgba(248,113,113,0.1);
+        }
+
         .logout-icon-wrap {
-            width: 28px; height: 28px;
+            width: 28px;
+            height: 28px;
             border-radius: 7px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 13px;
             flex-shrink: 0;
-            background: rgba(220,38,38,0.1);
-        }
-        .logout-sidebar-link:hover .logout-icon-wrap {
-            background: rgba(220,38,38,0.2);
+            background: var(--danger-bg);
+            transition: background 0.2s;
         }
 
-        /* ─────────── محتوای اصلی ─────────── */
+        /* ============================================
+           MAIN CONTENT
+        ============================================ */
         .expert-content {
             flex: 1;
             margin-right: var(--sidebar-w);
-            padding: 28px 28px 40px;
+            padding: 28px 28px 48px;
             min-width: 0;
+            transition: margin-right 0.3s;
         }
 
-        /* ─────────── استایل نوتیفیکیشن Toast ─────────── */
+        /* ============================================
+           CARDS — تمامی کارت‌ها
+        ============================================ */
+        .card,
+        .stat-card,
+        .plan-card,
+        .form-container,
+        .form-wrapper,
+        .form-box,
+        .info-box,
+        .filter-bar,
+        .table-wrapper,
+        .profile-card,
+        .empty-state,
+        .dashboard-stats > *,
+        .plans-grid > *,
+        .plan-info,
+        .recent-section,
+        .modal-content,
+        .crop-modal-content,
+        .detail-card,
+        .info-card,
+        .settings-card,
+        .notification-card {
+            background: var(--card-bg);
+            color: var(--text-1);
+            border: 1px solid var(--border-md);
+            transition: background 0.35s ease, color 0.35s ease,
+                        border-color 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        /* ============================================
+           INPUTS, SELECTS, TEXTAREAS
+        ============================================ */
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+        select,
+        textarea {
+            background: var(--input-bg);
+            color: var(--text-1);
+            border: 1px solid var(--input-border);
+            transition: background 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.2s;
+        }
+
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-focus);
+        }
+
+        /* placeholder */
+        ::placeholder { color: var(--text-3); }
+
+        /* ============================================
+           LABELS, HEADINGS, TEXT
+        ============================================ */
+        label {
+            color: var(--text-2);
+            transition: color 0.3s;
+        }
+
+        h1, h2, h3, h4, h5, h6,
+        .page-title, .section-title, .card-title {
+            color: var(--text-1);
+            transition: color 0.3s;
+        }
+
+        p, .page-subtitle, .info-label, .help-text {
+            color: var(--text-2);
+            transition: color 0.3s;
+        }
+
+        /* ============================================
+           TABLES
+        ============================================ */
+        table {
+            background: var(--card-bg);
+            transition: background 0.35s;
+        }
+
+        th {
+            background: var(--table-head-bg) !important;
+            color: var(--text-2) !important;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: background 0.35s, color 0.35s;
+        }
+
+        td {
+            color: var(--text-1);
+            border-color: var(--border) !important;
+            transition: background 0.2s, color 0.35s;
+        }
+
+        tbody tr:nth-child(even) td {
+            background: var(--table-row-even);
+        }
+
+        tbody tr:hover td {
+            background: var(--table-row-hover) !important;
+        }
+
+        /* ============================================
+           BADGES / STATUS
+        ============================================ */
+        .status-pending, .badge-pending {
+            background: var(--badge-pending-bg) !important;
+            color: var(--badge-pending-txt) !important;
+            border: 1px solid var(--badge-pending-bg);
+        }
+
+        .status-approved, .badge-approved {
+            background: var(--badge-approved-bg) !important;
+            color: var(--badge-approved-txt) !important;
+            border: 1px solid var(--badge-approved-bg);
+        }
+
+        .status-rejected, .badge-rejected {
+            background: var(--badge-rejected-bg) !important;
+            color: var(--badge-rejected-txt) !important;
+            border: 1px solid var(--badge-rejected-bg);
+        }
+
+        /* ============================================
+           BUTTONS
+        ============================================ */
+        .btn-primary {
+            background: var(--primary);
+            color: var(--text-inv);
+            border: none;
+            transition: background 0.25s, box-shadow 0.25s, transform 0.15s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-mid);
+            box-shadow: 0 4px 14px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+
+        [data-theme="dark"] .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border-strong);
+            color: var(--text-1);
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-tint);
+        }
+
+        /* ============================================
+           ALERT / INFO BOXES
+        ============================================ */
+        .alert-success {
+            background: var(--success-bg) !important;
+            border: 1px solid var(--success-border) !important;
+            color: var(--success) !important;
+        }
+
+        .alert-danger {
+            background: var(--danger-bg) !important;
+            border: 1px solid var(--danger-border) !important;
+            color: var(--danger) !important;
+        }
+
+        .alert-warning {
+            background: var(--warning-bg) !important;
+            color: var(--warning) !important;
+        }
+
+        .alert-info {
+            background: var(--info-bg) !important;
+            color: var(--info) !important;
+        }
+
+        /* ============================================
+           TOAST NOTIFICATIONS
+        ============================================ */
         .toast-container {
             position: fixed;
-            top: 80px;
+            top: 78px;
             right: 20px;
             z-index: 9999;
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
+
         .toast {
             min-width: 300px;
-            max-width: 400px;
-            background: white;
-            border-radius: 12px;
-            padding: 14px 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            animation: slideInRight 0.3s ease;
+            max-width: 420px;
+            border-radius: 14px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-lg);
+            animation: slideInRight 0.35s cubic-bezier(0.34,1.56,0.64,1);
             display: flex;
             align-items: center;
             gap: 12px;
-            border-right: 4px solid;
+            border-right: 4px solid transparent;
+            backdrop-filter: blur(12px);
         }
+
         .toast-success {
-            border-right-color: #10b981;
-            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-right-color: var(--success);
+            background: var(--success-bg);
         }
-        .toast-success .toast-icon { color: #10b981; }
+
         .toast-error {
-            border-right-color: #ef4444;
-            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-right-color: var(--danger);
+            background: var(--danger-bg);
         }
-        .toast-error .toast-icon { color: #ef4444; }
+
         .toast-warning {
-            border-right-color: #f59e0b;
-            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-right-color: var(--warning);
+            background: var(--warning-bg);
         }
-        .toast-warning .toast-icon { color: #f59e0b; }
+
         .toast-info {
-            border-right-color: #3b82f6;
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-right-color: var(--info);
+            background: var(--info-bg);
         }
-        .toast-info .toast-icon { color: #3b82f6; }
-        .toast-icon { font-size: 20px; }
+
+        [data-theme="dark"] .toast-success { background: rgba(52,211,153,0.08); border-color: var(--border-md); border-right-color: var(--success); }
+        [data-theme="dark"] .toast-error   { background: rgba(248,113,113,0.08); border-color: var(--border-md); border-right-color: var(--danger); }
+        [data-theme="dark"] .toast-warning { background: rgba(251,191,36,0.08); border-color: var(--border-md); border-right-color: var(--warning); }
+        [data-theme="dark"] .toast-info    { background: rgba(96,165,250,0.08); border-color: var(--border-md); border-right-color: var(--info); }
+
+        .toast-icon { font-size: 20px; flex-shrink: 0; }
+
         .toast-content {
             flex: 1;
             font-size: 13px;
             font-weight: 500;
-            color: #1f2937;
+            color: var(--text-1);
             line-height: 1.5;
         }
+
         .toast-close {
             cursor: pointer;
-            font-size: 18px;
-            color: #9ca3af;
+            font-size: 16px;
+            color: var(--text-3);
             transition: color 0.2s;
-            padding: 0 4px;
-        }
-        .toast-close:hover { color: #6b7280; }
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
+            padding: 2px 4px;
+            border-radius: 4px;
         }
 
-        /* ─────────── مودال برش عکس ─────────── */
+        .toast-close:hover {
+            color: var(--text-1);
+            background: var(--border);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(calc(100% + 20px)); opacity: 0; }
+            to   { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to   { opacity: 0; transform: translateX(20px); }
+        }
+
+        /* ============================================
+           CROP MODAL
+        ============================================ */
         .crop-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
+            inset: 0;
+            background: var(--modal-bg);
             z-index: 10000;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
         }
+
         .crop-modal-content {
-            background: white;
-            border-radius: 24px;
-            padding: 24px;
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-md) !important;
+            color: var(--text-1) !important;
+            border-radius: var(--radius-xl);
+            padding: 28px;
             max-width: 90%;
-            max-height: 90%;
+            max-height: 90vh;
             overflow: auto;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.3);
-            animation: modalFadeIn 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
         }
+
         @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: scale(0.94) translateY(10px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
         }
+
         .crop-modal h3 {
             margin-bottom: 20px;
-            font-size: 20px;
-            color: #1e293b;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-1);
+            border-bottom: 1px solid var(--border-md);
+            padding-bottom: 14px;
         }
+
         .crop-image-container {
             margin-bottom: 20px;
             text-align: center;
-            background: #f1f5f9;
-            border-radius: 12px;
+            background: var(--surface-2);
+            border-radius: var(--radius-md);
             padding: 10px;
+            border: 1px solid var(--border);
         }
+
         .crop-image-container img {
             max-width: 100%;
             max-height: 55vh;
             display: block;
             margin: 0 auto;
         }
+
         .crop-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
+
         .crop-btn {
-            padding: 8px 18px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 500;
+            border-radius: 99px;
+            font-size: 12.5px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             font-family: inherit;
         }
-        .crop-btn-primary { background: #2563eb; color: white; }
-        .crop-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
-        .crop-btn-secondary { background: #6b7280; color: white; }
-        .crop-btn-secondary:hover { background: #4b5563; }
-        .crop-btn-success { background: #10b981; color: white; }
-        .crop-btn-success:hover { background: #059669; }
-        .crop-btn-danger { background: #ef4444; color: white; }
-        .crop-btn-danger:hover { background: #dc2626; }
+
+        .crop-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+        .crop-btn-primary  { background: var(--info); color: #fff; }
+        .crop-btn-secondary{ background: var(--text-3); color: #fff; }
+        .crop-btn-success  { background: var(--success); color: #fff; }
+        .crop-btn-danger   { background: var(--danger); color: #fff; }
+
         .crop-note {
-            font-size: 12px;
-            color: #6b7280;
+            font-size: 11.5px;
+            color: var(--text-3);
             text-align: center;
-            margin-top: 15px;
+            margin-top: 14px;
             padding-top: 10px;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid var(--border);
         }
 
-        /* ─────────── دکمه منو موبایل ─────────── */
+        /* ============================================
+           MOBILE HAMBURGER & OVERLAY
+        ============================================ */
         .menu-toggle {
             display: none;
             position: fixed;
             top: calc(var(--header-h) + 14px);
             right: 14px;
             z-index: 201;
-            width: 40px; height: 40px;
+            width: 40px;
+            height: 40px;
             background: var(--primary);
             color: white;
             border: none;
@@ -463,45 +990,360 @@
             box-shadow: var(--shadow-md);
             align-items: center;
             justify-content: center;
+            transition: background 0.3s;
         }
 
         .sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(10,20,50,0.4);
-            backdrop-filter: blur(2px);
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
             z-index: 199;
             animation: fadeIn 0.2s ease;
         }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to   { opacity: 1; }
         }
 
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
         @media (max-width: 768px) {
             .menu-toggle { display: flex; }
+
             .expert-sidebar {
                 transform: translateX(100%);
-                transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
                 z-index: 200;
-                box-shadow: -8px 0 32px rgba(10,20,50,0.18);
+                box-shadow: -8px 0 36px rgba(0,0,0,0.22);
             }
+
             .expert-sidebar.open { transform: translateX(0); }
+
             .sidebar-overlay.open { display: block; }
-            .expert-content { margin-right: 0; padding: 18px 14px 32px; }
-            .expert-user-info { display: none; }
+
+            .expert-content {
+                margin-right: 0;
+                padding: 16px 14px 36px;
+            }
+
+            .expert-user-info,
             .expert-brand-sub { display: none; }
-            .toast-container { left: 20px; right: 20px; }
-            .toast { width: calc(100% - 40px); max-width: none; }
+
+            .toast-container { left: 14px; right: 14px; }
+            .toast { width: 100%; max-width: none; }
             .crop-buttons { gap: 6px; }
-            .crop-btn { padding: 6px 12px; font-size: 11px; }
+            .crop-btn { padding: 7px 12px; font-size: 11px; }
+        }
+
+        /* ============================================
+           DARK MODE — AGGRESSIVE OVERRIDES
+           پوشش کامل تمام باکس‌ها و عناصر صفحه پروفایل
+           و سایر صفحاتی که رنگ hardcode دارند
+        ============================================ */
+
+        /* هر دیو / سکشن / آرتیکل که background سفید داره */
+        [data-theme="dark"] .expert-content div,
+        [data-theme="dark"] .expert-content section,
+        [data-theme="dark"] .expert-content article,
+        [data-theme="dark"] .expert-content aside,
+        [data-theme="dark"] .expert-content form {
+            background-color: transparent;
+        }
+
+        /* ─── کلاس‌های رایج کارت و باکس ─── */
+        [data-theme="dark"] .expert-content .card,
+        [data-theme="dark"] .expert-content [class*="card"],
+        [data-theme="dark"] .expert-content [class*="-card"],
+        [data-theme="dark"] .expert-content [class*="box"],
+        [data-theme="dark"] .expert-content [class*="-box"],
+        [data-theme="dark"] .expert-content [class*="panel"],
+        [data-theme="dark"] .expert-content [class*="section"],
+        [data-theme="dark"] .expert-content [class*="wrapper"],
+        [data-theme="dark"] .expert-content [class*="container"],
+        [data-theme="dark"] .expert-content [class*="block"],
+        [data-theme="dark"] .expert-content [class*="widget"],
+        [data-theme="dark"] .expert-content [class*="item"],
+        [data-theme="dark"] .expert-content [class*="group"],
+        [data-theme="dark"] .expert-content [class*="row-bg"],
+        [data-theme="dark"] .expert-content [class*="detail"],
+        [data-theme="dark"] .expert-content [class*="info"],
+        [data-theme="dark"] .expert-content [class*="stat"],
+        [data-theme="dark"] .expert-content [class*="filter"],
+        [data-theme="dark"] .expert-content [class*="form"],
+        [data-theme="dark"] .expert-content [class*="modal"],
+        [data-theme="dark"] .expert-content [class*="profile"],
+        [data-theme="dark"] .expert-content [class*="setting"],
+        [data-theme="dark"] .expert-content [class*="tab"],
+        [data-theme="dark"] .expert-content [class*="list"],
+        [data-theme="dark"] .expert-content [class*="empty"],
+        [data-theme="dark"] .expert-content [class*="recent"],
+        [data-theme="dark"] .expert-content [class*="summary"],
+        [data-theme="dark"] .expert-content [class*="chart"],
+        [data-theme="dark"] .expert-content [class*="grid"] {
+            background-color: var(--card-bg) !important;
+            border-color: var(--border-md) !important;
+            color: var(--text-1) !important;
+        }
+
+        /* ─── استثناء: بج‌ها و badge ها رنگ خودشون رو حفظ کنن ─── */
+        [data-theme="dark"] .expert-content [class*="badge"],
+        [data-theme="dark"] .expert-content [class*="status"],
+        [data-theme="dark"] .expert-content [class*="tag"],
+        [data-theme="dark"] .expert-content [class*="chip"],
+        [data-theme="dark"] .expert-content [class*="label"],
+        [data-theme="dark"] .expert-content [class*="btn"],
+        [data-theme="dark"] .expert-content [class*="button"] {
+            /* به CSS variables خودشون defer می‌کنن */
+        }
+
+        /* ─── باکس‌هایی که background مستقیم سفید گرفتن ─── */
+        [data-theme="dark"] .expert-content *[style*="background: white"],
+        [data-theme="dark"] .expert-content *[style*="background:#fff"],
+        [data-theme="dark"] .expert-content *[style*="background: #fff"],
+        [data-theme="dark"] .expert-content *[style*="background-color: white"],
+        [data-theme="dark"] .expert-content *[style*="background-color:#fff"],
+        [data-theme="dark"] .expert-content *[style*="background-color: #fff"],
+        [data-theme="dark"] .expert-content *[style*="background-color:#ffffff"],
+        [data-theme="dark"] .expert-content *[style*="background-color: #ffffff"],
+        [data-theme="dark"] .expert-content *[style*="background:#ffffff"],
+        [data-theme="dark"] .expert-content *[style*="background: #ffffff"] {
+            background-color: var(--card-bg) !important;
+        }
+
+        /* ─── متون ─── */
+        [data-theme="dark"] .expert-content *:not(a):not(button):not([class*="btn"]):not([class*="badge"]):not([class*="status"]):not([class*="tag"]) {
+            color: var(--text-1);
+        }
+
+        [data-theme="dark"] .expert-content h1,
+        [data-theme="dark"] .expert-content h2,
+        [data-theme="dark"] .expert-content h3,
+        [data-theme="dark"] .expert-content h4,
+        [data-theme="dark"] .expert-content h5,
+        [data-theme="dark"] .expert-content h6,
+        [data-theme="dark"] .expert-content .title,
+        [data-theme="dark"] .expert-content [class*="title"],
+        [data-theme="dark"] .expert-content [class*="heading"] {
+            color: var(--text-1) !important;
+        }
+
+        [data-theme="dark"] .expert-content p,
+        [data-theme="dark"] .expert-content span:not([class*="badge"]):not([class*="status"]):not([class*="icon"]),
+        [data-theme="dark"] .expert-content small,
+        [data-theme="dark"] .expert-content [class*="desc"],
+        [data-theme="dark"] .expert-content [class*="sub"],
+        [data-theme="dark"] .expert-content [class*="meta"],
+        [data-theme="dark"] .expert-content [class*="hint"],
+        [data-theme="dark"] .expert-content [class*="help"],
+        [data-theme="dark"] .expert-content [class*="muted"] {
+            color: var(--text-2) !important;
+        }
+
+        [data-theme="dark"] .expert-content label {
+            color: var(--text-2) !important;
+        }
+
+        /* ─── ورودی‌ها ─── */
+        [data-theme="dark"] .expert-content input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+        [data-theme="dark"] .expert-content select,
+        [data-theme="dark"] .expert-content textarea {
+            background-color: var(--input-bg) !important;
+            color: var(--text-1) !important;
+            border-color: var(--input-border) !important;
+        }
+
+        [data-theme="dark"] .expert-content input::placeholder,
+        [data-theme="dark"] .expert-content textarea::placeholder {
+            color: var(--text-3) !important;
+        }
+
+        /* ─── select options ─── */
+        [data-theme="dark"] .expert-content select option {
+            background: var(--card-bg-2) !important;
+            color: var(--text-1) !important;
+        }
+
+        /* ─── جداول ─── */
+        [data-theme="dark"] .expert-content table {
+            background: var(--card-bg) !important;
+        }
+
+        [data-theme="dark"] .expert-content thead,
+        [data-theme="dark"] .expert-content thead tr,
+        [data-theme="dark"] .expert-content th {
+            background: var(--table-head-bg) !important;
+            color: var(--text-2) !important;
+            border-color: var(--border-md) !important;
+        }
+
+        [data-theme="dark"] .expert-content tbody tr td {
+            color: var(--text-1) !important;
+            border-color: var(--border) !important;
+        }
+
+        [data-theme="dark"] .expert-content tbody tr:hover td {
+            background: var(--table-row-hover) !important;
+        }
+
+        [data-theme="dark"] .expert-content tbody tr:nth-child(even) td {
+            background: var(--table-row-even);
+        }
+
+        [data-theme="dark"] .expert-content tfoot,
+        [data-theme="dark"] .expert-content tfoot td {
+            background: var(--table-head-bg) !important;
+            color: var(--text-2) !important;
+        }
+
+        /* ─── Divider / خط جداکننده ─── */
+        [data-theme="dark"] .expert-content hr,
+        [data-theme="dark"] .expert-content [class*="divider"],
+        [data-theme="dark"] .expert-content [class*="separator"] {
+            border-color: var(--border) !important;
+            background: var(--border) !important;
+        }
+
+        /* ─── shadow باکس‌ها ─── */
+        [data-theme="dark"] .expert-content [class*="shadow"],
+        [data-theme="dark"] .expert-content [style*="box-shadow"] {
+            box-shadow: var(--shadow-md) !important;
+        }
+
+        /* ─── لینک ─── */
+        [data-theme="dark"] .expert-content a:not([class*="btn"]):not([class*="sidebar"]):not([class*="badge"]) {
+            color: var(--primary) !important;
+        }
+
+        /* ─── breadcrumb ─── */
+        [data-theme="dark"] .expert-content [class*="breadcrumb"] {
+            background: transparent !important;
+            color: var(--text-2) !important;
+        }
+
+        /* ─── pre / code ─── */
+        [data-theme="dark"] .expert-content pre,
+        [data-theme="dark"] .expert-content code {
+            background: var(--surface-2) !important;
+            color: var(--primary-light) !important;
+            border-color: var(--border-md) !important;
+        }
+
+        /* ─── آیکون‌های رنگی با کلاس text-* (Bootstrap-style) ─── */
+        [data-theme="dark"] .expert-content .text-muted   { color: var(--text-3) !important; }
+        [data-theme="dark"] .expert-content .text-dark    { color: var(--text-1) !important; }
+        [data-theme="dark"] .expert-content .text-secondary { color: var(--text-2) !important; }
+        [data-theme="dark"] .expert-content .bg-white,
+        [data-theme="dark"] .expert-content .bg-light     { background: var(--card-bg) !important; }
+        [data-theme="dark"] .expert-content .border       { border-color: var(--border-md) !important; }
+        [data-theme="dark"] .expert-content .border-bottom { border-bottom-color: var(--border-md) !important; }
+        [data-theme="dark"] .expert-content .border-top   { border-top-color: var(--border-md) !important; }
+
+        /* ─── badge / status ─── */
+        [data-theme="dark"] .expert-content .status-pending,
+        [data-theme="dark"] .expert-content .badge-pending,
+        [data-theme="dark"] .expert-content [class*="pending"] {
+            background: var(--badge-pending-bg) !important;
+            color: var(--badge-pending-txt) !important;
+            border-color: transparent !important;
+        }
+
+        [data-theme="dark"] .expert-content .status-approved,
+        [data-theme="dark"] .expert-content .badge-approved,
+        [data-theme="dark"] .expert-content [class*="approved"] {
+            background: var(--badge-approved-bg) !important;
+            color: var(--badge-approved-txt) !important;
+            border-color: transparent !important;
+        }
+
+        [data-theme="dark"] .expert-content .status-rejected,
+        [data-theme="dark"] .expert-content .badge-rejected,
+        [data-theme="dark"] .expert-content [class*="rejected"] {
+            background: var(--badge-rejected-bg) !important;
+            color: var(--badge-rejected-txt) !important;
+            border-color: transparent !important;
+        }
+
+        /* ─── Alert boxes ─── */
+        [data-theme="dark"] .expert-content .alert,
+        [data-theme="dark"] .expert-content [class*="alert"],
+        [data-theme="dark"] .expert-content [class*="notice"],
+        [data-theme="dark"] .expert-content [class*="message"] {
+            border-color: var(--border-md) !important;
+        }
+
+        [data-theme="dark"] .expert-content [class*="alert-success"],
+        [data-theme="dark"] .expert-content [class*="success-msg"] {
+            background: var(--success-bg) !important;
+            color: var(--success) !important;
+            border-color: var(--success-border) !important;
+        }
+
+        [data-theme="dark"] .expert-content [class*="alert-danger"],
+        [data-theme="dark"] .expert-content [class*="alert-error"],
+        [data-theme="dark"] .expert-content [class*="error-msg"] {
+            background: var(--danger-bg) !important;
+            color: var(--danger) !important;
+            border-color: var(--danger-border) !important;
+        }
+
+        [data-theme="dark"] .expert-content [class*="alert-warning"],
+        [data-theme="dark"] .expert-content [class*="warning-msg"] {
+            background: var(--warning-bg) !important;
+            color: var(--warning) !important;
+        }
+
+        [data-theme="dark"] .expert-content [class*="alert-info"] {
+            background: var(--info-bg) !important;
+            color: var(--info) !important;
+        }
+
+        /* ─── Scrollbar داخل content ─── */
+        [data-theme="dark"] .expert-content ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+
+        [data-theme="dark"] .expert-content ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+        }
+
+        /* ─── Leaflet map (اگر نقشه داری) ─── */
+        [data-theme="dark"] .expert-content .leaflet-container {
+            background: #1a2236 !important;
+        }
+
+        /* ─── Pagination ─── */
+        [data-theme="dark"] .expert-content [class*="page"],
+        [data-theme="dark"] .expert-content [class*="pagination"] {
+            background: var(--card-bg) !important;
+            border-color: var(--border-md) !important;
+            color: var(--text-1) !important;
+        }
+
+        /* ============================================
+           TRANSITION برای همه عناصر در تغییر تم
+        ============================================ */
+        *, *::before, *::after {
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow;
+            transition-duration: 0.3s;
+            transition-timing-function: ease;
+        }
+
+        /* غیرفعال کردن transition برای انیمیشن‌ها و transform‌ها */
+        .toast, .toast *, .expert-avatar, .theme-toggle .toggle-knob,
+        .sidebar-link, .crop-btn, .btn-primary, .btn-outline {
+            transition-property: background-color, border-color, color, transform, box-shadow, opacity;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 </head>
 <body>
 
+<!-- ==============================
+     HEADER
+============================== -->
 <header class="expert-header">
     <div class="expert-brand">
         <div class="expert-brand-icon">📊</div>
@@ -510,12 +1352,22 @@
             <span class="expert-brand-sub">سامانه مدیریت اطلاعات شهری</span>
         </div>
     </div>
+
     <div class="expert-header-user">
+        <!-- دکمه تغییر تم -->
+        <button class="theme-toggle" id="themeToggleBtn" title="تغییر تم روشن / تاریک" aria-label="toggle theme">
+            <div class="toggle-knob">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+            </div>
+        </button>
+
         <div class="expert-user-info">
             <span class="expert-username">{{ user.get_full_name|default:user.username }}</span>
             <span class="expert-user-role">کارشناس</span>
         </div>
-        <div class="expert-avatar" onclick="triggerAvatarUpload()">
+
+        <div class="expert-avatar" onclick="triggerAvatarUpload()" title="تغییر عکس پروفایل">
             {% if user.profile.avatar %}
                 <img src="{{ user.profile.avatar.url }}" alt="avatar" id="headerAvatar">
             {% else %}
@@ -525,65 +1377,77 @@
     </div>
 </header>
 
-<!-- فرم مخفی برای آپلود عکس -->
-<form id="avatarUploadForm" method="post" enctype="multipart/form-data" action="{% url 'core_admin:expert_profile' %}" style="display:none;">
+<!-- فرم مخفی آپلود عکس -->
+<form id="avatarUploadForm" method="post" enctype="multipart/form-data"
+      action="{% url 'core_admin:expert_profile' %}" style="display:none;">
     {% csrf_token %}
     <input type="file" id="avatarFileInput" name="avatar" accept="image/jpeg,image/png,image/jpg">
 </form>
 
+<!-- دکمه موبایل منو -->
 <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
+<!-- ==============================
+     LAYOUT
+============================== -->
 <div class="expert-layout">
+
+    <!-- سایدبار -->
     <aside class="expert-sidebar" id="expertSidebar">
+
+        <div class="sidebar-header">
+            <div class="sidebar-header-icon">🏙️</div>
+            <div>
+                <div class="sidebar-header-title">سامانه شهری</div>
+                <div class="sidebar-header-sub">نسخه ۱.۰</div>
+            </div>
+        </div>
+
         <div class="sidebar-group-label">📊 اصلی</div>
         <ul class="sidebar-nav">
             <li>
-                <a href="{% url 'core_admin:expert_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'expert_dashboard' %}active{% endif %}">
-                    <span class="sidebar-icon-wrap">📊</span>
-                    <span>داشبورد</span>
+                <a href="{% url 'core_admin:expert_dashboard' %}"
+                   class="sidebar-link {% if request.resolver_match.url_name == 'expert_dashboard' %}active{% endif %}">
+                    <span class="sidebar-icon-wrap">📊</span>داشبورد
                 </a>
             </li>
         </ul>
 
         <div class="sidebar-divider"></div>
-
         <div class="sidebar-group-label">🗺️ داده‌های میدانی</div>
         <ul class="sidebar-nav">
             <li>
                 <a href="{% url 'core_admin:expert_dashboard' %}" class="sidebar-link">
-                    <span class="sidebar-icon-wrap">📍</span>
-                    <span>قطعات و نقشه</span>
+                    <span class="sidebar-icon-wrap">📍</span>قطعات و نقشه
                 </a>
             </li>
         </ul>
 
         <div class="sidebar-divider"></div>
-
         <div class="sidebar-group-label">📐 بررسی طرح‌های شهری</div>
         <ul class="sidebar-nav">
             <li>
-                <a href="{% url 'core_admin:expert_tafsili_list' %}" class="sidebar-link">
-                    <span class="sidebar-icon-wrap">📐</span>
-                    <span>طرح تفصیلی / جامع</span>
+                <a href="{% url 'core_admin:expert_tafsili_list' %}"
+                   class="sidebar-link {% if request.resolver_match.url_name == 'expert_tafsili_list' %}active{% endif %}">
+                    <span class="sidebar-icon-wrap">📐</span>طرح تفصیلی / جامع
                 </a>
             </li>
             <li>
-                <a href="{% url 'core_admin:expert_momayezi_list' %}" class="sidebar-link">
-                    <span class="sidebar-icon-wrap">🗂️</span>
-                    <span>ممیزی املاک</span>
+                <a href="{% url 'core_admin:expert_momayezi_list' %}"
+                   class="sidebar-link {% if request.resolver_match.url_name == 'expert_momayezi_list' %}active{% endif %}">
+                    <span class="sidebar-icon-wrap">🗂️</span>ممیزی املاک
                 </a>
             </li>
         </ul>
 
         <div class="sidebar-divider"></div>
-
         <div class="sidebar-group-label">⚙️ تنظیمات</div>
         <ul class="sidebar-nav">
             <li>
-                <a href="{% url 'core_admin:expert_profile' %}" class="sidebar-link">
-                    <span class="sidebar-icon-wrap">👤</span>
-                    <span>پروفایل</span>
+                <a href="{% url 'core_admin:expert_profile' %}"
+                   class="sidebar-link {% if request.resolver_match.url_name == 'expert_profile' %}active{% endif %}">
+                    <span class="sidebar-icon-wrap">👤</span>پروفایل
                 </a>
             </li>
         </ul>
@@ -591,20 +1455,24 @@
         <div class="sidebar-divider"></div>
         <ul class="sidebar-nav">
             <li>
-                <a href="{% url 'core_admin:logout' %}" class="logout-sidebar-link" onclick="return confirm('آیا از خروج مطمئن هستید؟')">
-                    <span class="logout-icon-wrap">🚪</span>
-                    <span>خروج از سیستم</span>
+                <a href="{% url 'core_admin:logout' %}"
+                   class="logout-sidebar-link"
+                   onclick="return confirm('آیا از خروج مطمئن هستید؟')">
+                    <span class="logout-icon-wrap">🚪</span>خروج از سیستم
                 </a>
             </li>
         </ul>
     </aside>
 
+    <!-- محتوای اصلی -->
     <main class="expert-content">
         {% block content %}{% endblock %}
     </main>
 </div>
 
-<!-- مودال برش عکس -->
+<!-- ==============================
+     مودال برش عکس
+============================== -->
 <div id="cropModal" class="crop-modal">
     <div class="crop-modal-content">
         <h3>✂️ تنظیم و برش عکس پروفایل</h3>
@@ -612,71 +1480,96 @@
             <img id="cropImage" src="" alt="پیش‌نمایش">
         </div>
         <div class="crop-buttons">
-            <button type="button" class="crop-btn crop-btn-primary" id="zoomInBtn">🔍 زوم +</button>
-            <button type="button" class="crop-btn crop-btn-primary" id="zoomOutBtn">🔍 زوم -</button>
-            <button type="button" class="crop-btn crop-btn-secondary" id="rotateLeftBtn">↩️ چرخش چپ</button>
-            <button type="button" class="crop-btn crop-btn-secondary" id="rotateRightBtn">↪️ چرخش راست</button>
-            <button type="button" class="crop-btn crop-btn-danger" id="resetBtn">⟳ ریست</button>
-            <button type="button" class="crop-btn crop-btn-success" id="cropConfirmBtn">✅ تأیید و برش</button>
+            <button type="button" class="crop-btn crop-btn-primary"   id="zoomInBtn">🔍+</button>
+            <button type="button" class="crop-btn crop-btn-primary"   id="zoomOutBtn">🔍−</button>
+            <button type="button" class="crop-btn crop-btn-secondary" id="rotateLeftBtn">↩️</button>
+            <button type="button" class="crop-btn crop-btn-secondary" id="rotateRightBtn">↪️</button>
+            <button type="button" class="crop-btn crop-btn-danger"    id="resetBtn">⟳ ریست</button>
+            <button type="button" class="crop-btn crop-btn-success"   id="cropConfirmBtn">✅ تأیید</button>
             <button type="button" class="crop-btn crop-btn-secondary" id="cropCancelBtn">❌ انصراف</button>
         </div>
         <div class="crop-note">
-            💡 نکته: عکس را بکشید و جابجا کنید. با زوم و چرخش تنظیم کنید تا در دایره قرار گیرد.
+            💡 عکس را بکشید، زوم و چرخش دهید تا در دایره قرار گیرد.
         </div>
     </div>
 </div>
 
-<!-- کانتینر نوتیفیکیشن Toast -->
+<!-- Toast container -->
 <div id="toastContainer" class="toast-container"></div>
 
-<script>
-    let cropper = null;
-    let currentFile = null;
 
-    // نمایش نوتیفیکیشن
+<!-- ==============================
+     JAVASCRIPT
+============================== -->
+<script>
+    /* ─────────────────────────────────────────
+       تم: ذخیره و بازیابی
+    ───────────────────────────────────────── */
+    (function () {
+        const saved = localStorage.getItem('expert-theme');
+        if (saved) {
+            document.documentElement.setAttribute('data-theme', saved);
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    })();
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('expert-theme', next);
+    }
+
+    document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+
+    /* ─────────────────────────────────────────
+       Toast notifications
+    ───────────────────────────────────────── */
     function showToast(message, type) {
         const container = document.getElementById('toastContainer');
         if (!container) return;
 
+        const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
         const toast = document.createElement('div');
         toast.className = 'toast toast-' + type;
-
-        let icon = '';
-        if (type === 'success') icon = '✅';
-        else if (type === 'error') icon = '❌';
-        else if (type === 'warning') icon = '⚠️';
-        else icon = 'ℹ️';
-
         toast.innerHTML = `
-            <div class="toast-icon">${icon}</div>
+            <div class="toast-icon">${icons[type] || 'ℹ️'}</div>
             <div class="toast-content">${message}</div>
             <div class="toast-close" onclick="this.parentElement.remove()">✕</div>
         `;
         container.appendChild(toast);
+
         setTimeout(() => {
             if (toast.parentElement) {
-                toast.style.animation = 'fadeOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
+                toast.style.animation = 'fadeOut 0.35s ease forwards';
+                setTimeout(() => toast.remove(), 350);
             }
-        }, 4000);
+        }, 4500);
     }
 
-    // نمایش پیام‌های Django
+    /* نمایش پیام‌های Django */
     function showMessagesFromDjango() {
         {% if messages %}
             {% for message in messages %}
-                showToast('{{ message|escapejs }}', '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}warning{% endif %}');
+                showToast(
+                    '{{ message|escapejs }}',
+                    '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}warning{% endif %}'
+                );
             {% endfor %}
         {% endif %}
     }
 
-    // فعال کردن آپلود عکس
+    /* ─────────────────────────────────────────
+       آپلود عکس پروفایل + Cropper.js
+    ───────────────────────────────────────── */
+    let cropper = null;
+
     function triggerAvatarUpload() {
         document.getElementById('avatarFileInput').click();
     }
 
-    // آپلود عکس با Cropper
-    document.getElementById('avatarFileInput')?.addEventListener('change', function(e) {
+    document.getElementById('avatarFileInput')?.addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -685,11 +1578,11 @@
             return;
         }
 
-        currentFile = file;
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (ev) {
             const cropImage = document.getElementById('cropImage');
-            cropImage.src = event.target.result;
+            cropImage.src = ev.target.result;
+
             const modal = document.getElementById('cropModal');
             modal.style.display = 'flex';
 
@@ -708,24 +1601,23 @@
                 center: true,
                 guides: true,
                 autoCropArea: 1,
-                minCropBoxWidth: 100,
-                minCropBoxHeight: 100,
+                minCropBoxWidth: 80,
+                minCropBoxHeight: 80,
             });
         };
         reader.readAsDataURL(file);
     });
 
-    // دکمه‌های Cropper
-    document.getElementById('zoomInBtn')?.addEventListener('click', () => cropper?.zoom(0.1));
-    document.getElementById('zoomOutBtn')?.addEventListener('click', () => cropper?.zoom(-0.1));
-    document.getElementById('rotateLeftBtn')?.addEventListener('click', () => cropper?.rotate(-45));
-    document.getElementById('rotateRightBtn')?.addEventListener('click', () => cropper?.rotate(45));
-    document.getElementById('resetBtn')?.addEventListener('click', () => cropper?.reset());
+    document.getElementById('zoomInBtn')?.addEventListener('click',    () => cropper?.zoom(0.1));
+    document.getElementById('zoomOutBtn')?.addEventListener('click',   () => cropper?.zoom(-0.1));
+    document.getElementById('rotateLeftBtn')?.addEventListener('click',() => cropper?.rotate(-45));
+    document.getElementById('rotateRightBtn')?.addEventListener('click',() => cropper?.rotate(45));
+    document.getElementById('resetBtn')?.addEventListener('click',     () => cropper?.reset());
 
     document.getElementById('cropCancelBtn')?.addEventListener('click', () => {
-        const modal = document.getElementById('cropModal');
-        modal.style.display = 'none';
-        if (cropper) { cropper.destroy(); cropper = null; }
+        document.getElementById('cropModal').style.display = 'none';
+        cropper?.destroy();
+        cropper = null;
         document.getElementById('avatarFileInput').value = '';
     });
 
@@ -733,7 +1625,7 @@
         if (!cropper) return;
 
         const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
-        canvas.toBlob(function(blob) {
+        canvas.toBlob(function (blob) {
             const formData = new FormData();
             formData.append('avatar', blob, 'avatar.jpg');
             formData.append('cropped', 'true');
@@ -742,65 +1634,62 @@
             fetch("{% url 'core_admin:expert_profile' %}", {
                 method: 'POST',
                 body: formData,
-                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
             })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    showToast('عکس پروفایل با موفقیت بروزرسانی شد', 'success');
-                    // به‌روزرسانی عکس در هدر
-                    const headerAvatar = document.getElementById('headerAvatar');
-                    if (headerAvatar) {
-                        headerAvatar.src = data.url + '?t=' + new Date().getTime();
+                    showToast('عکس پروفایل با موفقیت بروزرسانی شد ✅', 'success');
+                    const img = document.getElementById('headerAvatar');
+                    const ts  = '?t=' + Date.now();
+                    if (img) {
+                        img.src = data.url + ts;
                     } else {
-                        // اگر span بود، تبدیل به img کن
-                        const avatarDiv = document.querySelector('.expert-avatar');
-                        avatarDiv.innerHTML = `<img src="${data.url}?t=${new Date().getTime()}" alt="avatar" id="headerAvatar">`;
+                        document.querySelector('.expert-avatar').innerHTML =
+                            `<img src="${data.url}${ts}" alt="avatar" id="headerAvatar">`;
                     }
-                    setTimeout(() => location.reload(), 1000);
+                    setTimeout(() => location.reload(), 900);
                 } else {
                     showToast('خطا: ' + (data.error || 'مشخص نیست'), 'error');
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('خطا در ارتباط با سرور', 'error');
-            });
+            .catch(() => showToast('خطا در ارتباط با سرور', 'error'));
 
             document.getElementById('cropModal').style.display = 'none';
-            if (cropper) { cropper.destroy(); cropper = null; }
+            cropper?.destroy();
+            cropper = null;
         }, 'image/jpeg');
     });
 
-    // بستن مودال با کلیک خارج
-    document.getElementById('cropModal')?.addEventListener('click', function(e) {
+    document.getElementById('cropModal')?.addEventListener('click', function (e) {
         if (e.target === this) document.getElementById('cropCancelBtn').click();
     });
 
-    // توابع منو
+    /* ─────────────────────────────────────────
+       سایدبار موبایل
+    ───────────────────────────────────────── */
     function toggleSidebar() {
         const sidebar = document.getElementById('expertSidebar');
         const overlay = document.getElementById('sidebarOverlay');
-        if (sidebar) {
-            const isOpen = sidebar.classList.toggle('open');
-            if (overlay) overlay.classList.toggle('open', isOpen);
-        }
+        const isOpen  = sidebar.classList.toggle('open');
+        overlay.classList.toggle('open', isOpen);
     }
+
     function closeSidebar() {
         document.getElementById('expertSidebar')?.classList.remove('open');
         document.getElementById('sidebarOverlay')?.classList.remove('open');
     }
 
-    document.addEventListener('click', function(e) {
-        const sidebar = document.getElementById('expertSidebar');
-        const menuBtn = document.querySelector('.menu-toggle');
-        if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && !menuBtn?.contains(e.target)) {
-            sidebar.classList.remove('open');
-        }
+    /* ─────────────────────────────────────────
+       init
+    ───────────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', function () {
+        showMessagesFromDjango();
+        if (typeof map !== 'undefined' && map) setTimeout(() => map.invalidateSize(), 100);
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        showMessagesFromDjango();
+    window.addEventListener('resize', function () {
+        if (typeof map !== 'undefined' && map) setTimeout(() => map.invalidateSize(), 100);
     });
 </script>
 

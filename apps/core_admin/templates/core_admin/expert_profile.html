@@ -6,22 +6,37 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
 <style>
+    /* ============================================
+       PROFILE WRAPPER
+    ============================================ */
     .profile-wrapper {
         max-width: 900px;
         margin: 0 auto;
         padding: 20px;
     }
 
+    /* ============================================
+       PROFILE HEADER
+    ============================================ */
     .profile-header {
-        background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
         border-radius: 20px;
         padding: 30px;
         color: white;
         margin-bottom: 30px;
         text-align: center;
         position: relative;
+        transition: all 0.3s ease;
     }
 
+    [data-theme="dark"] .profile-header {
+        background: linear-gradient(135deg, #1a1f2e 0%, #141824 100%) !important;
+        border: 1px solid var(--border) !important;
+    }
+
+    /* ============================================
+       AVATAR CONTAINER
+    ============================================ */
     .avatar-container {
         position: relative;
         display: inline-block;
@@ -76,17 +91,35 @@
         border: 4px solid white;
     }
 
+    [data-theme="dark"] .avatar-placeholder {
+        background: rgba(255,255,255,0.1) !important;
+        color: var(--text-2) !important;
+    }
+
+    /* ============================================
+       PROFILE CARD
+    ============================================ */
     .profile-card {
-        background: white;
+        background: var(--card-bg);
         border-radius: 20px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
     }
 
+    /* ============================================
+       TABS
+    ============================================ */
     .card-tabs {
         display: flex;
-        border-bottom: 2px solid #f0f0f0;
-        background: #fafafa;
+        border-bottom: 2px solid var(--border);
+        background: var(--surface-2);
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .card-tabs {
+        background: var(--card-bg) !important;
     }
 
     .tab-btn {
@@ -97,14 +130,19 @@
         cursor: pointer;
         font-size: 16px;
         font-weight: 500;
-        color: #666;
+        color: var(--text-2);
         transition: all 0.3s;
         position: relative;
     }
 
     .tab-btn.active {
-        color: #14532d;
+        color: var(--primary);
         background: white;
+    }
+
+    [data-theme="dark"] .tab-btn.active {
+        background: var(--card-bg) !important;
+        color: var(--primary) !important;
     }
 
     .tab-btn.active::after {
@@ -114,12 +152,17 @@
         left: 0;
         right: 0;
         height: 3px;
-        background: #14532d;
+        background: var(--primary);
     }
 
+    /* ============================================
+       TAB CONTENT
+    ============================================ */
     .tab-content {
         display: none;
         padding: 30px;
+        background: var(--card-bg);
+        transition: all 0.3s ease;
     }
 
     .tab-content.active {
@@ -132,6 +175,9 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
+    /* ============================================
+       FORM GROUPS
+    ============================================ */
     .form-group {
         margin-bottom: 20px;
     }
@@ -140,34 +186,50 @@
         display: block;
         margin-bottom: 8px;
         font-weight: 500;
-        color: #333;
+        color: var(--text-2);
         font-size: 14px;
     }
 
-    .form-group input, .form-group textarea {
+    .form-group input,
+    .form-group textarea {
         width: 100%;
         padding: 12px 15px;
-        border: 2px solid #e0e0e0;
+        border: 2px solid var(--border);
         border-radius: 12px;
         font-size: 14px;
         transition: all 0.3s;
         font-family: inherit;
+        background: var(--input-bg);
+        color: var(--text-1);
     }
 
-    .form-group input:focus, .form-group textarea:focus {
+    .form-group input:focus,
+    .form-group textarea:focus {
         outline: none;
-        border-color: #14532d;
-        box-shadow: 0 0 0 3px rgba(20,83,45,0.1);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-glow);
     }
 
+    .form-group input[readonly],
+    .form-group input:disabled {
+        background: var(--surface-2);
+        cursor: not-allowed;
+    }
+
+    /* ============================================
+       FORM ROW
+    ============================================ */
     .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 20px;
     }
 
+    /* ============================================
+       SUBMIT BUTTON
+    ============================================ */
     .btn-submit {
-        background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
         color: white;
         border: none;
         padding: 12px 30px;
@@ -183,9 +245,12 @@
         transform: translateY(-2px);
     }
 
+    /* ============================================
+       INFO BOX
+    ============================================ */
     .info-box {
-        background: #f0fdf4;
-        border-right: 4px solid #22c55e;
+        background: var(--success-bg);
+        border-right: 4px solid var(--success);
         padding: 15px;
         border-radius: 12px;
         margin-bottom: 20px;
@@ -194,13 +259,40 @@
         gap: 10px;
     }
 
-    .info-icon { font-size: 24px; }
-    .info-text { flex: 1; font-size: 14px; color: #166534; }
-    .info-box-warning { background: #fef3c7; border-right-color: #f59e0b; }
-    .info-text-warning { color: #92400e; }
-    .password-requirements { font-size: 12px; color: #666; margin-top: 5px; }
+    .info-icon {
+        font-size: 24px;
+    }
 
-    /* مودال برش عکس */
+    .info-text {
+        flex: 1;
+        font-size: 14px;
+        color: var(--success);
+    }
+
+    /* ============================================
+       WARNING INFO BOX
+    ============================================ */
+    .info-box-warning {
+        background: var(--warning-bg);
+        border-right-color: var(--warning);
+    }
+
+    .info-text-warning {
+        color: var(--warning);
+    }
+
+    /* ============================================
+       REQUIREMENTS
+    ============================================ */
+    .password-requirements {
+        font-size: 12px;
+        color: var(--text-3);
+        margin-top: 5px;
+    }
+
+    /* ============================================
+       CROP MODAL
+    ============================================ */
     .crop-modal {
         display: none;
         position: fixed;
@@ -214,27 +306,47 @@
         justify-content: center;
         backdrop-filter: blur(4px);
     }
+
     .crop-modal-content {
-        background: white;
+        background: var(--card-bg);
         border-radius: 24px;
         padding: 24px;
         max-width: 90%;
         max-height: 90%;
         overflow: auto;
+        box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+        animation: modalFadeIn 0.3s ease;
+        border: 1px solid var(--border);
     }
+
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .crop-modal h3 {
+        margin-bottom: 20px;
+        font-size: 20px;
+        color: var(--text-1);
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 12px;
+    }
+
     .crop-image-container {
         margin-bottom: 20px;
         text-align: center;
-        background: #f1f5f9;
+        background: var(--surface-2);
         border-radius: 12px;
         padding: 10px;
     }
+
     .crop-image-container img {
         max-width: 100%;
         max-height: 55vh;
         display: block;
         margin: 0 auto;
     }
+
     .crop-buttons {
         display: flex;
         gap: 10px;
@@ -242,6 +354,7 @@
         flex-wrap: wrap;
         margin-bottom: 15px;
     }
+
     .crop-btn {
         padding: 8px 18px;
         border: none;
@@ -249,17 +362,47 @@
         font-size: 13px;
         font-weight: 500;
         cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
     }
-    .crop-btn-primary { background: #2563eb; color: white; }
-    .crop-btn-secondary { background: #6b7280; color: white; }
-    .crop-btn-success { background: #10b981; color: white; }
-    .crop-btn-danger { background: #ef4444; color: white; }
 
+    .crop-btn-primary { background: #2563eb; color: white; }
+    .crop-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .crop-btn-secondary { background: #6b7280; color: white; }
+    .crop-btn-secondary:hover { background: #4b5563; }
+    .crop-btn-success { background: #10b981; color: white; }
+    .crop-btn-success:hover { background: #059669; }
+    .crop-btn-danger { background: #ef4444; color: white; }
+    .crop-btn-danger:hover { background: #dc2626; }
+
+    .crop-note {
+        font-size: 12px;
+        color: var(--text-3);
+        text-align: center;
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
     @media (max-width: 768px) {
-        .form-row { grid-template-columns: 1fr; gap: 0; }
-        .profile-wrapper { padding: 10px; }
-        .tab-content { padding: 20px; }
-        .profile-avatar, .avatar-placeholder { width: 90px; height: 90px; }
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .profile-wrapper {
+            padding: 10px;
+        }
+        .tab-content {
+            padding: 20px;
+        }
+        .profile-avatar,
+        .avatar-placeholder {
+            width: 90px;
+            height: 90px;
+        }
     }
 </style>
 
@@ -285,6 +428,7 @@
             <button class="tab-btn" onclick="switchTab('password')">🔒 تغییر رمز عبور</button>
         </div>
 
+        <!-- تب اطلاعات شخصی -->
         <div id="info-tab" class="tab-content active">
             <form method="post" enctype="multipart/form-data" id="profileForm">
                 {% csrf_token %}
@@ -292,6 +436,7 @@
                     <div class="info-icon">ℹ️</div>
                     <div class="info-text">اطلاعات پایه خود را بروزرسانی کنید. نام کاربری قابل تغییر نیست.</div>
                 </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>نام</label>
@@ -302,47 +447,74 @@
                         <input type="text" name="last_name" value="{{ user.last_name }}">
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label>نام کاربری</label>
                     <input type="text" value="{{ user.username }}" readonly disabled>
+                    <small style="color:var(--text-3); display:block; margin-top:5px;">نام کاربری قابل تغییر نیست</small>
                 </div>
+
                 <div class="form-group">
                     <label>ایمیل</label>
                     <input type="email" name="email" value="{{ user.email }}">
                 </div>
+
                 <div class="form-group">
                     <label>تلفن همراه</label>
                     <input type="tel" name="phone" value="{{ profile.phone }}">
                 </div>
+
                 <div class="form-group">
                     <label>بیوگرافی</label>
                     <textarea name="bio" rows="4">{{ profile.bio }}</textarea>
                 </div>
+
+                <div class="form-group">
+                    <label>نقش کاربری</label>
+                    <input type="text" value="کارشناس" readonly disabled>
+                </div>
+
+                <div class="form-group">
+                    <label>تاریخ عضویت</label>
+                    <input type="text" value="{{ user.date_joined|date:'Y/m/d H:i' }}" readonly disabled>
+                </div>
+
                 <button type="submit" class="btn-submit">💾 ذخیره تغییرات</button>
             </form>
         </div>
 
+        <!-- تب تغییر رمز عبور -->
         <div id="password-tab" class="tab-content">
             <form method="post">
                 {% csrf_token %}
                 <input type="hidden" name="change_password" value="1">
+
                 <div class="info-box info-box-warning">
                     <div class="info-icon">⚠️</div>
-                    <div class="info-text info-text-warning">برای تغییر رمز عبور، رمز فعلی را وارد کنید.</div>
+                    <div class="info-text info-text-warning">
+                        برای تغییر رمز عبور، رمز فعلی را وارد کنید. رمز جدید باید حداقل ۶ کاراکتر باشد.
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <label>رمز عبور فعلی</label>
-                    <input type="password" name="old_password" required>
+                    <input type="password" name="old_password" required placeholder="رمز عبور فعلی را وارد کنید">
                 </div>
+
                 <div class="form-group">
                     <label>رمز عبور جدید</label>
-                    <input type="password" name="new_password1" required>
-                    <div class="password-requirements">• حداقل ۶ کاراکتر</div>
+                    <input type="password" name="new_password1" required placeholder="حداقل ۶ کاراکتر">
+                    <div class="password-requirements">
+                        • حداقل ۶ کاراکتر<br>
+                        • ترکیب حروف و اعداد پیشنهاد می‌شود
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <label>تکرار رمز عبور جدید</label>
-                    <input type="password" name="new_password2" required>
+                    <input type="password" name="new_password2" required placeholder="دوباره وارد کنید">
                 </div>
+
                 <button type="submit" class="btn-submit">🔄 تغییر رمز عبور</button>
             </form>
         </div>
@@ -365,8 +537,8 @@
             <button type="button" class="crop-btn crop-btn-success" id="cropConfirmBtn">✅ تأیید و برش</button>
             <button type="button" class="crop-btn crop-btn-secondary" id="cropCancelBtn">❌ انصراف</button>
         </div>
-        <div class="crop-note" style="font-size:12px; color:#666; text-align:center;">
-            💡 عکس را بکشید و جابجا کنید. با زوم و چرخش تنظیم کنید.
+        <div class="crop-note">
+            💡 نکته: عکس را بکشید و جابجا کنید. با زوم و چرخش تنظیم کنید.
         </div>
     </div>
 </div>
@@ -379,6 +551,7 @@
         const infoTab = document.getElementById('info-tab');
         const passwordTab = document.getElementById('password-tab');
         const btns = document.querySelectorAll('.tab-btn');
+
         if (tab === 'info') {
             btns[0].classList.add('active');
             btns[1].classList.remove('active');
@@ -392,7 +565,6 @@
         }
     }
 
-    // نمایش نوتیفیکیشن
     function showToast(message, type) {
         const toastContainer = document.getElementById('toastContainer');
         if (!toastContainer) return;
@@ -466,7 +638,10 @@
 
     document.getElementById('cropCancelBtn')?.addEventListener('click', () => {
         document.getElementById('cropModal').style.display = 'none';
-        if (cropper) { cropper.destroy(); cropper = null; }
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
     });
 
     document.getElementById('cropConfirmBtn')?.addEventListener('click', () => {
@@ -477,44 +652,35 @@
             const formData = new FormData();
             formData.append('avatar', blob, 'avatar.jpg');
 
-            fetch(window.location.href, {
+            fetch("{% url 'core_admin:expert_upload_avatar' %}", {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'X-CSRFToken': '{{ csrf_token|escapejs }}'
                 }
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('خطا در ارتباط با سرور');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // به‌روزرسانی عکس در پروفایل
                     const avatarImg = document.getElementById('currentAvatar');
                     if (avatarImg) {
                         avatarImg.src = data.url + '?t=' + new Date().getTime();
                     } else {
                         const avatarContainer = document.getElementById('avatarClick');
-                        const placeholder = document.getElementById('avatarPlaceholder');
-                        if (placeholder) {
-                            avatarContainer.innerHTML = `<img src="${data.url}?t=${new Date().getTime()}" class="profile-avatar" alt="avatar" id="currentAvatar"><div class="edit-overlay">📷 ویرایش</div>`;
-                        }
+                        avatarContainer.innerHTML = `<img src="${data.url}?t=${new Date().getTime()}" class="profile-avatar" alt="avatar" id="currentAvatar"><div class="edit-overlay">📷 ویرایش</div>`;
                     }
 
-                    // به‌روزرسانی عکس در هدر
                     const headerAvatar = document.querySelector('.expert-avatar');
                     if (headerAvatar) {
                         headerAvatar.innerHTML = `<img src="${data.url}?t=${new Date().getTime()}" alt="avatar">`;
                     }
 
                     showToast('عکس پروفایل با موفقیت بروزرسانی شد', 'success');
-
-                    // بستن مودال
                     document.getElementById('cropModal').style.display = 'none';
-                    if (cropper) { cropper.destroy(); cropper = null; }
+                    if (cropper) {
+                        cropper.destroy();
+                        cropper = null;
+                    }
                 } else {
                     showToast('خطا: ' + (data.error || 'مشخص نیست'), 'error');
                 }

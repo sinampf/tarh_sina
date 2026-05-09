@@ -3,7 +3,7 @@
 
 <style>
     .form-container {
-        max-width: 1000px;
+        max-width: 1400px;
         margin: 0 auto;
     }
     .form-card {
@@ -81,6 +81,10 @@
         border-color: #1e3c72;
         box-shadow: 0 0 0 3px rgba(30,60,114,0.1);
     }
+    .form-control[readonly] {
+        background: #f3f4f6;
+        cursor: not-allowed;
+    }
     .row-2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -127,6 +131,12 @@
         border-radius: 10px;
         margin-top: 10px;
     }
+    .help-text {
+        font-size: 11px;
+        color: #6b7280;
+        margin-top: 4px;
+        display: block;
+    }
     @media (max-width: 768px) {
         .row-2, .row-3, .row-4 {
             grid-template-columns: 1fr;
@@ -153,39 +163,33 @@
             </div>
         </div>
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" id="editForm">
             {% csrf_token %}
 
             {% if plan.plan_type == 'tafsili' %}
-                <!-- فرم طرح تفصیلی با تمام فیلدها -->
-
+                <!-- ==================== اطلاعات پایه ==================== -->
                 <div class="form-section">
                     <div class="section-title">📋 اطلاعات پایه</div>
                     <div class="row-2">
                         <div class="form-group">
-                            <label>عنوان پروژه <span class="required-star">*</span></label>
-                            <input type="text" name="title" class="form-control" value="{{ plan.title }}" required>
+                            <label>کد شناسه قطعه <span class="required-star">*</span></label>
+                            <input type="text" name="parcel_code" id="parcel_code" class="form-control" value="{{ plan.tafsili_plan.parcel_code }}" required>
+                            <small class="help-text">کد منحصر به فرد قطعه/پلیگون که قبل از برداشت در نقشه GIS تعیین می‌گردد</small>
                         </div>
                         <div class="form-group">
-                            <label>کد منطقه <span class="required-star">*</span></label>
-                            <input type="text" name="zone_code" class="form-control" value="{{ plan.tafsili_plan.zone_code }}" required>
+                            <label>عنوان پروژه <span class="required-star">*</span></label>
+                            <input type="text" name="title" class="form-control" value="{{ plan.title }}" required>
                         </div>
                     </div>
                     <div class="row-2">
                         <div class="form-group">
-                            <label>نوع کاربری اراضی <span class="required-star">*</span></label>
-                            <select name="land_use_type" class="form-control" required>
-                                <option value="">انتخاب کنید...</option>
-                                <option value="مسکونی" {% if plan.tafsili_plan.land_use_type == 'مسکونی' %}selected{% endif %}>مسکونی</option>
-                                <option value="تجاری" {% if plan.tafsili_plan.land_use_type == 'تجاری' %}selected{% endif %}>تجاری</option>
-                                <option value="کشاورزی" {% if plan.tafsili_plan.land_use_type == 'کشاورزی' %}selected{% endif %}>کشاورزی</option>
-                                <option value="صنعتی" {% if plan.tafsili_plan.land_use_type == 'صنعتی' %}selected{% endif %}>صنعتی</option>
-                                <option value="خدماتی" {% if plan.tafsili_plan.land_use_type == 'خدماتی' %}selected{% endif %}>خدماتی</option>
-                            </select>
+                            <label>کد منطقه</label>
+                            <input type="text" name="zone_code" class="form-control" value="{{ plan.tafsili_plan.zone_code }}">
                         </div>
                         <div class="form-group">
-                            <label>نام محله</label>
-                            <input type="text" name="neighborhood" class="form-control" value="{{ plan.tafsili_plan.neighborhood }}">
+                            <label>نام محله <span class="required-star">*</span></label>
+                            <input type="text" name="neighborhood" id="neighborhood" class="form-control" value="{{ plan.tafsili_plan.neighborhood }}" required>
+                            <small class="help-text">مثال: ونک، گلشهر، سعادت آباد، فرمانیه، الهیه</small>
                         </div>
                     </div>
                     <div class="form-group">
@@ -194,75 +198,75 @@
                     </div>
                 </div>
 
+                <!-- ==================== اطلاعات شهری ==================== -->
                 <div class="form-section">
-                    <div class="section-title">🏙️ اطلاعات شهری</div>
-                    <div class="row-3">
+                    <div class="section-title">🏙️ اطلاعات شهری <small style="font-size:11px;">صرفاً برای معابر</small></div>
+                    <div class="row-2">
                         <div class="form-group">
                             <label>نام معبر</label>
                             <input type="text" name="street_name" class="form-control" value="{{ plan.tafsili_plan.street_name }}">
                         </div>
                         <div class="form-group">
                             <label>عرض معبر (متر)</label>
-                            <input type="number" step="0.1" name="street_width" class="form-control" value="{{ plan.tafsili_plan.street_width }}">
+                            <input type="number" step="0.5" name="street_width" class="form-control" value="{{ plan.tafsili_plan.street_width }}">
                         </div>
+                    </div>
+                    <div class="row-2">
                         <div class="form-group">
-                            <label>نوع مالکیت</label>
+                            <label>مالکیت</label>
                             <select name="ownership_type" class="form-control">
-                                <option value="">انتخاب کنید...</option>
+                                <option value="">انتخاب...</option>
                                 <option value="خصوصی" {% if plan.tafsili_plan.ownership_type == 'خصوصی' %}selected{% endif %}>خصوصی</option>
                                 <option value="عمومی" {% if plan.tafsili_plan.ownership_type == 'عمومی' %}selected{% endif %}>عمومی</option>
                                 <option value="وقف" {% if plan.tafsili_plan.ownership_type == 'وقف' %}selected{% endif %}>وقف</option>
                                 <option value="دولتی" {% if plan.tafsili_plan.ownership_type == 'دولتی' %}selected{% endif %}>دولتی</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label>مساحت عرصه (متر مربع)</label>
+                            <input type="number" step="0.01" name="land_area" id="land_area" class="form-control" value="{{ plan.tafsili_plan.land_area }}">
+                            <small class="help-text">از نقشه پایه موجود استخراج گردد</small>
+                        </div>
                     </div>
                 </div>
 
+                <!-- ==================== اطلاعات ساختمانی ==================== -->
                 <div class="form-section">
                     <div class="section-title">🏗️ اطلاعات ساختمانی</div>
                     <div class="row-3">
                         <div class="form-group">
-                            <label>تراکم ساختمانی</label>
-                            <input type="number" step="0.1" name="density" class="form-control" value="{{ plan.tafsili_plan.density }}">
-                        </div>
-                        <div class="form-group">
-                            <label>حداکثر طبقات</label>
-                            <input type="number" name="floor_limit" class="form-control" value="{{ plan.tafsili_plan.floor_limit }}">
-                        </div>
-                        <div class="form-group">
                             <label>مساحت اعیانی (متر مربع)</label>
-                            <input type="number" step="0.01" name="built_area" class="form-control" value="{{ plan.tafsili_plan.built_area }}">
+                            <input type="number" step="0.01" name="built_area" id="built_area" class="form-control" value="{{ plan.tafsili_plan.built_area }}">
+                            <small class="help-text">از نقشه پایه موجود استخراج گردد</small>
+                        </div>
+                        <div class="form-group">
+                            <label>سطح اشغال (%)</label>
+                            <input type="number" step="0.01" name="occupancy_rate" id="occupancy_rate" class="form-control" readonly placeholder="به صورت خودکار محاسبه می‌شود" value="{{ plan.tafsili_plan.occupancy_rate }}">
+                            <small class="help-text">(مساحت اعیانی ÷ مساحت عرصه) × 100 - به صورت خودکار محاسبه می‌شود</small>
+                        </div>
+                        <div class="form-group">
+                            <label>تعداد طبقات</label>
+                            <input type="number" name="floor_count" id="floor_count" class="form-control" value="{{ plan.tafsili_plan.floor_count }}">
                         </div>
                     </div>
                     <div class="row-3">
                         <div class="form-group">
+                            <label>تراکم ساختمانی</label>
+                            <input type="number" step="0.01" name="density" id="density" class="form-control" readonly placeholder="به صورت خودکار محاسبه می‌شود" value="{{ plan.tafsili_plan.density }}">
+                            <small class="help-text">سطح اشغال × تعداد طبقات - به صورت خودکار محاسبه می‌شود</small>
+                        </div>
+                        <div class="form-group">
+                            <label>حداکثر طبقات مجاز</label>
+                            <input type="number" name="floor_limit" class="form-control" value="{{ plan.tafsili_plan.floor_limit }}">
+                        </div>
+                        <div class="form-group">
                             <label>قدمت بنا</label>
                             <select name="building_age" class="form-control">
-                                <option value="">انتخاب کنید...</option>
-                                <option value="1_10" {% if plan.tafsili_plan.building_age == '1_10' %}selected{% endif %}>1-10 سال</option>
-                                <option value="10_20" {% if plan.tafsili_plan.building_age == '10_20' %}selected{% endif %}>10-20 سال</option>
-                                <option value="20_30" {% if plan.tafsili_plan.building_age == '20_30' %}selected{% endif %}>20-30 سال</option>
+                                <option value="">انتخاب...</option>
+                                <option value="1_10" {% if plan.tafsili_plan.building_age == '1_10' %}selected{% endif %}>1 تا 10 سال</option>
+                                <option value="10_20" {% if plan.tafsili_plan.building_age == '10_20' %}selected{% endif %}>10 تا 20 سال</option>
+                                <option value="20_30" {% if plan.tafsili_plan.building_age == '20_30' %}selected{% endif %}>20 تا 30 سال</option>
                                 <option value="30+" {% if plan.tafsili_plan.building_age == '30+' %}selected{% endif %}>بیش از 30 سال</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>نوع نما</label>
-                            <select name="facade_type" class="form-control">
-                                <option value="">انتخاب کنید...</option>
-                                <option value="سنگی" {% if plan.tafsili_plan.facade_type == 'سنگی' %}selected{% endif %}>سنگی</option>
-                                <option value="آجری" {% if plan.tafsili_plan.facade_type == 'آجری' %}selected{% endif %}>آجری</option>
-                                <option value="سیمانی" {% if plan.tafsili_plan.facade_type == 'سیمانی' %}selected{% endif %}>سیمانی</option>
-                                <option value="شیشه‌ای" {% if plan.tafsili_plan.facade_type == 'شیشه‌ای' %}selected{% endif %}>شیشه‌ای</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>مصالح ساختمانی</label>
-                            <select name="material_type" class="form-control">
-                                <option value="">انتخاب کنید...</option>
-                                <option value="بتنی" {% if plan.tafsili_plan.material_type == 'بتنی' %}selected{% endif %}>بتنی</option>
-                                <option value="اسکلت فلزی" {% if plan.tafsili_plan.material_type == 'اسکلت فلزی' %}selected{% endif %}>اسکلت فلزی</option>
-                                <option value="آجر و آهن" {% if plan.tafsili_plan.material_type == 'آجر و آهن' %}selected{% endif %}>آجر و آهن</option>
-                                <option value="خشتی" {% if plan.tafsili_plan.material_type == 'خشتی' %}selected{% endif %}>خشتی</option>
                             </select>
                         </div>
                     </div>
@@ -270,17 +274,46 @@
                         <div class="form-group">
                             <label>کیفیت ابنیه</label>
                             <select name="building_quality" class="form-control">
-                                <option value="">انتخاب کنید...</option>
+                                <option value="">انتخاب...</option>
                                 <option value="نوساز" {% if plan.tafsili_plan.building_quality == 'نوساز' %}selected{% endif %}>نوساز</option>
                                 <option value="قابل نگهداری" {% if plan.tafsili_plan.building_quality == 'قابل نگهداری' %}selected{% endif %}>قابل نگهداری</option>
                                 <option value="تعمیری" {% if plan.tafsili_plan.building_quality == 'تعمیری' %}selected{% endif %}>تعمیری</option>
                                 <option value="تخریبی" {% if plan.tafsili_plan.building_quality == 'تخریبی' %}selected{% endif %}>تخریبی</option>
+                                <option value="در حال ساخت" {% if plan.tafsili_plan.building_quality == 'در حال ساخت' %}selected{% endif %}>در حال ساخت</option>
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>مصالح ساختمانی</label>
+                            <select name="material_type" class="form-control">
+                                <option value="">انتخاب...</option>
+                                <option value="بتنی" {% if plan.tafsili_plan.material_type == 'بتنی' %}selected{% endif %}>بتنی</option>
+                                <option value="اسکلت فلزی" {% if plan.tafsili_plan.material_type == 'اسکلت فلزی' %}selected{% endif %}>اسکلت فلزی</option>
+                                <option value="آجر و آهن" {% if plan.tafsili_plan.material_type == 'آجر و آهن' %}selected{% endif %}>آجر و آهن</option>
+                                <option value="خشتی" {% if plan.tafsili_plan.material_type == 'خشتی' %}selected{% endif %}>خشتی</option>
+                                <option value="چوبی" {% if plan.tafsili_plan.material_type == 'چوبی' %}selected{% endif %}>چوبی</option>
+                                <option value="سنگی" {% if plan.tafsili_plan.material_type == 'سنگی' %}selected{% endif %}>سنگی</option>
+                                <option value="بلوک سیمانی" {% if plan.tafsili_plan.material_type == 'بلوک سیمانی' %}selected{% endif %}>بلوک سیمانی</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>نما</label>
+                            <select name="facade_type" class="form-control">
+                                <option value="">انتخاب...</option>
+                                <option value="سنگی" {% if plan.tafsili_plan.facade_type == 'سنگی' %}selected{% endif %}>سنگی</option>
+                                <option value="آجری" {% if plan.tafsili_plan.facade_type == 'آجری' %}selected{% endif %}>آجری</option>
+                                <option value="سیمانی" {% if plan.tafsili_plan.facade_type == 'سیمانی' %}selected{% endif %}>سیمانی</option>
+                                <option value="کامپوزیت" {% if plan.tafsili_plan.facade_type == 'کامپوزیت' %}selected{% endif %}>کامپوزیت</option>
+                                <option value="شیشه" {% if plan.tafsili_plan.facade_type == 'شیشه' %}selected{% endif %}>شیشه</option>
+                                <option value="فاقد نما" {% if plan.tafsili_plan.facade_type == 'فاقد نما' %}selected{% endif %}>فاقد نما</option>
+                                <option value="سایر" {% if plan.tafsili_plan.facade_type == 'سایر' %}selected{% endif %}>سایر</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row-3">
+                        <div class="form-group">
                             <label>سطح عملکردی</label>
                             <select name="functional_level" class="form-control">
-                                <option value="">انتخاب کنید...</option>
+                                <option value="">انتخاب...</option>
                                 <option value="محلی" {% if plan.tafsili_plan.functional_level == 'محلی' %}selected{% endif %}>محلی</option>
                                 <option value="ناحیه" {% if plan.tafsili_plan.functional_level == 'ناحیه' %}selected{% endif %}>ناحیه</option>
                                 <option value="منطقه" {% if plan.tafsili_plan.functional_level == 'منطقه' %}selected{% endif %}>منطقه</option>
@@ -288,58 +321,135 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>کد پلاک</label>
-                            <input type="text" name="parcel_code" class="form-control" value="{{ plan.tafsili_plan.parcel_code }}">
-                        </div>
-                    </div>
-                    <div class="row-2">
-                        <div class="form-group">
-                            <label>مساحت عرصه (متر مربع)</label>
-                            <input type="number" step="0.01" name="land_area" class="form-control" value="{{ plan.tafsili_plan.land_area }}">
-                        </div>
-                        <div class="form-group">
-                            <label>کد پلاک</label>
-                            <input type="text" name="parcel_code" class="form-control" value="{{ plan.tafsili_plan.parcel_code }}">
+                            <label>وضعیت</label>
+                            <select name="building_status" class="form-control">
+                                <option value="">انتخاب...</option>
+                                <option value="در حال ساخت" {% if plan.tafsili_plan.building_status == 'در حال ساخت' %}selected{% endif %}>در حال ساخت</option>
+                                <option value="تخریبی" {% if plan.tafsili_plan.building_status == 'تخریبی' %}selected{% endif %}>تخریبی</option>
+                                <option value="تکمیل شده" {% if plan.tafsili_plan.building_status == 'تکمیل شده' %}selected{% endif %}>تکمیل شده</option>
+                            </select>
                         </div>
                     </div>
                 </div>
 
+                <!-- ==================== اطلاعات کاربری ==================== -->
                 <div class="form-section">
                     <div class="section-title">🏪 اطلاعات کاربری</div>
                     <div class="row-3">
                         <div class="form-group">
                             <label>کاربری طبقات بالای همکف</label>
                             <select name="upper_floor_use" class="form-control">
-                                <option value="">انتخاب کنید...</option>
+                                <option value="">انتخاب...</option>
                                 <option value="مسکونی" {% if plan.tafsili_plan.upper_floor_use == 'مسکونی' %}selected{% endif %}>مسکونی</option>
                                 <option value="تجاری" {% if plan.tafsili_plan.upper_floor_use == 'تجاری' %}selected{% endif %}>تجاری</option>
-                                <option value="اداری" {% if plan.tafsili_plan.upper_floor_use == 'اداری' %}selected{% endif %}>اداری</option>
                                 <option value="آموزشی" {% if plan.tafsili_plan.upper_floor_use == 'آموزشی' %}selected{% endif %}>آموزشی</option>
+                                <option value="فرهنگی" {% if plan.tafsili_plan.upper_floor_use == 'فرهنگی' %}selected{% endif %}>فرهنگی</option>
+                                <option value="فرهنگی-هنری" {% if plan.tafsili_plan.upper_floor_use == 'فرهنگی-هنری' %}selected{% endif %}>فرهنگی-هنری</option>
+                                <option value="مذهبی" {% if plan.tafsili_plan.upper_floor_use == 'مذهبی' %}selected{% endif %}>مذهبی</option>
+                                <option value="درمانی" {% if plan.tafsili_plan.upper_floor_use == 'درمانی' %}selected{% endif %}>درمانی</option>
+                                <option value="بهداشتی" {% if plan.tafsili_plan.upper_floor_use == 'بهداشتی' %}selected{% endif %}>بهداشتی</option>
+                                <option value="آموزش عالی" {% if plan.tafsili_plan.upper_floor_use == 'آموزش عالی' %}selected{% endif %}>آموزش عالی</option>
+                                <option value="اداری" {% if plan.tafsili_plan.upper_floor_use == 'اداری' %}selected{% endif %}>اداری</option>
+                                <option value="انتظامی" {% if plan.tafsili_plan.upper_floor_use == 'انتظامی' %}selected{% endif %}>انتظامی</option>
+                                <option value="نظامی" {% if plan.tafsili_plan.upper_floor_use == 'نظامی' %}selected{% endif %}>نظامی</option>
+                                <option value="صنعتی" {% if plan.tafsili_plan.upper_floor_use == 'صنعتی' %}selected{% endif %}>صنعتی</option>
+                                <option value="کارگاهی" {% if plan.tafsili_plan.upper_floor_use == 'کارگاهی' %}selected{% endif %}>کارگاهی</option>
+                                <option value="انبار" {% if plan.tafsili_plan.upper_floor_use == 'انبار' %}selected{% endif %}>انبار</option>
+                                <option value="پذیرایی" {% if plan.tafsili_plan.upper_floor_use == 'پذیرایی' %}selected{% endif %}>پذیرایی</option>
+                                <option value="گردشگری" {% if plan.tafsili_plan.upper_floor_use == 'گردشگری' %}selected{% endif %}>گردشگری</option>
+                                <option value="ورزشی" {% if plan.tafsili_plan.upper_floor_use == 'ورزشی' %}selected{% endif %}>ورزشی</option>
+                                <option value="تاسیسات شهری" {% if plan.tafsili_plan.upper_floor_use == 'تاسیسات شهری' %}selected{% endif %}>تاسیسات شهری</option>
+                                <option value="تجهیزات شهری" {% if plan.tafsili_plan.upper_floor_use == 'تجهیزات شهری' %}selected{% endif %}>تجهیزات شهری</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>کاربری همکف</label>
                             <select name="ground_floor_use" class="form-control">
-                                <option value="">انتخاب کنید...</option>
+                                <option value="">انتخاب...</option>
                                 <option value="مسکونی" {% if plan.tafsili_plan.ground_floor_use == 'مسکونی' %}selected{% endif %}>مسکونی</option>
                                 <option value="تجاری" {% if plan.tafsili_plan.ground_floor_use == 'تجاری' %}selected{% endif %}>تجاری</option>
-                                <option value="تجاری-خدماتی" {% if plan.tafsili_plan.ground_floor_use == 'تجاری-خدماتی' %}selected{% endif %}>تجاری-خدماتی</option>
+                                <option value="آموزشی" {% if plan.tafsili_plan.ground_floor_use == 'آموزشی' %}selected{% endif %}>آموزشی</option>
+                                <option value="فرهنگی" {% if plan.tafsili_plan.ground_floor_use == 'فرهنگی' %}selected{% endif %}>فرهنگی</option>
+                                <option value="مذهبی" {% if plan.tafsili_plan.ground_floor_use == 'مذهبی' %}selected{% endif %}>مذهبی</option>
+                                <option value="درمانی" {% if plan.tafsili_plan.ground_floor_use == 'درمانی' %}selected{% endif %}>درمانی</option>
+                                <option value="بهداشتی" {% if plan.tafsili_plan.ground_floor_use == 'بهداشتی' %}selected{% endif %}>بهداشتی</option>
+                                <option value="آموزش عالی" {% if plan.tafsili_plan.ground_floor_use == 'آموزش عالی' %}selected{% endif %}>آموزش عالی</option>
+                                <option value="اداری" {% if plan.tafsili_plan.ground_floor_use == 'اداری' %}selected{% endif %}>اداری</option>
+                                <option value="انتظامی" {% if plan.tafsili_plan.ground_floor_use == 'انتظامی' %}selected{% endif %}>انتظامی</option>
+                                <option value="صنعتی" {% if plan.tafsili_plan.ground_floor_use == 'صنعتی' %}selected{% endif %}>صنعتی</option>
+                                <option value="کارگاهی" {% if plan.tafsili_plan.ground_floor_use == 'کارگاهی' %}selected{% endif %}>کارگاهی</option>
+                                <option value="انبار" {% if plan.tafsili_plan.ground_floor_use == 'انبار' %}selected{% endif %}>انبار</option>
                                 <option value="پذیرایی" {% if plan.tafsili_plan.ground_floor_use == 'پذیرایی' %}selected{% endif %}>پذیرایی</option>
+                                <option value="گردشگری" {% if plan.tafsili_plan.ground_floor_use == 'گردشگری' %}selected{% endif %}>گردشگری</option>
+                                <option value="ورزشی" {% if plan.tafsili_plan.ground_floor_use == 'ورزشی' %}selected{% endif %}>ورزشی</option>
+                                <option value="تاسیسات شهری" {% if plan.tafsili_plan.ground_floor_use == 'تاسیسات شهری' %}selected{% endif %}>تاسیسات شهری</option>
+                                <option value="تجهیزات شهری" {% if plan.tafsili_plan.ground_floor_use == 'تجهیزات شهری' %}selected{% endif %}>تجهیزات شهری</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>انواع کاربری (غالب)</label>
                             <select name="dominant_use" class="form-control">
-                                <option value="">انتخاب کنید...</option>
+                                <option value="">انتخاب...</option>
                                 <option value="مسکونی" {% if plan.tafsili_plan.dominant_use == 'مسکونی' %}selected{% endif %}>مسکونی</option>
-                                <option value="تجاری" {% if plan.tafsili_plan.dominant_use == 'تجاری' %}selected{% endif %}>تجاری</option>
                                 <option value="تجاری-خدماتی" {% if plan.tafsili_plan.dominant_use == 'تجاری-خدماتی' %}selected{% endif %}>تجاری-خدماتی</option>
                                 <option value="آموزشی" {% if plan.tafsili_plan.dominant_use == 'آموزشی' %}selected{% endif %}>آموزشی</option>
+                                <option value="فرهنگی-هنری" {% if plan.tafsili_plan.dominant_use == 'فرهنگی-هنری' %}selected{% endif %}>فرهنگی-هنری</option>
+                                <option value="مذهبی" {% if plan.tafsili_plan.dominant_use == 'مذهبی' %}selected{% endif %}>مذهبی</option>
+                                <option value="درمانی" {% if plan.tafsili_plan.dominant_use == 'درمانی' %}selected{% endif %}>درمانی</option>
+                                <option value="بهداشتی" {% if plan.tafsili_plan.dominant_use == 'بهداشتی' %}selected{% endif %}>بهداشتی</option>
+                                <option value="آموزش عالی" {% if plan.tafsili_plan.dominant_use == 'آموزش عالی' %}selected{% endif %}>آموزش عالی</option>
+                                <option value="اداری" {% if plan.tafsili_plan.dominant_use == 'اداری' %}selected{% endif %}>اداری</option>
+                                <option value="انتظامی" {% if plan.tafsili_plan.dominant_use == 'انتظامی' %}selected{% endif %}>انتظامی</option>
+                                <option value="نظامی" {% if plan.tafsili_plan.dominant_use == 'نظامی' %}selected{% endif %}>نظامی</option>
+                                <option value="فضای سبز عمومی" {% if plan.tafsili_plan.dominant_use == 'فضای سبز عمومی' %}selected{% endif %}>فضای سبز عمومی</option>
+                                <option value="رفیوژها" {% if plan.tafsili_plan.dominant_use == 'رفیوژها' %}selected{% endif %}>رفیوژها</option>
+                                <option value="صنعتی" {% if plan.tafsili_plan.dominant_use == 'صنعتی' %}selected{% endif %}>صنعتی</option>
+                                <option value="کارگاهی" {% if plan.tafsili_plan.dominant_use == 'کارگاهی' %}selected{% endif %}>کارگاهی</option>
+                                <option value="انبار" {% if plan.tafsili_plan.dominant_use == 'انبار' %}selected{% endif %}>انبار</option>
+                                <option value="پایانه" {% if plan.tafsili_plan.dominant_use == 'پایانه' %}selected{% endif %}>پایانه</option>
+                                <option value="پذیرایی" {% if plan.tafsili_plan.dominant_use == 'پذیرایی' %}selected{% endif %}>پذیرایی</option>
+                                <option value="گردشگری" {% if plan.tafsili_plan.dominant_use == 'گردشگری' %}selected{% endif %}>گردشگری</option>
+                                <option value="ورزشی" {% if plan.tafsili_plan.dominant_use == 'ورزشی' %}selected{% endif %}>ورزشی</option>
+                                <option value="تاسیسات شهری" {% if plan.tafsili_plan.dominant_use == 'تاسیسات شهری' %}selected{% endif %}>تاسیسات شهری</option>
+                                <option value="تجهیزات شهری" {% if plan.tafsili_plan.dominant_use == 'تجهیزات شهری' %}selected{% endif %}>تجهیزات شهری</option>
+                                <option value="باغات" {% if plan.tafsili_plan.dominant_use == 'باغات' %}selected{% endif %}>باغات</option>
+                                <option value="بایر" {% if plan.tafsili_plan.dominant_use == 'بایر' %}selected{% endif %}>بایر</option>
+                                <option value="زراعی" {% if plan.tafsili_plan.dominant_use == 'زراعی' %}selected{% endif %}>زراعی</option>
+                                <option value="میراث تاریخی-فرهنگی" {% if plan.tafsili_plan.dominant_use == 'میراث تاریخی-فرهنگی' %}selected{% endif %}>میراث تاریخی-فرهنگی</option>
+                                <option value="حریم" {% if plan.tafsili_plan.dominant_use == 'حریم' %}selected{% endif %}>حریم</option>
+                                <option value="مختلط تجاری مسکونی" {% if plan.tafsili_plan.dominant_use == 'مختلط تجاری مسکونی' %}selected{% endif %}>مختلط تجاری مسکونی</option>
+                                <option value="معابر" {% if plan.tafsili_plan.dominant_use == 'معابر' %}selected{% endif %}>معابر</option>
+                                <option value="رودخانه" {% if plan.tafsili_plan.dominant_use == 'رودخانه' %}selected{% endif %}>رودخانه</option>
+                                <option value="مسیل" {% if plan.tafsili_plan.dominant_use == 'مسیل' %}selected{% endif %}>مسیل</option>
+                                <option value="در حال ساخت" {% if plan.tafsili_plan.dominant_use == 'در حال ساخت' %}selected{% endif %}>در حال ساخت</option>
+                                <option value="تخریبی" {% if plan.tafsili_plan.dominant_use == 'تخریبی' %}selected{% endif %}>تخریبی</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>توضیحات تکمیلی</label>
+                        <textarea name="description" rows="2" class="form-control">{{ plan.description }}</textarea>
+                    </div>
+                </div>
+
+                <!-- ==================== موقعیت مکانی ==================== -->
+                <div class="form-section">
+                    <div class="section-title">📍 موقعیت مکانی قطعه</div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>عرض جغرافیایی (Latitude) <span class="required-star">*</span></label>
+                            <input type="text" name="latitude" id="latitude" class="form-control" value="{% if plan.tafsili_plan.location %}{{ plan.tafsili_plan.location.y }}{% endif %}" required>
+                            <small class="help-text">مثال: 35.6892</small>
+                        </div>
+                        <div class="form-group">
+                            <label>طول جغرافیایی (Longitude) <span class="required-star">*</span></label>
+                            <input type="text" name="longitude" id="longitude" class="form-control" value="{% if plan.tafsili_plan.location %}{{ plan.tafsili_plan.location.x }}{% endif %}" required>
+                            <small class="help-text">مثال: 51.3890</small>
                         </div>
                     </div>
                 </div>
 
+                <!-- ==================== عکس ==================== -->
                 <div class="form-group">
                     <label>عکس طرح</label>
                     {% if plan.tafsili_plan.photo %}
@@ -347,12 +457,12 @@
                             <img src="{{ plan.tafsili_plan.photo.url }}" class="photo-preview">
                         </div>
                     {% endif %}
-                    <input type="file" name="photo" class="form-control" accept="image/*">
-                    <small class="help-text">در صورت تمایل می‌توانید عکس جدیدی جایگزین کنید</small>
+                    <input type="file" name="photo" class="form-control" accept="image/jpeg,image/jpg,image/png">
+                    <small class="help-text">فرمت‌های مجاز: jpg, jpeg, png - در صورت تمایل می‌توانید عکس جدیدی جایگزین کنید</small>
                 </div>
 
             {% elif plan.plan_type == 'jame' %}
-                <!-- فرم طرح جامع -->
+                <!-- ==================== فرم طرح جامع (بدون تغییر - حفظ گزینه‌های قبلی) ==================== -->
                 <div class="form-group">
                     <label>عنوان پروژه <span class="required-star">*</span></label>
                     <input type="text" name="title" class="form-control" value="{{ plan.title }}" required>
@@ -377,9 +487,13 @@
                     <label>مراکز خدماتی نزدیک</label>
                     <textarea name="service_centers" rows="3" class="form-control">{{ plan.jame_plan.service_centers }}</textarea>
                 </div>
+                <div class="form-group">
+                    <label>توضیحات تکمیلی</label>
+                    <textarea name="description" rows="2" class="form-control">{{ plan.description }}</textarea>
+                </div>
 
             {% elif plan.plan_type == 'momayezi' %}
-                <!-- فرم ممیزی املاک -->
+                <!-- ==================== فرم ممیزی املاک (بدون تغییر - حفظ گزینه‌های قبلی) ==================== -->
                 <div class="form-group">
                     <label>عنوان پروژه <span class="required-star">*</span></label>
                     <input type="text" name="title" class="form-control" value="{{ plan.title }}" required>
@@ -436,17 +550,60 @@
                     {% endif %}
                     <input type="file" name="attachment" class="form-control">
                 </div>
+                <div class="form-group">
+                    <label>توضیحات تکمیلی</label>
+                    <textarea name="description" rows="2" class="form-control">{{ plan.description }}</textarea>
+                </div>
             {% endif %}
 
-            <div class="form-group">
-                <label>توضیحات تکمیلی</label>
-                <textarea name="description" rows="2" class="form-control">{{ plan.description }}</textarea>
-            </div>
-            
             <button type="submit" class="btn-submit">✅ ارسال مجدد برای بررسی</button>
             <a href="{% url 'core_admin:operator_my_plans' %}" class="btn-submit btn-cancel" style="text-align:center; display:block; text-decoration:none;">↩️ بازگشت</a>
         </form>
     </div>
 </div>
+
+<script>
+    // محاسبات خودکار سطح اشغال و تراکم
+    function calculateOccupancyAndDensity() {
+        const landArea = parseFloat(document.getElementById('land_area')?.value);
+        const builtArea = parseFloat(document.getElementById('built_area')?.value);
+        const floorCount = parseFloat(document.getElementById('floor_count')?.value);
+
+        let occupancy = '';
+        let density = '';
+
+        if (!isNaN(landArea) && !isNaN(builtArea) && landArea > 0) {
+            occupancy = ((builtArea / landArea) * 100).toFixed(2);
+            const occupancyInput = document.getElementById('occupancy_rate');
+            if (occupancyInput) occupancyInput.value = occupancy;
+
+            if (!isNaN(floorCount) && floorCount > 0) {
+                density = (parseFloat(occupancy) * floorCount).toFixed(2);
+                const densityInput = document.getElementById('density');
+                if (densityInput) densityInput.value = density;
+            } else {
+                const densityInput = document.getElementById('density');
+                if (densityInput) densityInput.value = '';
+            }
+        } else {
+            const occupancyInput = document.getElementById('occupancy_rate');
+            const densityInput = document.getElementById('density');
+            if (occupancyInput) occupancyInput.value = '';
+            if (densityInput) densityInput.value = '';
+        }
+    }
+
+    // اتصال رویدادها
+    const landAreaInput = document.getElementById('land_area');
+    const builtAreaInput = document.getElementById('built_area');
+    const floorCountInput = document.getElementById('floor_count');
+
+    if (landAreaInput) landAreaInput.addEventListener('input', calculateOccupancyAndDensity);
+    if (builtAreaInput) builtAreaInput.addEventListener('input', calculateOccupancyAndDensity);
+    if (floorCountInput) floorCountInput.addEventListener('input', calculateOccupancyAndDensity);
+
+    // اجرای اولیه برای مقداردهی در صورت وجود مقادیر
+    calculateOccupancyAndDensity();
+</script>
 
 {% endblock %}

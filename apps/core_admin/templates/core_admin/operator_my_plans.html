@@ -123,7 +123,7 @@
     }
     .plan-info {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 2fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 12px;
         margin-bottom: 16px;
         padding: 12px;
@@ -140,6 +140,7 @@
     .info-value {
         color: #1e293b;
         margin-top: 4px;
+        word-break: break-word;
     }
     .expert-note {
         margin-top: 12px;
@@ -169,6 +170,32 @@
     .btn-revise:hover {
         background: #2563eb;
         transform: translateY(-1px);
+    }
+    .btn-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f59e0b;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        margin-left: 8px;
+    }
+    .btn-edit:hover {
+        background: #d97706;
+        transform: translateY(-1px);
+    }
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
     }
     .approved-badge {
         margin-top: 12px;
@@ -211,20 +238,31 @@
         border-radius: 8px;
         object-fit: cover;
     }
+    .location-coord {
+        font-family: monospace;
+        font-size: 11px;
+        background: #e2e8f0;
+        padding: 4px 8px;
+        border-radius: 12px;
+        display: inline-block;
+    }
+    [data-theme="dark"] .location-coord {
+        background: #1e2538;
+    }
     @media (max-width: 768px) {
         .stats-row {
             flex-direction: column;
         }
         .plan-info {
-            grid-template-columns: 2fr;
+            grid-template-columns: 1fr;
         }
     }
-        @media (max-width: 320px) {
-        .stats-row {
-            flex-direction: column;
-        }
+    @media (max-width: 480px) {
         .plan-info {
-            grid-template-columns: 2fr;
+            grid-template-columns: 1fr;
+        }
+        .info-item {
+            font-size: 12px;
         }
     }
 </style>
@@ -278,28 +316,98 @@
                 {% if plan.plan_type == 'tafsili' and plan.tafsili_plan %}
                 <div class="plan-info">
                     <div class="info-item">
+                        <div class="info-label">🔢 کد قطعه</div>
+                        <div class="info-value">{{ plan.tafsili_plan.parcel_code|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
                         <div class="info-label">📌 کد منطقه</div>
                         <div class="info-value">{{ plan.tafsili_plan.zone_code|default:"-" }}</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">🏷️ نوع کاربری</div>
-                        <div class="info-value">{{ plan.tafsili_plan.land_use_type|default:"-" }}</div>
+                        <div class="info-label">🏘️ نام محله</div>
+                        <div class="info-value">{{ plan.tafsili_plan.neighborhood|default:"-" }}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">📐 تراکم</div>
                         <div class="info-value">{{ plan.tafsili_plan.density|default:"-" }}</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">🏢 حداکثر طبقات</div>
+                        <div class="info-label">🏢 تعداد طبقات</div>
+                        <div class="info-value">{{ plan.tafsili_plan.floor_count|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🏢 حداکثر طبقات مجاز</div>
                         <div class="info-value">{{ plan.tafsili_plan.floor_limit|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">📊 سطح اشغال (%)</div>
+                        <div class="info-value">{{ plan.tafsili_plan.occupancy_rate|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🏗️ وضعیت ساخت</div>
+                        <div class="info-value">{{ plan.tafsili_plan.building_status|default:"-" }}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">🏙️ نام معبر</div>
                         <div class="info-value">{{ plan.tafsili_plan.street_name|default:"-" }}</div>
                     </div>
                     <div class="info-item">
+                        <div class="info-label">📏 عرض معبر (متر)</div>
+                        <div class="info-value">{{ plan.tafsili_plan.street_width|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
                         <div class="info-label">🏷️ نوع مالکیت</div>
                         <div class="info-value">{{ plan.tafsili_plan.ownership_type|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">📏 مساحت عرصه (متر مربع)</div>
+                        <div class="info-value">{{ plan.tafsili_plan.land_area|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">📐 مساحت اعیانی (متر مربع)</div>
+                        <div class="info-value">{{ plan.tafsili_plan.built_area|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">📅 قدمت بنا</div>
+                        <div class="info-value">{{ plan.tafsili_plan.building_age|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🎨 نوع نما</div>
+                        <div class="info-value">{{ plan.tafsili_plan.facade_type|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🧱 مصالح ساختمانی</div>
+                        <div class="info-value">{{ plan.tafsili_plan.material_type|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">⭐ کیفیت ابنیه</div>
+                        <div class="info-value">{{ plan.tafsili_plan.building_quality|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🎯 سطح عملکردی</div>
+                        <div class="info-value">{{ plan.tafsili_plan.functional_level|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🏪 کاربری طبقات بالای همکف</div>
+                        <div class="info-value">{{ plan.tafsili_plan.upper_floor_use|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🏪 کاربری همکف</div>
+                        <div class="info-value">{{ plan.tafsili_plan.ground_floor_use|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🏪 انواع کاربری (غالب)</div>
+                        <div class="info-value">{{ plan.tafsili_plan.dominant_use|default:"-" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">📍 موقعیت (GPS)</div>
+                        <div class="info-value">
+                            {% if plan.tafsili_plan.location %}
+                                <span class="location-coord">{{ plan.tafsili_plan.location.y|floatformat:6 }}, {{ plan.tafsili_plan.location.x|floatformat:6 }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
                     </div>
                     {% if plan.tafsili_plan.photo %}
                     <div class="info-item">
@@ -322,11 +430,19 @@
                         <strong>🚫 نظر کارشناس:</strong><br>
                         {{ plan.expert_note }}
                     </div>
-                    {% if plan.plan_type == 'tafsili' %}
+                    <div class="action-buttons">
                         <a href="{% url 'core_admin:operator_revise_plan' plan.id %}" class="btn-revise">
                             ✏️ اصلاح و ارسال مجدد
                         </a>
-                    {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if plan.status == 'pending' %}
+                    <div class="action-buttons">
+                        <a href="{% url 'core_admin:operator_edit_plan' plan.id %}" class="btn-edit">
+                            ✏️ ویرایش طرح
+                        </a>
+                    </div>
                 {% endif %}
 
                 {% if plan.status == 'approved' %}

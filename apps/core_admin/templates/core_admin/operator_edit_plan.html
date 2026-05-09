@@ -1,0 +1,697 @@
+{% extends 'core_admin/operator_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #0066cc;
+        --primary-mid: #0052a3;
+        --primary-glow: rgba(0, 102, 204, 0.2);
+        --surface-2: #f8fafc;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+        --text-1: #1e293b;
+        --text-2: #334155;
+        --text-3: #64748b;
+        --input-bg: #ffffff;
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .dark-mode {
+        --surface-2: #1e293b;
+        --card-bg: #0f172a;
+        --border: #334155;
+        --text-1: #f1f5f9;
+        --text-2: #cbd5e1;
+        --text-3: #94a3b8;
+        --input-bg: #1e293b;
+    }
+
+    .form-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: var(--shadow-md);
+    }
+
+    .form-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        text-align: center;
+        color: var(--text-1);
+    }
+
+    .form-section {
+        background: var(--surface-2);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--primary);
+        border-right: 3px solid var(--primary);
+        padding-right: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .form-section-title small {
+        font-size: 12px;
+        font-weight: normal;
+        color: var(--text-3);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-2);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        font-size: 14px;
+        font-family: inherit;
+        background: var(--input-bg);
+        color: var(--text-1);
+        transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .form-group input[readonly] {
+        background: var(--surface-2);
+        cursor: not-allowed;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-row-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .location-box {
+        background: var(--surface-2);
+        border: 2px solid var(--border);
+        border-radius: 16px;
+        padding: 25px;
+        text-align: center;
+    }
+
+    .location-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 5px;
+    }
+
+    .location-btn:hover {
+        background: var(--primary-mid);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .location-btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        padding: 14px 28px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 5px;
+    }
+
+    .location-btn-outline:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .location-status {
+        padding: 15px;
+        border-radius: 12px;
+        margin-top: 15px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .status-info {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .manual-input-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .manual-input-group input {
+        width: 200px;
+        text-align: center;
+        padding: 10px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        background: var(--input-bg);
+        color: var(--text-1);
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+        transition: all 0.2s;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .required:after {
+        content: " *";
+        color: #dc2626;
+    }
+
+    .expert-note-box {
+        background: #fee2e2;
+        border-right: 4px solid #ef4444;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .expert-note-box strong {
+        color: #991b1b;
+    }
+
+    .expert-note-box p {
+        color: #7f1d1d;
+        margin-top: 8px;
+    }
+
+    .current-photo {
+        margin-top: 10px;
+    }
+
+    .current-photo label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .current-photo img {
+        max-width: 200px;
+        border-radius: 8px;
+        border: 2px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 20px;
+        }
+        .form-row, .form-row-3 {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .manual-input-group input {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="form-container">
+    <h2 class="form-title">✏️ ویرایش طرح تفصیلی / جامع</h2>
+
+    {% if plan.expert_note %}
+    <div class="expert-note-box">
+        <strong>📝 نظر کارشناس برای اصلاح:</strong>
+        <p>{{ plan.expert_note }}</p>
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" id="planForm">
+        {% csrf_token %}
+
+        <!-- اطلاعات پایه -->
+        <div class="form-section">
+            <div class="form-section-title">📋 اطلاعات پایه</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required">کد شناسه قطعه</label>
+                    <input type="text" name="parcel_code" value="{{ tafsili.parcel_code|default:'' }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="required">عنوان پروژه</label>
+                    <input type="text" name="title" value="{{ plan.title|default:'' }}" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>کد منطقه</label>
+                    <input type="text" name="zone_code" value="{{ tafsili.zone_code|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label class="required">نام محله</label>
+                    <input type="text" name="neighborhood" value="{{ tafsili.neighborhood|default:'' }}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>کاربری تفصیلی</label>
+                <textarea name="detailed_use" rows="2">{{ tafsili.detailed_use|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- اطلاعات شهری -->
+        <div class="form-section">
+            <div class="form-section-title">🏙️ اطلاعات شهری <small>صرفاً برای معابر</small></div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>نام معبر</label>
+                    <input type="text" name="street_name" value="{{ tafsili.street_name|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>عرض معبر (متر)</label>
+                    <input type="number" step="0.5" name="street_width" value="{{ tafsili.street_width|default:'' }}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>مالکیت</label>
+                    <select name="ownership_type">
+                        <option value="">انتخاب...</option>
+                        <option value="خصوصی" {% if tafsili.ownership_type == 'خصوصی' %}selected{% endif %}>خصوصی</option>
+                        <option value="عمومی" {% if tafsili.ownership_type == 'عمومی' %}selected{% endif %}>عمومی</option>
+                        <option value="وقف" {% if tafsili.ownership_type == 'وقف' %}selected{% endif %}>وقف</option>
+                        <option value="دولتی" {% if tafsili.ownership_type == 'دولتی' %}selected{% endif %}>دولتی</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>مساحت عرصه (متر مربع)</label>
+                    <input type="number" step="0.01" name="land_area" id="land_area" value="{{ tafsili.land_area|default:'' }}">
+                    <small>از نقشه پایه موجود استخراج گردد</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- اطلاعات ساختمانی -->
+        <div class="form-section">
+            <div class="form-section-title">🏗️ اطلاعات ساختمانی</div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>مساحت اعیانی (متر مربع)</label>
+                    <input type="number" step="0.01" name="built_area" id="built_area" value="{{ tafsili.built_area|default:'' }}">
+                    <small>از نقشه پایه موجود استخراج گردد</small>
+                </div>
+                <div class="form-group">
+                    <label>سطح اشغال (%)</label>
+                    <input type="number" step="0.01" name="occupancy_rate" id="occupancy_rate" readonly value="{{ tafsili.occupancy_rate|default:'' }}">
+                    <small>(مساحت اعیانی ÷ مساحت عرصه) × 100</small>
+                </div>
+                <div class="form-group">
+                    <label>تعداد طبقات</label>
+                    <input type="number" name="floor_count" id="floor_count" value="{{ tafsili.floor_count|default:'' }}">
+                </div>
+            </div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>تراکم ساختمانی</label>
+                    <input type="number" name="density" id="density" readonly value="{{ tafsili.density|default:'' }}">
+                    <small>سطح اشغال × تعداد طبقات</small>
+                </div>
+                <div class="form-group">
+                    <label>حداکثر طبقات مجاز</label>
+                    <input type="number" name="floor_limit" value="{{ tafsili.floor_limit|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>قدمت بنا</label>
+                    <select name="building_age">
+                        <option value="">انتخاب...</option>
+                        <option value="1_10" {% if tafsili.building_age == '1_10' %}selected{% endif %}>1 تا 10 سال</option>
+                        <option value="10_20" {% if tafsili.building_age == '10_20' %}selected{% endif %}>10 تا 20 سال</option>
+                        <option value="20_30" {% if tafsili.building_age == '20_30' %}selected{% endif %}>20 تا 30 سال</option>
+                        <option value="30+" {% if tafsili.building_age == '30+' %}selected{% endif %}>بیش از 30 سال</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>کیفیت ابنیه</label>
+                    <select name="building_quality">
+                        <option value="">انتخاب...</option>
+                        <option value="نوساز" {% if tafsili.building_quality == 'نوساز' %}selected{% endif %}>نوساز</option>
+                        <option value="قابل نگهداری" {% if tafsili.building_quality == 'قابل نگهداری' %}selected{% endif %}>قابل نگهداری</option>
+                        <option value="تعمیری" {% if tafsili.building_quality == 'تعمیری' %}selected{% endif %}>تعمیری</option>
+                        <option value="تخریبی" {% if tafsili.building_quality == 'تخریبی' %}selected{% endif %}>تخریبی</option>
+                        <option value="در حال ساخت" {% if tafsili.building_quality == 'در حال ساخت' %}selected{% endif %}>در حال ساخت</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>مصالح ساختمانی</label>
+                    <select name="material_type">
+                        <option value="">انتخاب...</option>
+                        <option value="بتنی" {% if tafsili.material_type == 'بتنی' %}selected{% endif %}>بتنی</option>
+                        <option value="اسکلت فلزی" {% if tafsili.material_type == 'اسکلت فلزی' %}selected{% endif %}>اسکلت فلزی</option>
+                        <option value="آجر و آهن" {% if tafsili.material_type == 'آجر و آهن' %}selected{% endif %}>آجر و آهن</option>
+                        <option value="خشتی" {% if tafsili.material_type == 'خشتی' %}selected{% endif %}>خشتی</option>
+                        <option value="چوبی" {% if tafsili.material_type == 'چوبی' %}selected{% endif %}>چوبی</option>
+                        <option value="سنگی" {% if tafsili.material_type == 'سنگی' %}selected{% endif %}>سنگی</option>
+                        <option value="بلوک سیمانی" {% if tafsili.material_type == 'بلوک سیمانی' %}selected{% endif %}>بلوک سیمانی</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>نما</label>
+                    <select name="facade_type">
+                        <option value="">انتخاب...</option>
+                        <option value="سنگی" {% if tafsili.facade_type == 'سنگی' %}selected{% endif %}>سنگی</option>
+                        <option value="آجری" {% if tafsili.facade_type == 'آجری' %}selected{% endif %}>آجری</option>
+                        <option value="سیمانی" {% if tafsili.facade_type == 'سیمانی' %}selected{% endif %}>سیمانی</option>
+                        <option value="کامپوزیت" {% if tafsili.facade_type == 'کامپوزیت' %}selected{% endif %}>کامپوزیت</option>
+                        <option value="شیشه" {% if tafsili.facade_type == 'شیشه' %}selected{% endif %}>شیشه</option>
+                        <option value="فاقد نما" {% if tafsili.facade_type == 'فاقد نما' %}selected{% endif %}>فاقد نما</option>
+                        <option value="سایر" {% if tafsili.facade_type == 'سایر' %}selected{% endif %}>سایر</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>سطح عملکردی</label>
+                    <select name="functional_level">
+                        <option value="">انتخاب...</option>
+                        <option value="محلی" {% if tafsili.functional_level == 'محلی' %}selected{% endif %}>محلی</option>
+                        <option value="ناحیه" {% if tafsili.functional_level == 'ناحیه' %}selected{% endif %}>ناحیه</option>
+                        <option value="منطقه" {% if tafsili.functional_level == 'منطقه' %}selected{% endif %}>منطقه</option>
+                        <option value="شهر" {% if tafsili.functional_level == 'شهر' %}selected{% endif %}>شهر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>وضعیت</label>
+                    <select name="building_status">
+                        <option value="">انتخاب...</option>
+                        <option value="در حال ساخت" {% if tafsili.building_status == 'در حال ساخت' %}selected{% endif %}>در حال ساخت</option>
+                        <option value="تخریبی" {% if tafsili.building_status == 'تخریبی' %}selected{% endif %}>تخریبی</option>
+                        <option value="تکمیل شده" {% if tafsili.building_status == 'تکمیل شده' %}selected{% endif %}>تکمیل شده</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- اطلاعات کاربری -->
+        <div class="form-section">
+            <div class="form-section-title">🏪 اطلاعات کاربری</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>کاربری طبقات بالای همکف</label>
+                    <select name="upper_floor_use">
+                        <option value="">انتخاب...</option>
+                        <option value="مسکونی" {% if tafsili.upper_floor_use == 'مسکونی' %}selected{% endif %}>مسکونی</option>
+                        <option value="تجاری" {% if tafsili.upper_floor_use == 'تجاری' %}selected{% endif %}>تجاری</option>
+                        <option value="آموزشی" {% if tafsili.upper_floor_use == 'آموزشی' %}selected{% endif %}>آموزشی</option>
+                        <option value="فرهنگی" {% if tafsili.upper_floor_use == 'فرهنگی' %}selected{% endif %}>فرهنگی</option>
+                        <option value="فرهنگی-هنری" {% if tafsili.upper_floor_use == 'فرهنگی-هنری' %}selected{% endif %}>فرهنگی-هنری</option>
+                        <option value="مذهبی" {% if tafsili.upper_floor_use == 'مذهبی' %}selected{% endif %}>مذهبی</option>
+                        <option value="درمانی" {% if tafsili.upper_floor_use == 'درمانی' %}selected{% endif %}>درمانی</option>
+                        <option value="بهداشتی" {% if tafsili.upper_floor_use == 'بهداشتی' %}selected{% endif %}>بهداشتی</option>
+                        <option value="آموزش عالی" {% if tafsili.upper_floor_use == 'آموزش عالی' %}selected{% endif %}>آموزش عالی</option>
+                        <option value="اداری" {% if tafsili.upper_floor_use == 'اداری' %}selected{% endif %}>اداری</option>
+                        <option value="انتظامی" {% if tafsili.upper_floor_use == 'انتظامی' %}selected{% endif %}>انتظامی</option>
+                        <option value="نظامی" {% if tafsili.upper_floor_use == 'نظامی' %}selected{% endif %}>نظامی</option>
+                        <option value="صنعتی" {% if tafsili.upper_floor_use == 'صنعتی' %}selected{% endif %}>صنعتی</option>
+                        <option value="کارگاهی" {% if tafsili.upper_floor_use == 'کارگاهی' %}selected{% endif %}>کارگاهی</option>
+                        <option value="انبار" {% if tafsili.upper_floor_use == 'انبار' %}selected{% endif %}>انبار</option>
+                        <option value="پذیرایی" {% if tafsili.upper_floor_use == 'پذیرایی' %}selected{% endif %}>پذیرایی</option>
+                        <option value="گردشگری" {% if tafsili.upper_floor_use == 'گردشگری' %}selected{% endif %}>گردشگری</option>
+                        <option value="ورزشی" {% if tafsili.upper_floor_use == 'ورزشی' %}selected{% endif %}>ورزشی</option>
+                        <option value="تاسیسات شهری" {% if tafsili.upper_floor_use == 'تاسیسات شهری' %}selected{% endif %}>تاسیسات شهری</option>
+                        <option value="تجهیزات شهری" {% if tafsili.upper_floor_use == 'تجهیزات شهری' %}selected{% endif %}>تجهیزات شهری</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>کاربری همکف</label>
+                    <select name="ground_floor_use">
+                        <option value="">انتخاب...</option>
+                        <option value="مسکونی" {% if tafsili.ground_floor_use == 'مسکونی' %}selected{% endif %}>مسکونی</option>
+                        <option value="تجاری" {% if tafsili.ground_floor_use == 'تجاری' %}selected{% endif %}>تجاری</option>
+                        <option value="آموزشی" {% if tafsili.ground_floor_use == 'آموزشی' %}selected{% endif %}>آموزشی</option>
+                        <option value="فرهنگی" {% if tafsili.ground_floor_use == 'فرهنگی' %}selected{% endif %}>فرهنگی</option>
+                        <option value="مذهبی" {% if tafsili.ground_floor_use == 'مذهبی' %}selected{% endif %}>مذهبی</option>
+                        <option value="درمانی" {% if tafsili.ground_floor_use == 'درمانی' %}selected{% endif %}>درمانی</option>
+                        <option value="بهداشتی" {% if tafsili.ground_floor_use == 'بهداشتی' %}selected{% endif %}>بهداشتی</option>
+                        <option value="آموزش عالی" {% if tafsili.ground_floor_use == 'آموزش عالی' %}selected{% endif %}>آموزش عالی</option>
+                        <option value="اداری" {% if tafsili.ground_floor_use == 'اداری' %}selected{% endif %}>اداری</option>
+                        <option value="انتظامی" {% if tafsili.ground_floor_use == 'انتظامی' %}selected{% endif %}>انتظامی</option>
+                        <option value="صنعتی" {% if tafsili.ground_floor_use == 'صنعتی' %}selected{% endif %}>صنعتی</option>
+                        <option value="کارگاهی" {% if tafsili.ground_floor_use == 'کارگاهی' %}selected{% endif %}>کارگاهی</option>
+                        <option value="انبار" {% if tafsili.ground_floor_use == 'انبار' %}selected{% endif %}>انبار</option>
+                        <option value="پذیرایی" {% if tafsili.ground_floor_use == 'پذیرایی' %}selected{% endif %}>پذیرایی</option>
+                        <option value="گردشگری" {% if tafsili.ground_floor_use == 'گردشگری' %}selected{% endif %}>گردشگری</option>
+                        <option value="ورزشی" {% if tafsili.ground_floor_use == 'ورزشی' %}selected{% endif %}>ورزشی</option>
+                        <option value="تاسیسات شهری" {% if tafsili.ground_floor_use == 'تاسیسات شهری' %}selected{% endif %}>تاسیسات شهری</option>
+                        <option value="تجهیزات شهری" {% if tafsili.ground_floor_use == 'تجهیزات شهری' %}selected{% endif %}>تجهیزات شهری</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>انواع کاربری (غالب)</label>
+                    <select name="dominant_use">
+                        <option value="">انتخاب...</option>
+                        <option value="مسکونی" {% if tafsili.dominant_use == 'مسکونی' %}selected{% endif %}>مسکونی</option>
+                        <option value="تجاری-خدماتی" {% if tafsili.dominant_use == 'تجاری-خدماتی' %}selected{% endif %}>تجاری-خدماتی</option>
+                        <option value="آموزشی" {% if tafsili.dominant_use == 'آموزشی' %}selected{% endif %}>آموزشی</option>
+                        <option value="فرهنگی-هنری" {% if tafsili.dominant_use == 'فرهنگی-هنری' %}selected{% endif %}>فرهنگی-هنری</option>
+                        <option value="مذهبی" {% if tafsili.dominant_use == 'مذهبی' %}selected{% endif %}>مذهبی</option>
+                        <option value="درمانی" {% if tafsili.dominant_use == 'درمانی' %}selected{% endif %}>درمانی</option>
+                        <option value="بهداشتی" {% if tafsili.dominant_use == 'بهداشتی' %}selected{% endif %}>بهداشتی</option>
+                        <option value="آموزش عالی" {% if tafsili.dominant_use == 'آموزش عالی' %}selected{% endif %}>آموزش عالی</option>
+                        <option value="اداری" {% if tafsili.dominant_use == 'اداری' %}selected{% endif %}>اداری</option>
+                        <option value="انتظامی" {% if tafsili.dominant_use == 'انتظامی' %}selected{% endif %}>انتظامی</option>
+                        <option value="نظامی" {% if tafsili.dominant_use == 'نظامی' %}selected{% endif %}>نظامی</option>
+                        <option value="فضای سبز عمومی" {% if tafsili.dominant_use == 'فضای سبز عمومی' %}selected{% endif %}>فضای سبز عمومی</option>
+                        <option value="رفیوژها" {% if tafsili.dominant_use == 'رفیوژها' %}selected{% endif %}>رفیوژها</option>
+                        <option value="صنعتی" {% if tafsili.dominant_use == 'صنعتی' %}selected{% endif %}>صنعتی</option>
+                        <option value="کارگاهی" {% if tafsili.dominant_use == 'کارگاهی' %}selected{% endif %}>کارگاهی</option>
+                        <option value="انبار" {% if tafsili.dominant_use == 'انبار' %}selected{% endif %}>انبار</option>
+                        <option value="پایانه" {% if tafsili.dominant_use == 'پایانه' %}selected{% endif %}>پایانه</option>
+                        <option value="پذیرایی" {% if tafsili.dominant_use == 'پذیرایی' %}selected{% endif %}>پذیرایی</option>
+                        <option value="گردشگری" {% if tafsili.dominant_use == 'گردشگری' %}selected{% endif %}>گردشگری</option>
+                        <option value="ورزشی" {% if tafsili.dominant_use == 'ورزشی' %}selected{% endif %}>ورزشی</option>
+                        <option value="تاسیسات شهری" {% if tafsili.dominant_use == 'تاسیسات شهری' %}selected{% endif %}>تاسیسات شهری</option>
+                        <option value="تجهیزات شهری" {% if tafsili.dominant_use == 'تجهیزات شهری' %}selected{% endif %}>تجهیزات شهری</option>
+                        <option value="باغات" {% if tafsili.dominant_use == 'باغات' %}selected{% endif %}>باغات</option>
+                        <option value="بایر" {% if tafsili.dominant_use == 'بایر' %}selected{% endif %}>بایر</option>
+                        <option value="زراعی" {% if tafsili.dominant_use == 'زراعی' %}selected{% endif %}>زراعی</option>
+                        <option value="میراث تاریخی-فرهنگی" {% if tafsili.dominant_use == 'میراث تاریخی-فرهنگی' %}selected{% endif %}>میراث تاریخی-فرهنگی</option>
+                        <option value="حریم" {% if tafsili.dominant_use == 'حریم' %}selected{% endif %}>حریم</option>
+                        <option value="مختلط تجاری مسکونی" {% if tafsili.dominant_use == 'مختلط تجاری مسکونی' %}selected{% endif %}>مختلط تجاری مسکونی</option>
+                        <option value="معابر" {% if tafsili.dominant_use == 'معابر' %}selected{% endif %}>معابر</option>
+                        <option value="رودخانه" {% if tafsili.dominant_use == 'رودخانه' %}selected{% endif %}>رودخانه</option>
+                        <option value="مسیل" {% if tafsili.dominant_use == 'مسیل' %}selected{% endif %}>مسیل</option>
+                        <option value="در حال ساخت" {% if tafsili.dominant_use == 'در حال ساخت' %}selected{% endif %}>در حال ساخت</option>
+                        <option value="تخریبی" {% if tafsili.dominant_use == 'تخریبی' %}selected{% endif %}>تخریبی</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>توضیحات تکمیلی</label>
+                    <textarea name="description" rows="2">{{ plan.description|default:'' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- موقعیت مکانی -->
+        <div class="form-section">
+            <div class="form-section-title">📍 موقعیت مکانی قطعه</div>
+            <div class="location-box">
+                <button type="button" class="location-btn" id="getLocationBtn">📍 دریافت موقعیت با GPS</button>
+                <div id="locationStatus" class="location-status status-info">
+                    <span>📍</span>
+                    <span>موقعیت فعلی:
+                        {% if tafsili.location %}
+                            {{ tafsili.location.y|floatformat:6 }}, {{ tafsili.location.x|floatformat:6 }}
+                        {% else %}
+                            ثبت نشده
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="manual-input-group">
+                    <input type="text" id="manualLat" placeholder="عرض جغرافیایی" value="{% if tafsili.location %}{{ tafsili.location.y|floatformat:6 }}{% endif %}">
+                    <input type="text" id="manualLng" placeholder="طول جغرافیایی" value="{% if tafsili.location %}{{ tafsili.location.x|floatformat:6 }}{% endif %}">
+                    <button type="button" class="location-btn-outline" id="setManualBtn">✏️ ثبت مختصات دستی</button>
+                </div>
+                <input type="hidden" name="latitude" id="latitude" value="{% if tafsili.location %}{{ tafsili.location.y }}{% endif %}">
+                <input type="hidden" name="longitude" id="longitude" value="{% if tafsili.location %}{{ tafsili.location.x }}{% endif %}">
+            </div>
+        </div>
+
+        <!-- عکس -->
+        <div class="form-section">
+            <div class="form-section-title">📷 عکس و مستندات</div>
+            <div class="form-group">
+                <label>عکس جدید (اختیاری)</label>
+                <input type="file" name="photo" accept="image/jpeg,image/jpg,image/png">
+                {% if tafsili.photo %}
+                <div class="current-photo">
+                    <label>عکس فعلی:</label>
+                    <img src="{{ tafsili.photo.url }}" alt="عکس فعلی">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">✅ ذخیره تغییرات و ارسال به کارشناس</button>
+    </form>
+</div>
+
+<script>
+    function calculateOccupancyAndDensity() {
+        const landArea = parseFloat(document.getElementById('land_area')?.value);
+        const builtArea = parseFloat(document.getElementById('built_area')?.value);
+        const floorCount = parseFloat(document.getElementById('floor_count')?.value);
+
+        let occupancy = '';
+        let density = '';
+
+        if (!isNaN(landArea) && !isNaN(builtArea) && landArea > 0) {
+            occupancy = ((builtArea / landArea) * 100).toFixed(2);
+            document.getElementById('occupancy_rate').value = occupancy;
+
+            if (!isNaN(floorCount) && floorCount > 0) {
+                density = (parseFloat(occupancy) * floorCount).toFixed(2);
+                document.getElementById('density').value = density;
+            } else {
+                document.getElementById('density').value = '';
+            }
+        } else {
+            document.getElementById('occupancy_rate').value = '';
+            document.getElementById('density').value = '';
+        }
+    }
+
+    // اضافه کردن event listenerها
+    const landAreaInput = document.getElementById('land_area');
+    const builtAreaInput = document.getElementById('built_area');
+    const floorCountInput = document.getElementById('floor_count');
+
+    if (landAreaInput) landAreaInput.addEventListener('input', calculateOccupancyAndDensity);
+    if (builtAreaInput) builtAreaInput.addEventListener('input', calculateOccupancyAndDensity);
+    if (floorCountInput) floorCountInput.addEventListener('input', calculateOccupancyAndDensity);
+
+    // اجرای اولیه
+    calculateOccupancyAndDensity();
+
+    function getCurrentLocation() {
+        const statusDiv = document.getElementById('locationStatus');
+        if (!navigator.geolocation) {
+            statusDiv.innerHTML = '<span>❌</span><span>مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند</span>';
+            return;
+        }
+        statusDiv.innerHTML = '<span>📍</span><span>در حال دریافت موقعیت...</span>';
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+                document.getElementById('manualLat').value = lat.toFixed(6);
+                document.getElementById('manualLng').value = lng.toFixed(6);
+                statusDiv.innerHTML = '<span>✅</span><span>موقعیت: ' + lat.toFixed(6) + ', ' + lng.toFixed(6) + '</span>';
+            },
+            function(error) {
+                let errorMsg = '';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMsg = 'دسترسی به موقعیت مجاز نیست';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMsg = 'اطلاعات موقعیت در دسترس نیست';
+                        break;
+                    case error.TIMEOUT:
+                        errorMsg = 'زمان درخواست به پایان رسید';
+                        break;
+                    default:
+                        errorMsg = 'خطا در دریافت موقعیت';
+                }
+                statusDiv.innerHTML = '<span>❌</span><span>' + errorMsg + '</span>';
+            }
+        );
+    }
+
+    function setManualLocation() {
+        const lat = parseFloat(document.getElementById('manualLat').value);
+        const lng = parseFloat(document.getElementById('manualLng').value);
+        const statusDiv = document.getElementById('locationStatus');
+        if (isNaN(lat) || isNaN(lng)) {
+            statusDiv.innerHTML = '<span>❌</span><span>لطفاً مختصات معتبر وارد کنید</span>';
+            return;
+        }
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+        statusDiv.innerHTML = '<span>✅</span><span>موقعیت: ' + lat.toFixed(6) + ', ' + lng.toFixed(6) + ' (دستی)</span>';
+    }
+
+    const getLocationBtn = document.getElementById('getLocationBtn');
+    const setManualBtn = document.getElementById('setManualBtn');
+
+    if (getLocationBtn) getLocationBtn.addEventListener('click', getCurrentLocation);
+    if (setManualBtn) setManualBtn.addEventListener('click', setManualLocation);
+</script>
+
+{% endblock %}

@@ -189,39 +189,58 @@ class TafsiliPlanData(models.Model):
         return f"طرح تفصیلی - {self.plan.title}"
 
 
+from django.db import models
+from django.contrib.gis.db import models as gis_models
+
+
 class FinalTafsiliData(models.Model):
     plan = models.OneToOneField(ProjectPlan, on_delete=models.CASCADE, related_name='final_tafsili')
 
     # 📋 اطلاعات پایه
-    zone_code = models.CharField('کد منطقه', max_length=50)
-    land_use_type = models.CharField('نوع کاربری اراضی', max_length=100)
-    neighborhood = models.CharField('نام محله', max_length=100, blank=True)
-    detailed_use = models.TextField('کاربری تفصیلی', blank=True)
+    zone_code = models.CharField('کد منطقه', max_length=50, blank=True, null=True)
+    land_use_type = models.CharField('نوع کاربری اراضی', max_length=100, blank=True, null=True)
+    neighborhood = models.CharField('نام محله', max_length=100, blank=True, null=True)
+    detailed_use = models.TextField('کاربری تفصیلی', blank=True, null=True)
 
     # 🏙️ اطلاعات شهری
-    street_name = models.CharField('نام معبر', max_length=200)
+    street_name = models.CharField('نام معبر', max_length=200, blank=True, null=True)
     street_width = models.FloatField('عرض معبر (متر)', null=True, blank=True)
-    ownership_type = models.CharField('نوع مالکیت', max_length=50)
+    ownership_type = models.CharField('نوع مالکیت', max_length=50, blank=True, null=True)
     land_area = models.FloatField('مساحت عرصه (متر مربع)', null=True, blank=True)
 
     # 🏗️ اطلاعات ساختمانی
     density = models.FloatField('تراکم ساختمانی', null=True, blank=True)
     floor_limit = models.IntegerField('حداکثر طبقات', null=True, blank=True)
     built_area = models.FloatField('مساحت اعیانی (متر مربع)', null=True, blank=True)
-    building_age = models.CharField('قدمت بنا', max_length=50, blank=True)
-    facade_type = models.CharField('نوع نما', max_length=100, blank=True)
-    material_type = models.CharField('مصالح ساختمانی', max_length=100, blank=True)
-    building_quality = models.CharField('کیفیت ابنیه', max_length=50, blank=True)
-    functional_level = models.CharField('سطح عملکردی', max_length=100, blank=True)
-    parcel_code = models.CharField('کد پلاک', max_length=50, blank=True)
+    building_age = models.CharField('قدمت بنا', max_length=50, blank=True, null=True)
+    facade_type = models.CharField('نوع نما', max_length=100, blank=True, null=True)
+    material_type = models.CharField('مصالح ساختمانی', max_length=100, blank=True, null=True)
+    building_quality = models.CharField('کیفیت ابنیه', max_length=50, blank=True, null=True)
+    functional_level = models.CharField('سطح عملکردی', max_length=100, blank=True, null=True)
+    parcel_code = models.CharField('کد پلاک', max_length=50, blank=True, null=True)
+
+    # فیلدهای جدید اضافه شده (هماهنگ با فرم ثبت)
+    floor_count = models.IntegerField('تعداد طبقات', null=True, blank=True)
+    occupancy_rate = models.FloatField('سطح اشغال (%)', null=True, blank=True)
+    building_status = models.CharField('وضعیت ساخت', max_length=50, blank=True, null=True)
 
     # 🏪 اطلاعات کاربری
-    upper_floor_use = models.CharField('کاربری طبقات بالای همکف', max_length=100, blank=True)
-    ground_floor_use = models.CharField('کاربری همکف', max_length=100, blank=True)
-    dominant_use = models.CharField('انواع کاربری (غالب)', max_length=100, blank=True)
+    upper_floor_use = models.CharField('کاربری طبقات بالای همکف', max_length=100, blank=True, null=True)
+    ground_floor_use = models.CharField('کاربری همکف', max_length=100, blank=True, null=True)
+    dominant_use = models.CharField('انواع کاربری (غالب)', max_length=100, blank=True, null=True)
+
+    # توضیحات تکمیلی
+    description = models.TextField('توضیحات', blank=True, null=True)
 
     photo = models.ImageField('عکس', upload_to='final_tafsili/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # ✅ فیلد مکان برای ArcGIS
+    location = gis_models.PointField(srid=4326, null=True, blank=True, verbose_name="موقعیت مکانی")
+
+    # 🔧 فیلدهای کمکی برای جلوگیری از خطا (برای مواقعی که location خالی است)
+    latitude = models.DecimalField('عرض جغرافیایی', max_digits=10, decimal_places=7, null=True, blank=True)
+    longitude = models.DecimalField('طول جغرافیایی', max_digits=10, decimal_places=7, null=True, blank=True)
 
     def __str__(self):
         return f"نهایی - {self.plan.title}"
@@ -279,55 +298,6 @@ class PlanRevisionHistory(models.Model):
 
 # ========== مدل‌های نهایی (برای داده‌های تأیید شده) ==========
 
-class FinalTafsiliData(models.Model):
-    plan = models.OneToOneField(ProjectPlan, on_delete=models.CASCADE, related_name='final_tafsili')
-
-    # 📋 اطلاعات پایه
-    zone_code = models.CharField('کد منطقه', max_length=50)
-    land_use_type = models.CharField('نوع کاربری اراضی', max_length=100)
-    neighborhood = models.CharField('نام محله', max_length=100, blank=True)
-    detailed_use = models.TextField('کاربری تفصیلی', blank=True)
-
-    # 🏙️ اطلاعات شهری
-    street_name = models.CharField('نام معبر', max_length=200)
-    street_width = models.FloatField('عرض معبر (متر)', null=True, blank=True)
-    ownership_type = models.CharField('نوع مالکیت', max_length=50)
-    land_area = models.FloatField('مساحت عرصه (متر مربع)', null=True, blank=True)
-
-    # 🏗️ اطلاعات ساختمانی
-    density = models.FloatField('تراکم ساختمانی', null=True, blank=True)
-    floor_limit = models.IntegerField('حداکثر طبقات', null=True, blank=True)
-    built_area = models.FloatField('مساحت اعیانی (متر مربع)', null=True, blank=True)
-    building_age = models.CharField('قدمت بنا', max_length=50, blank=True)
-    facade_type = models.CharField('نوع نما', max_length=100, blank=True)
-    material_type = models.CharField('مصالح ساختمانی', max_length=100, blank=True)
-    building_quality = models.CharField('کیفیت ابنیه', max_length=50, blank=True)
-    functional_level = models.CharField('سطح عملکردی', max_length=100, blank=True)
-    parcel_code = models.CharField('کد پلاک', max_length=50, blank=True)
-
-    # 🏪 اطلاعات کاربری
-    upper_floor_use = models.CharField('کاربری طبقات بالای همکف', max_length=100, blank=True)
-    ground_floor_use = models.CharField('کاربری همکف', max_length=100, blank=True)
-    dominant_use = models.CharField('انواع کاربری (غالب)', max_length=100, blank=True)
-
-    photo = models.ImageField('عکس', upload_to='final_tafsili/', blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"نهایی - {self.plan.title}"
-
-class FinalJameData(models.Model):
-    """داده‌های نهایی طرح جامع - فقط پس از تأیید کارشناس"""
-    plan = models.OneToOneField(ProjectPlan, on_delete=models.CASCADE, related_name='final_jame')
-
-    zone_type = models.CharField(max_length=50, blank=True, null=True)
-    green_percent = models.FloatField(blank=True, null=True)
-    service_centers = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "داده نهایی طرح جامع"
-        verbose_name_plural = "داده‌های نهایی طرح جامع"
 
 
 class FinalMomayeziData(models.Model):
@@ -375,54 +345,52 @@ class FinalMomayeziData(models.Model):
 class TafsiliPlanData(models.Model):
     plan = models.OneToOneField(ProjectPlan, on_delete=models.CASCADE, related_name='tafsili_plan')
 
-    # اطلاعات پایه
-    zone_code = models.CharField(max_length=50, blank=True, null=True)
-    land_use_type = models.CharField(max_length=100, blank=True, null=True)
-    detailed_use = models.TextField(blank=True, null=True)
-    density = models.FloatField(blank=True, null=True)
-    floor_limit = models.IntegerField(blank=True, null=True)
-    photo = models.ImageField(upload_to='tafsili_plans/', blank=True, null=True)
+    # ==================== اطلاعات پایه ====================
+    parcel_code = models.CharField('کد شناسه قطعه', max_length=50, blank=True, null=True)
+    zone_code = models.CharField('کد منطقه', max_length=50, blank=True, null=True)
+    land_use_type = models.CharField('نوع کاربری اراضی', max_length=100, blank=True, null=True)
+    neighborhood = models.CharField('نام محله', max_length=100, blank=True, null=True)
+    detailed_use = models.TextField('کاربری تفصیلی', blank=True, null=True)
 
-    # اطلاعات شهری
-    street_name = models.CharField(max_length=200, blank=True, null=True)
-    street_width = models.FloatField(blank=True, null=True)
-    ownership_type = models.CharField(max_length=50, blank=True, null=True)
-    neighborhood = models.CharField(max_length=100, blank=True, null=True)
+    # ==================== اطلاعات شهری ====================
+    street_name = models.CharField('نام معبر', max_length=200, blank=True, null=True)
+    street_width = models.FloatField('عرض معبر (متر)', blank=True, null=True)
+    ownership_type = models.CharField('نوع مالکیت', max_length=50, blank=True, null=True)
+    land_area = models.FloatField('مساحت عرصه (متر مربع)', blank=True, null=True)
 
-    # اطلاعات ساختمانی
-    building_age = models.CharField(max_length=50, blank=True, null=True)
-    facade_type = models.CharField(max_length=50, blank=True, null=True)
-    material_type = models.CharField(max_length=50, blank=True, null=True)
-    building_quality = models.CharField(max_length=50, blank=True, null=True)
-    functional_level = models.CharField(max_length=50, blank=True, null=True)
-    land_area = models.FloatField(blank=True, null=True)
-    built_area = models.FloatField(blank=True, null=True)
+    # ==================== اطلاعات ساختمانی ====================
+    density = models.FloatField('تراکم ساختمانی', blank=True, null=True)
+    floor_limit = models.IntegerField('حداکثر طبقات مجاز', blank=True, null=True)
+    built_area = models.FloatField('مساحت اعیانی (متر مربع)', blank=True, null=True)
+    building_age = models.CharField('قدمت بنا', max_length=50, blank=True, null=True)
+    facade_type = models.CharField('نوع نما', max_length=50, blank=True, null=True)
+    material_type = models.CharField('مصالح ساختمانی', max_length=50, blank=True, null=True)
+    building_quality = models.CharField('کیفیت ابنیه', max_length=50, blank=True, null=True)
+    functional_level = models.CharField('سطح عملکردی', max_length=50, blank=True, null=True)
 
-    # اطلاعات کاربری
-    upper_floor_use = models.CharField(max_length=100, blank=True, null=True)
-    ground_floor_use = models.CharField(max_length=100, blank=True, null=True)
-    dominant_use = models.CharField(max_length=100, blank=True, null=True)
-    parcel_code = models.CharField(max_length=50, blank=True, null=True)
+    # فیلدهای جدید اضافه شده
+    floor_count = models.IntegerField('تعداد طبقات', blank=True, null=True)
+    occupancy_rate = models.FloatField('سطح اشغال (%)', blank=True, null=True)
+    building_status = models.CharField('وضعیت ساخت', max_length=50, blank=True, null=True)
+
+    # ==================== اطلاعات کاربری ====================
+    upper_floor_use = models.CharField('کاربری طبقات بالای همکف', max_length=100, blank=True, null=True)
+    ground_floor_use = models.CharField('کاربری همکف', max_length=100, blank=True, null=True)
+    dominant_use = models.CharField('انواع کاربری (غالب)', max_length=100, blank=True, null=True)
+
+    # ==================== موقعیت مکانی ====================
+    location = gis_models.PointField(srid=4326, null=True, blank=True, verbose_name="موقعیت مکانی")
+
+    # ==================== عکس ====================
+    photo = models.ImageField('عکس', upload_to='tafsili_plans/', blank=True, null=True)
+
+    # زمان
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"طرح تفصیلی - {self.plan.title}"
 
-class JameData(models.Model):
-    """داده‌های طرح جامع (قدیمی - برای سازگاری)"""
-    operator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='jame_data')
-    project_name = models.CharField(max_length=200, verbose_name="نام پروژه")
-    zone_type = models.CharField(max_length=100, verbose_name="نوع پهنه")
-    green_percent = models.FloatField(verbose_name="درصد فضای سبز")
-    service_centers = models.TextField(verbose_name="مراکز خدماتی نزدیک")
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.project_name} - {self.operator.username}"
-
-    class Meta:
-        verbose_name = "داده طرح جامع"
-        verbose_name_plural = "داده‌های طرح جامع"
-        ordering = ['-created_at']
 
 
 class MomayeziData(models.Model):

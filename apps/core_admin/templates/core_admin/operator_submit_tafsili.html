@@ -1,218 +1,716 @@
 {% extends 'core_admin/operator_base.html' %}
-{% block content %}
+{% load static %}
 
+{% block content %}
 <style>
-    .form-container { max-width: 1000px; margin: 0 auto; }
-    .form-card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    .form-title { font-size: 22px; font-weight: 700; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #e5e7eb; color: #1e3c72; }
-    .form-section { background: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-    .section-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #1e293b; border-right: 3px solid #1e3c72; padding-right: 10px; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #374151; }
-    .form-control { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-family: inherit; font-size: 13px; }
-    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-    .btn-submit { background: #1e3c72; color: white; border: none; padding: 12px 28px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; }
-    .btn-submit:hover { background: #0f2d5e; }
-    @media (max-width: 768px) { .row-2, .row-3 { grid-template-columns: 1fr; } }
+    .form-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: var(--shadow-md);
+    }
+    .form-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        text-align: center;
+        color: var(--text-1);
+    }
+    .form-section {
+        background: var(--surface-2);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--primary);
+        border-right: 3px solid var(--primary);
+        padding-right: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .form-section-title small {
+        font-size: 12px;
+        font-weight: normal;
+        color: var(--text-3);
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-2);
+    }
+    .form-group label small {
+        font-weight: normal;
+        font-size: 11px;
+        color: var(--text-3);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        font-size: 14px;
+        font-family: inherit;
+        background: var(--input-bg);
+        color: var(--text-1);
+        transition: all 0.3s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    .form-group input[readonly] {
+        background: var(--surface-2);
+        cursor: not-allowed;
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .form-row-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    .form-row-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    .location-box {
+        background: var(--surface-2);
+        border: 2px solid var(--border);
+        border-radius: 16px;
+        padding: 25px;
+        text-align: center;
+    }
+    .location-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 5px;
+    }
+    .location-btn:hover {
+        background: var(--primary-mid);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    .location-btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+    }
+    .location-btn-outline:hover {
+        background: var(--primary);
+        color: white;
+    }
+    .location-status {
+        padding: 15px;
+        border-radius: 12px;
+        margin-top: 15px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .location-coord {
+        font-family: monospace;
+        font-size: 13px;
+        background: var(--input-bg);
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+    .status-success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    .status-error {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+    .status-info {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    .status-warning {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    .manual-input-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .manual-input-group input {
+        width: 200px;
+        text-align: center;
+    }
+    .btn-submit {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+        transition: all 0.2s;
+    }
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    .required:after {
+        content: " *";
+        color: #dc2626;
+    }
+    .info-tooltip {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: var(--text-3);
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 11px;
+        line-height: 16px;
+        cursor: help;
+        margin-right: 5px;
+    }
+    @media (max-width: 768px) {
+        .form-container { padding: 20px; }
+        .form-row, .form-row-3, .form-row-4 { grid-template-columns: 1fr; gap: 0; }
+        .location-btn { padding: 10px 20px; font-size: 14px; }
+        .manual-input-group input { width: 100%; }
+    }
 </style>
 
 <div class="form-container">
-    <div class="form-card">
-        <div class="form-title">📐 ثبت طرح تفصیلی جدید</div>
+    <h2 class="form-title">📐 ثبت طرح تفصیلی / جامع</h2>
 
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
+    <form method="post" enctype="multipart/form-data" id="planForm">
+        {% csrf_token %}
 
-            <!-- اطلاعات پایه -->
-            <div class="form-section">
-                <div class="section-title">📋 اطلاعات پایه</div>
-                <div class="row-2">
-                    <div class="form-group">
-                        <label>عنوان پروژه</label>
-                        <input type="text" name="title" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>کد منطقه</label>
-                        <input type="text" name="zone_code" class="form-control">
-                    </div>
-                </div>
-                <div class="row-2">
-                    <div class="form-group">
-                        <label>نوع کاربری اراضی</label>
-                        <select name="land_use_type" class="form-control">
-                            <option value="">انتخاب...</option>
-                            <option value="مسکونی">مسکونی</option>
-                            <option value="تجاری">تجاری</option>
-                            <option value="کشاورزی">کشاورزی</option>
-                            <option value="صنعتی">صنعتی</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>نام محله</label>
-                        <input type="text" name="neighborhood" class="form-control">
-                    </div>
+        <!-- ==================== اطلاعات پایه ==================== -->
+        <div class="form-section">
+            <div class="form-section-title">📋 اطلاعات پایه</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required">کد شناسه قطعه</label>
+                    <input type="text" name="parcel_code" id="parcel_code" required placeholder="کد منحصر به فرد قطعه - قبل از برداشت در GIS تعیین می‌شود">
+                    <small style="color: var(--text-3);">کد مختص هر قطعه/پلیگون که قبل از برداشت در نقشه GIS تعیین می‌گردد</small>
                 </div>
                 <div class="form-group">
-                    <label>کاربری تفصیلی</label>
-                    <textarea name="detailed_use" rows="2" class="form-control"></textarea>
+                    <label class="required">عنوان پروژه</label>
+                    <input type="text" name="title" required placeholder="عنوان پروژه را وارد کنید">
                 </div>
             </div>
-
-            <!-- اطلاعات شهری -->
-            <div class="form-section">
-                <div class="section-title">🏙️ اطلاعات شهری</div>
-                <div class="row-2">
-                    <div class="form-group">
-                        <label>نام معبر</label>
-                        <input type="text" name="street_name" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>عرض معبر (متر)</label>
-                        <input type="number" step="0.1" name="street_width" class="form-control">
-                    </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>کد منطقه</label>
+                    <input type="text" name="zone_code" placeholder="مثال: 741">
                 </div>
-                <div class="row-2">
-                    <div class="form-group">
-                        <label>نوع مالکیت</label>
-                        <select name="ownership_type" class="form-control">
-                            <option value="">انتخاب...</option>
-                            <option value="خصوصی">خصوصی</option>
-                            <option value="عمومی">عمومی</option>
-                            <option value="وقف">وقف</option>
-                            <option value="دولتی">دولتی</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>مساحت عرصه (متر مربع)</label>
-                        <input type="number" step="0.01" name="land_area" class="form-control">
-                    </div>
+                <div class="form-group">
+                    <label class="required">نام محله</label>
+                    <input type="text" name="neighborhood" id="neighborhood" required placeholder="مثال: ونک، گلشهر، سعادت آباد، فرمانیه، الهیه">
+                    <small style="color: var(--text-3);">نام محله را به صورت کامل وارد کنید</small>
                 </div>
             </div>
-
-            <!-- اطلاعات ساختمانی -->
-            <div class="form-section">
-                <div class="section-title">🏗️ اطلاعات ساختمانی</div>
-                <div class="row-3">
-                    <div class="form-group">
-                        <label>تراکم ساختمانی</label>
-                        <input type="number" step="0.1" name="density" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>حداکثر طبقات</label>
-                        <input type="number" name="floor_limit" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>مساحت اعیانی (متر مربع)</label>
-                        <input type="number" step="0.01" name="built_area" class="form-control">
-                    </div>
-                </div>
-                <div class="row-3">
-                    <div class="form-group">
-                        <label>قدمت بنا</label>
-                        <select name="building_age" class="form-control">
-                            <option value="">انتخاب...</option>
-                            <option value="1_10">1-10 سال</option>
-                            <option value="10_20">10-20 سال</option>
-                            <option value="20_30">20-30 سال</option>
-                            <option value="30+">بیش از 30 سال</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>نوع نما</label>
-                        <select name="facade_type" class="form-control">
-                            <option value="">انتخاب...</option>
-                            <option value="سنگی">سنگی</option>
-                            <option value="آجری">آجری</option>
-                            <option value="سیمانی">سیمانی</option>
-                            <option value="شیشه‌ای">شیشه‌ای</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>مصالح ساختمانی</label>
-                        <select name="material_type" class="form-control">
-                            <option value="">انتخاب...</option>
-                            <option value="بتنی">بتنی</option>
-                            <option value="اسکلت فلزی">اسکلت فلزی</option>
-                            <option value="آجر و آهن">آجر و آهن</option>
-                            <option value="خشتی">خشتی</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row-3">
-                    <div class="form-group">
-                        <label>کیفیت ابنیه</label>
-                        <select name="building_quality" class="form-control">
-                            <option value="">انتخاب...</option>
-                            <option value="نوساز">نوساز</option>
-                            <option value="قابل نگهداری">قابل نگهداری</option>
-                            <option value="تعمیری">تعمیری</option>
-                            <option value="تخریبی">تخریبی</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>سطح عملکردی</label>
-                        <select name="functional_level" class="form-control">
-                            <option value="">انتخاب...</option>
-                            <option value="محلی">محلی</option>
-                            <option value="ناحیه">ناحیه</option>
-                            <option value="منطقه">منطقه</option>
-                            <option value="شهر">شهر</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>کد پلاک</label>
-                        <input type="text" name="parcel_code" class="form-control">
-                    </div>
-                </div>
-            </div>
-
-            <!-- اطلاعات کاربری -->
-            <div class="form-section">
-                <div class="section-title">🏪 اطلاعات کاربری</div>
-                <div class="row-3">
-                    <div class="form-group">
-                        <label>کاربری طبقات بالای همکف</label>
-                        <select name="upper_floor_use" class="form-control">
-                            <option value="">انتخاب...</option>
-                            <option value="مسکونی">مسکونی</option>
-                            <option value="تجاری">تجاری</option>
-                            <option value="اداری">اداری</option>
-                            <option value="آموزشی">آموزشی</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>کاربری همکف</label>
-                        <select name="ground_floor_use" class="form-control">
-                            <option value="">انتخاب...</option>
-                            <option value="مسکونی">مسکونی</option>
-                            <option value="تجاری">تجاری</option>
-                            <option value="تجاری-خدماتی">تجاری-خدماتی</option>
-                            <option value="پذیرایی">پذیرایی</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>انواع کاربری (غالب)</label>
-                        <select name="dominant_use" class="form-control">
-                            <option value="">انتخاب...</option>
-                            <option value="مسکونی">مسکونی</option>
-                            <option value="تجاری">تجاری</option>
-                            <option value="تجاری-خدماتی">تجاری-خدماتی</option>
-                            <option value="آموزشی">آموزشی</option>
-                            <option value="درمانی">درمانی</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
             <div class="form-group">
-                <label>عکس طرح</label>
-                <input type="file" name="photo" class="form-control" accept="image/*">
+                <label>کاربری تفصیلی</label>
+                <textarea name="detailed_use" rows="2" placeholder="توضیحات کاربری تفصیلی"></textarea>
             </div>
+        </div>
 
-            <button type="submit" class="btn-submit">✅ ارسال به کارشناس</button>
-        </form>
-    </div>
+        <!-- ==================== اطلاعات شهری ==================== -->
+        <div class="form-section">
+            <div class="form-section-title">🏙️ اطلاعات شهری <small>صرفاً برای معابر</small></div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>نام معبر</label>
+                    <input type="text" name="street_name" placeholder="نام خیابان/کوچه">
+                </div>
+                <div class="form-group">
+                    <label>عرض معبر (متر)</label>
+                    <input type="number" step="0.5" name="street_width" placeholder="مثال: 12">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>مالکیت</label>
+                    <select name="ownership_type">
+                        <option value="">انتخاب...</option>
+                        <option value="خصوصی">خصوصی</option>
+                        <option value="عمومی">عمومی</option>
+                        <option value="وقف">وقف</option>
+                        <option value="دولتی">دولتی</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>مساحت عرصه (متر مربع)</label>
+                    <input type="number" step="0.01" name="land_area" id="land_area" placeholder="از نقشه پایه موجود استخراج گردد">
+                    <small style="color: var(--text-3);">از نقشه پایه موجود استخراج گردد</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== اطلاعات ساختمانی ==================== -->
+        <div class="form-section">
+            <div class="form-section-title">🏗️ اطلاعات ساختمانی</div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>مساحت اعیانی (متر مربع)</label>
+                    <input type="number" step="0.01" name="built_area" id="built_area" placeholder="از نقشه پایه موجود استخراج گردد">
+                    <small style="color: var(--text-3);">از نقشه پایه موجود استخراج گردد</small>
+                </div>
+                <div class="form-group">
+                    <label>سطح اشغال (%)</label>
+                    <input type="number" step="0.01" name="occupancy_rate" id="occupancy_rate" readonly placeholder="به صورت خودکار محاسبه می‌شود">
+                    <small style="color: var(--text-3);">(مساحت اعیانی ÷ مساحت عرصه) × 100 - به صورت خودکار محاسبه می‌شود</small>
+                </div>
+                <div class="form-group">
+                    <label>تعداد طبقات</label>
+                    <input type="number" name="floor_count" id="floor_count" placeholder="عدد وارد گردد">
+                </div>
+            </div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>تراکم ساختمانی</label>
+                    <input type="number" name="density" id="density" readonly placeholder="به صورت خودکار محاسبه می‌شود">
+                    <small style="color: var(--text-3);">سطح اشغال × تعداد طبقات - به صورت خودکار محاسبه می‌شود</small>
+                </div>
+                <div class="form-group">
+                    <label>حداکثر طبقات مجاز</label>
+                    <input type="number" name="floor_limit" placeholder="مثال: 4">
+                </div>
+                <div class="form-group">
+                    <label>قدمت بنا</label>
+                    <select name="building_age">
+                        <option value="">انتخاب...</option>
+                        <option value="1_10">1 تا 10 سال</option>
+                        <option value="10_20">10 تا 20 سال</option>
+                        <option value="20_30">20 تا 30 سال</option>
+                        <option value="30+">بیش از 30 سال</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>کیفیت ابنیه</label>
+                    <select name="building_quality">
+                        <option value="">انتخاب...</option>
+                        <option value="نوساز">نوساز</option>
+                        <option value="قابل نگهداری">قابل نگهداری</option>
+                        <option value="تعمیری">تعمیری</option>
+                        <option value="تخریبی">تخریبی</option>
+                        <option value="در حال ساخت">در حال ساخت</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>مصالح ساختمانی</label>
+                    <select name="material_type">
+                        <option value="">انتخاب...</option>
+                        <option value="بتنی">بتنی</option>
+                        <option value="اسکلت فلزی">اسکلت فلزی</option>
+                        <option value="آجر و آهن">آجر و آهن</option>
+                        <option value="خشتی">خشتی</option>
+                        <option value="چوبی">چوبی</option>
+                        <option value="سنگی">سنگی</option>
+                        <option value="بلوک سیمانی">بلوک سیمانی</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>نما</label>
+                    <select name="facade_type">
+                        <option value="">انتخاب...</option>
+                        <option value="سنگی">سنگی</option>
+                        <option value="آجری">آجری</option>
+                        <option value="سیمانی">سیمانی</option>
+                        <option value="کامپوزیت">کامپوزیت</option>
+                        <option value="شیشه">شیشه</option>
+                        <option value="فاقد نما">فاقد نما</option>
+                        <option value="سایر">سایر</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>سطح عملکردی</label>
+                    <select name="functional_level">
+                        <option value="">انتخاب...</option>
+                        <option value="محلی">محلی</option>
+                        <option value="ناحیه">ناحیه</option>
+                        <option value="منطقه">منطقه</option>
+                        <option value="شهر">شهر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>وضعیت</label>
+                    <select name="building_status">
+                        <option value="">انتخاب...</option>
+                        <option value="در حال ساخت">در حال ساخت</option>
+                        <option value="تخریبی">تخریبی</option>
+                        <option value="تکمیل شده">تکمیل شده</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== اطلاعات کاربری ==================== -->
+        <div class="form-section">
+            <div class="form-section-title">🏪 اطلاعات کاربری</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>کاربری طبقات بالای همکف</label>
+                    <select name="upper_floor_use">
+                        <option value="">انتخاب...</option>
+                        <option value="مسکونی">مسکونی</option>
+                        <option value="تجاری">تجاری</option>
+                        <option value="آموزشی">آموزشی</option>
+                        <option value="فرهنگی">فرهنگی</option>
+                        <option value="فرهنگی-هنری">فرهنگی-هنری</option>
+                        <option value="مذهبی">مذهبی</option>
+                        <option value="درمانی">درمانی</option>
+                        <option value="بهداشتی">بهداشتی</option>
+                        <option value="آموزش عالی">آموزش عالی</option>
+                        <option value="اداری">اداری</option>
+                        <option value="انتظامی">انتظامی</option>
+                        <option value="نظامی">نظامی</option>
+                        <option value="صنعتی">صنعتی</option>
+                        <option value="کارگاهی">کارگاهی</option>
+                        <option value="انبار">انبار</option>
+                        <option value="پذیرایی">پذیرایی</option>
+                        <option value="گردشگری">گردشگری</option>
+                        <option value="ورزشی">ورزشی</option>
+                        <option value="تاسیسات شهری">تاسیسات شهری</option>
+                        <option value="تجهیزات شهری">تجهیزات شهری</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>کاربری همکف</label>
+                    <select name="ground_floor_use">
+                        <option value="">انتخاب...</option>
+                        <option value="مسکونی">مسکونی</option>
+                        <option value="تجاری">تجاری</option>
+                        <option value="آموزشی">آموزشی</option>
+                        <option value="فرهنگی">فرهنگی</option>
+                        <option value="مذهبی">مذهبی</option>
+                        <option value="درمانی">درمانی</option>
+                        <option value="بهداشتی">بهداشتی</option>
+                        <option value="آموزش عالی">آموزش عالی</option>
+                        <option value="اداری">اداری</option>
+                        <option value="انتظامی">انتظامی</option>
+                        <option value="صنعتی">صنعتی</option>
+                        <option value="کارگاهی">کارگاهی</option>
+                        <option value="انبار">انبار</option>
+                        <option value="پذیرایی">پذیرایی</option>
+                        <option value="گردشگری">گردشگری</option>
+                        <option value="ورزشی">ورزشی</option>
+                        <option value="تاسیسات شهری">تاسیسات شهری</option>
+                        <option value="تجهیزات شهری">تجهیزات شهری</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>انواع کاربری (غالب)</label>
+                    <select name="dominant_use">
+                        <option value="">انتخاب...</option>
+                        <option value="مسکونی">مسکونی</option>
+                        <option value="تجاری-خدماتی">تجاری-خدماتی</option>
+                        <option value="آموزشی">آموزشی</option>
+                        <option value="فرهنگی-هنری">فرهنگی-هنری</option>
+                        <option value="مذهبی">مذهبی</option>
+                        <option value="درمانی">درمانی</option>
+                        <option value="بهداشتی">بهداشتی</option>
+                        <option value="آموزش عالی">آموزش عالی</option>
+                        <option value="اداری">اداری</option>
+                        <option value="انتظامی">انتظامی</option>
+                        <option value="نظامی">نظامی</option>
+                        <option value="فضای سبز عمومی">فضای سبز عمومی</option>
+                        <option value="رفیوژها">رفیوژها</option>
+                        <option value="صنعتی">صنعتی</option>
+                        <option value="کارگاهی">کارگاهی</option>
+                        <option value="انبار">انبار</option>
+                        <option value="پایانه">پایانه</option>
+                        <option value="پذیرایی">پذیرایی</option>
+                        <option value="گردشگری">گردشگری</option>
+                        <option value="ورزشی">ورزشی</option>
+                        <option value="تاسیسات شهری">تاسیسات شهری</option>
+                        <option value="تجهیزات شهری">تجهیزات شهری</option>
+                        <option value="باغات">باغات</option>
+                        <option value="بایر">بایر</option>
+                        <option value="زراعی">زراعی</option>
+                        <option value="میراث تاریخی-فرهنگی">میراث تاریخی-فرهنگی</option>
+                        <option value="حریم">حریم</option>
+                        <option value="مختلط تجاری مسکونی">مختلط تجاری مسکونی</option>
+                        <option value="معابر">معابر</option>
+                        <option value="رودخانه">رودخانه</option>
+                        <option value="مسیل">مسیل</option>
+                        <option value="در حال ساخت">در حال ساخت</option>
+                        <option value="تخریبی">تخریبی</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>توضیحات تکمیلی</label>
+                    <textarea name="description" rows="2" placeholder="توضیحات اضافی..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== موقعیت مکانی ==================== -->
+        <div class="form-section">
+            <div class="form-section-title">📍 موقعیت مکانی قطعه</div>
+            <div class="location-box">
+                <button type="button" class="location-btn" id="getLocationBtn">
+                    📍 دریافت موقعیت با GPS
+                </button>
+
+                <div id="locationStatus" class="location-status status-info">
+                    <span>📍</span>
+                    <span>روی دکمه کلیک کنید تا موقعیت فعلی شما دریافت شود</span>
+                </div>
+
+                <div class="manual-input-group">
+                    <input type="text" id="manualLat" placeholder="عرض جغرافیایی (مثال: 35.6892)">
+                    <input type="text" id="manualLng" placeholder="طول جغرافیایی (مثال: 51.3890)">
+                    <button type="button" class="location-btn location-btn-outline" id="setManualBtn">
+                        ✏️ ثبت مختصات دستی
+                    </button>
+                </div>
+
+                <small style="color: var(--text-3); display: block; margin-top: 10px;">
+                    💡 برای دریافت مختصات می‌توانید از GPS، نقشه Google Maps یا نشان (Neshan) استفاده کنید
+                </small>
+
+                <input type="hidden" name="latitude" id="latitude" required>
+                <input type="hidden" name="longitude" id="longitude" required>
+            </div>
+        </div>
+
+        <!-- ==================== عکس ==================== -->
+        <div class="form-section">
+            <div class="form-section-title">📷 عکس و مستندات</div>
+            <div class="form-group">
+                <label>عکس</label>
+                <input type="file" name="photo" accept="image/jpeg,image/jpg,image/png">
+                <small style="color: var(--text-3);">فرمت‌های مجاز: jpg, jpeg, png</small>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">✅ ثبت اطلاعات و ارسال به کارشناس</button>
+    </form>
 </div>
+
+<script>
+    // ==================== محاسبات خودکار سطح اشغال و تراکم ====================
+    function calculateOccupancyAndDensity() {
+        const landArea = parseFloat(document.getElementById('land_area')?.value);
+        const builtArea = parseFloat(document.getElementById('built_area')?.value);
+        const floorCount = parseFloat(document.getElementById('floor_count')?.value);
+
+        let occupancy = '';
+        let density = '';
+
+        if (!isNaN(landArea) && !isNaN(builtArea) && landArea > 0) {
+            occupancy = ((builtArea / landArea) * 100).toFixed(2);
+            document.getElementById('occupancy_rate').value = occupancy;
+
+            if (!isNaN(floorCount) && floorCount > 0) {
+                density = (parseFloat(occupancy) * floorCount).toFixed(2);
+                document.getElementById('density').value = density;
+            } else {
+                document.getElementById('density').value = '';
+            }
+        } else {
+            document.getElementById('occupancy_rate').value = '';
+            document.getElementById('density').value = '';
+        }
+    }
+
+    document.getElementById('land_area')?.addEventListener('input', calculateOccupancyAndDensity);
+    document.getElementById('built_area')?.addEventListener('input', calculateOccupancyAndDensity);
+    document.getElementById('floor_count')?.addEventListener('input', calculateOccupancyAndDensity);
+
+    // ==================== دریافت موقعیت جغرافیایی با GPS ====================
+    function getCurrentLocation() {
+        const statusDiv = document.getElementById('locationStatus');
+
+        if (!navigator.geolocation) {
+            statusDiv.className = 'location-status status-error';
+            statusDiv.innerHTML = '<span>❌</span><span>مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند</span>';
+            return;
+        }
+
+        statusDiv.className = 'location-status status-info';
+        statusDiv.innerHTML = '<span>📍</span><span>در حال دریافت موقعیت... لطفاً مجوز دسترسی را بدهید</span>';
+
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        };
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+
+                document.getElementById('latitude').value = lat.toFixed(8);
+                document.getElementById('longitude').value = lng.toFixed(8);
+                document.getElementById('manualLat').value = lat.toFixed(6);
+                document.getElementById('manualLng').value = lng.toFixed(6);
+
+                let accuracyText = '';
+                if (accuracy < 10) accuracyText = 'دقت عالی (کمتر از 10 متر)';
+                else if (accuracy < 50) accuracyText = 'دقت خوب (کمتر از 50 متر)';
+                else if (accuracy < 200) accuracyText = 'دقت متوسط (حدود ' + Math.round(accuracy) + ' متر)';
+                else accuracyText = 'دقت پایین (حدود ' + Math.round(accuracy) + ' متر) - موقعیت تقریبی';
+
+                statusDiv.className = 'location-status status-success';
+                statusDiv.innerHTML = `
+                    <span>✅</span>
+                    <span>موقعیت با موفقیت دریافت شد</span>
+                    <span class="location-coord">عرض: ${lat.toFixed(6)}</span>
+                    <span class="location-coord">طول: ${lng.toFixed(6)}</span>
+                    <span class="location-coord">📏 ${accuracyText}</span>
+                `;
+            },
+            function(error) {
+                let message = '';
+                let helpText = '';
+
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        message = '❌ دسترسی به موقعیت مکانی مجاز نیست';
+                        helpText = 'لطفاً در مرورگر اجازه دسترسی به موقعیت را بدهید.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        message = '❌ اطلاعات موقعیت در دسترس نیست';
+                        helpText = 'لطفاً از Wi-Fi یا GPS استفاده کنید. می‌توانید مختصات را دستی وارد کنید.';
+                        break;
+                    case error.TIMEOUT:
+                        message = '❌ زمان درخواست به پایان رسید';
+                        helpText = 'لطفاً دوباره تلاش کنید یا مختصات را دستی وارد کنید.';
+                        break;
+                    default:
+                        message = '❌ خطا در دریافت موقعیت';
+                        helpText = 'لطفاً مختصات را دستی وارد کنید.';
+                        break;
+                }
+
+                statusDiv.className = 'location-status status-error';
+                statusDiv.innerHTML = `<span>❌</span><span>${message}</span><span class="location-coord">${helpText}</span>`;
+            },
+            options
+        );
+    }
+
+    // ==================== ثبت مختصات دستی ====================
+    function setManualLocation() {
+        const latInput = document.getElementById('manualLat');
+        const lngInput = document.getElementById('manualLng');
+        const statusDiv = document.getElementById('locationStatus');
+
+        let lat = parseFloat(latInput.value);
+        let lng = parseFloat(lngInput.value);
+
+        if (isNaN(lat) || isNaN(lng)) {
+            statusDiv.className = 'location-status status-error';
+            statusDiv.innerHTML = '<span>❌</span><span>لطفاً عرض و طول جغرافیایی معتبر وارد کنید</span><span class="location-coord">مثال: عرض: 35.6892 و طول: 51.3890</span>';
+            return;
+        }
+
+        if (lat < -90 || lat > 90) {
+            statusDiv.className = 'location-status status-error';
+            statusDiv.innerHTML = '<span>❌</span><span>عرض جغرافیایی باید بین -90 تا 90 باشد</span>';
+            return;
+        }
+
+        if (lng < -180 || lng > 180) {
+            statusDiv.className = 'location-status status-error';
+            statusDiv.innerHTML = '<span>❌</span><span>طول جغرافیایی باید بین -180 تا 180 باشد</span>';
+            return;
+        }
+
+        document.getElementById('latitude').value = lat.toFixed(8);
+        document.getElementById('longitude').value = lng.toFixed(8);
+
+        statusDiv.className = 'location-status status-success';
+        statusDiv.innerHTML = `
+            <span>✅</span>
+            <span>موقعیت دستی ثبت شد</span>
+            <span class="location-coord">عرض: ${lat.toFixed(6)}</span>
+            <span class="location-coord">طول: ${lng.toFixed(6)}</span>
+            <span class="location-coord">✏️ وارد شده توسط کاربر</span>
+        `;
+    }
+
+    // ==================== اعتبارسنجی قبل از ارسال فرم ====================
+    document.getElementById('planForm').addEventListener('submit', function(e) {
+        const lat = document.getElementById('latitude').value;
+        const lng = document.getElementById('longitude').value;
+        const parcelCode = document.getElementById('parcel_code')?.value;
+        const neighborhood = document.getElementById('neighborhood')?.value;
+
+        if (!parcelCode) {
+            e.preventDefault();
+            alert('❌ لطفاً کد شناسه قطعه را وارد کنید');
+            document.getElementById('parcel_code').focus();
+            return;
+        }
+
+        if (!neighborhood) {
+            e.preventDefault();
+            alert('❌ لطفاً نام محله را وارد کنید');
+            document.getElementById('neighborhood').focus();
+            return;
+        }
+
+        if (!lat || !lng) {
+            e.preventDefault();
+            const statusDiv = document.getElementById('locationStatus');
+            statusDiv.className = 'location-status status-error';
+            statusDiv.innerHTML = '<span>❌</span><span>لطفاً ابتدا موقعیت مکانی را ثبت کنید</span><span class="location-coord">از دکمه "دریافت موقعیت با GPS" یا "ثبت مختصات دستی" استفاده کنید</span>';
+            statusDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+
+    document.getElementById('getLocationBtn').addEventListener('click', getCurrentLocation);
+    document.getElementById('setManualBtn').addEventListener('click', setManualLocation);
+</script>
 
 {% endblock %}

@@ -2,51 +2,29 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django import forms
-from django.views.decorators.csrf import csrf_protect
-from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views.decorators.http import require_POST
 from django.db.models import Count, Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.utils import timezone
+from django.contrib.gis.geos import Point
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from datetime import datetime, timedelta
 import csv
 import json
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 import os
-from django.shortcuts import redirect
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.gis.geos import Point
-from django.shortcuts import redirect
-from django.shortcuts import redirect
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-import csv
-from django.http import HttpResponse
-from .models import FinalTafsiliData, FinalMomayeziData, ProjectPlan
-from django.contrib.auth.models import User
-import csv
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import ProjectPlan, FinalTafsiliData, FinalMomayeziData
-# جایگزین تمام ایمپورت‌های مربوط به مدل‌ها
+
 from .models import (
     Project, Feature, FeatureAttachment, OperatorProfile,
-    ProjectPlan, TafsiliPlanData, MomayeziPlanData,
-    PlanRevisionHistory, FinalTafsiliData, FinalMomayeziData
+    ProjectPlan, TafsiliPlanData, MomayeziPlanData, MomayeziData,
+    PlanRevisionHistory, FinalTafsiliData, FinalMomayeziData, UserProfile
 )
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
-from .models import UserProfile
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-
 # ==================== Helper Functions ====================
 
 def is_admin(user):
@@ -136,8 +114,7 @@ def admin_login(request):
 
     return render(request, "core_admin/admin_login.html", {"form": form, "error": error})
 
-# ==================== Operator Login ====================
-# ==================== Operator Login ====================
+
 def operator_login(request):
     # اگه قبلاً وارد شده و اپراتوره، ببر به پنل اپراتور
     if request.user.is_authenticated:
@@ -194,23 +171,13 @@ def expert_login(request):
 
     return render(request, 'core_admin/expert_login.html', {'error': error})
 
-
-# ==================== Operator Panel ====================
-
-
 # ==================== Expert Panel ====================
-
 @login_required
 def expert_dashboard(request):
     """پنل مخصوص کارشناسان - مشاهده و تحلیل داده‌ها"""
     if not request.user.groups.filter(name='expert').exists():
         messages.error(request, "دسترسی غیرمجاز")
         return redirect('core_admin:expert_login')
-
-    from .models import Feature, Project, ProjectPlan
-    from django.contrib.auth.models import User
-    from django.core.paginator import Paginator
-
     # دریافت فیلترها
     filter_project = request.GET.get('project')
     filter_operator = request.GET.get('operator')
@@ -319,50 +286,12 @@ def feature_detail_api(request, feature_id):
     }
     return JsonResponse(data)
 
-
-# ==================== Update Feature Status ====================
-
-
-@login_required
-def feature_detail_api(request, feature_id):
-    from .models import Feature
-    feature = get_object_or_404(Feature, id=feature_id)
-
-    data = {
-        'id': feature.id,
-        'feature_id': str(feature.feature_id),
-        'project': feature.project.name if feature.project else 'بدون پروژه',
-        'operator': feature.operator.get_full_name() or feature.operator.username if feature.operator else 'نامشخص',
-        'latitude': feature.location.y if feature.location else None,
-        'longitude': feature.location.x if feature.location else None,
-        'land_use': feature.land_use,
-        'area_sqm': feature.area_sqm,
-        'owner_name': feature.owner_name,
-        'address': feature.address,
-        'description': feature.description,
-        'recorded_at': feature.recorded_at.strftime('%Y/%m/%d %H:%M'),
-        'status': feature.status,
-        'status_display': feature.get_status_display(),
-        'photo': feature.photo.url if feature.photo else None,
-        'review_note': feature.review_note if hasattr(feature, 'review_note') else '',
-    }
-    return JsonResponse(data)
-
-
-# ==================== Update Feature Status ====================
-
-
-
-
 # ==================== Export GeoJSON ====================
-
-# admin_views.py
-
 @login_required
 def export_geojson(request):
     """خروجی GeoJSON برای نمایش روی نقشه"""
     from .models import Feature, Project
-    from django.contrib.gis.geos import Point
+
 
     try:
         filter_project = request.GET.get('project')
@@ -584,7 +513,6 @@ def edit_user(request, user_id):
 
     return render(request, "core_admin/edit_user.html", {"user": user})
 
-
 @login_required
 @user_passes_test(is_admin)
 def delete_user(request, user_id):
@@ -602,7 +530,6 @@ def delete_user(request, user_id):
         messages.success(request, f"کاربر {username} با موفقیت حذف شد")
 
     return redirect("core_admin:dashboard")
-
 
 @login_required
 @user_passes_test(is_admin)
@@ -757,9 +684,7 @@ def export_users_csv(request):
     messages.success(request, f"{users.count()} کاربر با موفقیت در فایل CSV ذخیره شدند")
     return response
 
-
 # ==================== Profile ====================
-
 @login_required
 def profile(request):
     """صفحه پروفایل کاربر - هر کاربر فقط اطلاعات خودش را می‌بیند"""
@@ -802,12 +727,6 @@ def profile(request):
         return redirect("core_admin:profile")
 
     return render(request, "core_admin/profile.html", {"user": request.user})
-
-
-# ==================== پروفایل اپراتور ====================
-# views.py - اضافه کردن یا جایگزینی
-from .models import UserProfile
-
 
 # ==================== پروفایل کارشناس ====================
 @login_required
@@ -879,11 +798,6 @@ def expert_profile_view(request):
     }
     return render(request, 'core_admin/expert_profile.html', context)
 
-# ==================== پروفایل اپراتور ====================
-from django.http import JsonResponse
-import json
-
-
 # ==================== Logs (نسخه موقت) ====================
 
 @login_required
@@ -953,10 +867,6 @@ def search_users_api(request):
 
 
 # ==================== Logout ====================
-
-
-
-
 @login_required
 def admin_logout(request):
     """خروج از سیستم و هدایت به صفحه اصلی"""
@@ -977,8 +887,6 @@ def admin_logout(request):
 
     return response
 # ==================== Operator Panel ====================
-from django.contrib.gis.geos import Point
-
 @login_required
 def operator_dashboard(request):
     if not request.user.groups.filter(name='operator').exists():
@@ -1063,8 +971,6 @@ def check_user_role(request):
     else:
         return JsonResponse({'role': 'none'})
 
-
-
 def check_session(request):
     if request.user.is_authenticated:
         return JsonResponse({'is_logged_in': True})
@@ -1084,7 +990,6 @@ def check_role_redirect(request):
         return redirect('core_admin:dashboard')
     else:
         return redirect('core_admin:login')
-
 
 @csrf_exempt
 @login_required
@@ -1173,7 +1078,8 @@ def operator_add_feature(request):
 
             location = Point(float(longitude), float(latitude), srid=4326)
 
-            Feature.objects.create(
+            # ✅ ذخیره خروجی در متغیر feature
+            feature = Feature.objects.create(
                 project_id=project_id,
                 operator=request.user,
                 location=location,
@@ -1185,6 +1091,7 @@ def operator_add_feature(request):
                 status='submitted'
             )
 
+            # ✅ حالا feature تعریف شده و می‌توانیم عکس را اضافه کنیم
             if request.FILES.get('photo'):
                 feature.photo = request.FILES['photo']
                 feature.save()
@@ -1425,34 +1332,6 @@ def expert_review_plan(request, plan_id):
         'plan_data': plan_data,
     }
     return render(request, 'core_admin/expert_review_plan.html', context)
-@login_required
-def expert_revised_plans(request):
-    """لیست طرح‌های اصلاح شده توسط اپراتور (در انتظار بررسی مجدد)"""
-    if not request.user.groups.filter(name='expert').exists():
-        messages.error(request, "دسترسی غیرمجاز")
-        return redirect('core_admin:expert_login')
-
-    from .models import ProjectPlan
-
-    revised_plans = ProjectPlan.objects.filter(status='revised').order_by('-updated_at')
-
-    return render(request, 'core_admin/expert_revised_plans.html', {'plans': revised_plans})
-
-
-@login_required
-def expert_approved_plans(request):
-    """لیست طرح‌های تأیید شده نهایی"""
-    if not request.user.groups.filter(name='expert').exists():
-        messages.error(request, "دسترسی غیرمجاز")
-        return redirect('core_admin:expert_login')
-
-    from .models import ProjectPlan
-
-    approved_plans = ProjectPlan.objects.filter(status='approved', is_final=True).order_by('-updated_at')
-
-    return render(request, 'core_admin/expert_approved_plans.html', {'plans': approved_plans})
-
-
 # ==================== پنل اپراتور - ثبت طرح‌ها ====================
 
 @login_required
@@ -1472,10 +1351,20 @@ def operator_submit_tafsili(request):
         return redirect('core_admin:operator_login')
 
     from .models import ProjectPlan, TafsiliPlanData
+    from django.contrib.gis.geos import Point
 
     if request.method == 'POST':
         try:
-            # ایجاد طرح پایه
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+
+            location = None
+            if latitude and longitude:
+                try:
+                    location = Point(float(longitude), float(latitude), srid=4326)
+                except:
+                    pass
+
             plan = ProjectPlan.objects.create(
                 plan_type='tafsili',
                 operator=request.user,
@@ -1484,20 +1373,21 @@ def operator_submit_tafsili(request):
                 status='pending'
             )
 
-            # ایجاد تمام فیلدهای طرح تفصیلی
             tafsili = TafsiliPlanData.objects.create(
                 plan=plan,
-                # اطلاعات پایه
+                location=location,
+                # ========== اطلاعات پایه ==========
+                parcel_code=request.POST.get('parcel_code', ''),
                 zone_code=request.POST.get('zone_code', ''),
-                land_use_type=request.POST.get('land_use_type', ''),
+                land_use_type=request.POST.get('land_use_type', ''),  # ← این خط مهمه
                 neighborhood=request.POST.get('neighborhood', ''),
                 detailed_use=request.POST.get('detailed_use', ''),
-                # اطلاعات شهری
+                # ========== اطلاعات شهری ==========
                 street_name=request.POST.get('street_name', ''),
                 street_width=request.POST.get('street_width') or None,
                 ownership_type=request.POST.get('ownership_type', ''),
                 land_area=request.POST.get('land_area') or None,
-                # اطلاعات ساختمانی
+                # ========== اطلاعات ساختمانی ==========
                 density=request.POST.get('density') or None,
                 floor_limit=request.POST.get('floor_limit') or None,
                 built_area=request.POST.get('built_area') or None,
@@ -1506,8 +1396,11 @@ def operator_submit_tafsili(request):
                 material_type=request.POST.get('material_type', ''),
                 building_quality=request.POST.get('building_quality', ''),
                 functional_level=request.POST.get('functional_level', ''),
-                parcel_code=request.POST.get('parcel_code', ''),
-                # اطلاعات کاربری
+                # ========== فیلدهای جدید ==========
+                floor_count=request.POST.get('floor_count') or None,
+                occupancy_rate=request.POST.get('occupancy_rate') or None,
+                building_status=request.POST.get('building_status', ''),
+                # ========== اطلاعات کاربری ==========
                 upper_floor_use=request.POST.get('upper_floor_use', ''),
                 ground_floor_use=request.POST.get('ground_floor_use', ''),
                 dominant_use=request.POST.get('dominant_use', ''),
@@ -1525,7 +1418,6 @@ def operator_submit_tafsili(request):
             return redirect('core_admin:operator_submit_tafsili')
 
     return render(request, 'core_admin/operator_submit_tafsili.html')
-
 
 @login_required
 def operator_submit_momayezi(request):
@@ -1630,7 +1522,6 @@ def expert_revised_plans(request):
 
     return render(request, 'core_admin/expert_revised_plans.html', {'plans': revised_plans})
 
-
 @login_required
 def expert_approved_plans(request):
     """لیست طرح‌های تأیید شده نهایی (فقط نمایش داده می‌شوند)"""
@@ -1706,63 +1597,74 @@ def operator_revise_plan(request, plan_id):
     }
     return render(request, 'core_admin/operator_revise_plan.html', context)
 
+# ==================== Export Functions (CSV) ====================
 
-import csv
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import ProjectPlan, FinalTafsiliData, FinalMomayeziData
 
-import csv
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-
-import csv
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
 
 
 @login_required
-def export_final_csv(request):
-    """خروجی CSV از طرح‌های تأیید شده"""
+def export_final_detailed_csv(request):
+    """خروجی CSV کامل با استفاده از کوئری مستقیم SQL"""
 
     if not (request.user.groups.filter(name='expert').exists() or request.user.is_staff):
         return redirect('core_admin:login')
 
+    # کوئری مستقیم SQL با COALESCE برای فیلدهایی که ممکنه NULL باشن
+    query = """
+        SELECT 
+            f.id AS "شناسه",
+            p.title AS "عنوان پروژه",
+            u.username AS "اپراتور",
+            'تأیید شده' AS "وضعیت",
+            TO_CHAR(p.created_at, 'YYYY/MM/DD HH24:MI') AS "تاریخ ثبت",
+            TO_CHAR(f.created_at, 'YYYY/MM/DD HH24:MI') AS "تاریخ تأیید",
+            f.zone_code AS "کد منطقه",
+            f.neighborhood AS "نام محله",
+            f.detailed_use AS "کاربری تفصیلی",
+            f.street_name AS "نام معبر",
+            f.street_width AS "عرض معبر (متر)",
+            f.ownership_type AS "نوع مالکیت",
+            f.land_area AS "مساحت عرصه (متر مربع)",
+            f.built_area AS "مساحت اعیانی (متر مربع)",
+            COALESCE(f.floor_count, t.floor_count) AS "تعداد طبقات",
+            COALESCE(f.occupancy_rate, t.occupancy_rate) AS "سطح اشغال (%)",
+            f.density AS "تراکم ساختمانی",
+            f.floor_limit AS "حداکثر طبقات مجاز",
+            f.building_age AS "قدمت بنا",
+            f.facade_type AS "نوع نما",
+            f.material_type AS "مصالح ساختمانی",
+            f.building_quality AS "کیفیت ابنیه",
+            f.functional_level AS "سطح عملکردی",
+            f.upper_floor_use AS "کاربری طبقات بالای همکف",
+            f.ground_floor_use AS "کاربری همکف",
+            f.dominant_use AS "انواع کاربری (غالب)",
+            COALESCE(f.description, p.description) AS "توضیحات",
+            COALESCE(f.latitude, ST_Y(t.location)) AS "عرض جغرافیایی",
+            COALESCE(f.longitude, ST_X(t.location)) AS "طول جغرافیایی"
+        FROM core_admin_finaltafsilidata f
+        INNER JOIN core_admin_projectplan p ON f.plan_id = p.id
+        INNER JOIN auth_user u ON p.operator_id = u.id
+        LEFT JOIN core_admin_tafsiliplandata t ON t.plan_id = p.id
+        WHERE p.status = 'approved'
+          AND p.plan_type = 'tafsili'
+        ORDER BY f.created_at DESC
+    """
+
     response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
-    response['Content-Disposition'] = 'attachment; filename="taiid_shodeh.csv"'
+    response['Content-Disposition'] = 'attachment; filename="export_final_tafsili.csv"'
 
     writer = csv.writer(response)
 
-    writer.writerow([
-        'شناسه', 'عنوان پروژه', 'اپراتور', 'نوع طرح',
-        'تاریخ ثبت', 'تاریخ تأیید', 'وضعیت'
-    ])
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
 
-    from .models import ProjectPlan
-
-    approved_plans = ProjectPlan.objects.filter(
-        status='approved',
-        is_final=True
-    ).select_related('operator').order_by('-created_at')
-
-    plan_type_map = {
-        'tafsili': 'طرح تفصیلی',
-        'momayezi': 'ممیزی املاک'
-    }
-
-    for plan in approved_plans:
-        writer.writerow([
-            str(plan.id)[:8],
-            plan.title,
-            plan.operator.username,
-            plan_type_map.get(plan.plan_type, plan.plan_type),
-            plan.created_at.strftime('%Y/%m/%d %H:%M'),
-            plan.updated_at.strftime('%Y/%m/%d %H:%M'),
-            'تأیید شده'
-        ])
+        writer.writerow(columns)
+        for row in rows:
+            writer.writerow(row)
 
     return response
-
 
 @login_required
 def expert_momayezi_list(request):
@@ -1809,65 +1711,6 @@ def expert_momayezi_list(request):
     return render(request, 'core_admin/expert_plans_list_new.html', context)
 
 @login_required
-def export_final_detailed_csv(request):
-    """خروجی CSV کامل با جزئیات طرح‌های تأیید شده (فقط کارشناسان و ادمین)"""
-
-    # بررسی دسترسی کارشناس یا ادمین
-    if not (request.user.groups.filter(name='expert').exists() or request.user.is_staff):
-        return redirect('core_admin:login')
-
-    response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
-    response['Content-Disposition'] = 'attachment; filename="joziiat_taiidi.csv"'
-
-    writer = csv.writer(response)
-
-    writer.writerow([
-        'شناسه', 'عنوان پروژه', 'اپراتور', 'نوع طرح',
-        'کد منطقه', 'نوع کاربری', 'کاربری تفصیلی',
-        'تراکم', 'حداکثر طبقات', 'وضعیت', 'تاریخ ثبت'
-    ])
-
-    from .models import FinalTafsiliData, FinalMomayeziData
-
-    # داده‌های طرح تفصیلی تأیید شده
-    tafsili_data = FinalTafsiliData.objects.select_related('plan__operator').order_by('-created_at')
-
-    for data in tafsili_data:
-        writer.writerow([
-            str(data.id)[:8],
-            data.plan.title,
-            data.plan.operator.username,
-            'طرح تفصیلی',
-            data.zone_code,
-            data.land_use_type,
-            data.detailed_use[:50] + '...' if len(data.detailed_use) > 50 else data.detailed_use,
-            data.density,
-            data.floor_limit,
-            'تأیید شده',
-            data.created_at.strftime('%Y/%m/%d %H:%M'),
-        ])
-
-    # داده‌های ممیزی املاک تأیید شده
-    momayezi_data = FinalMomayeziData.objects.select_related('plan__operator').order_by('-created_at')
-
-    for data in momayezi_data:
-        writer.writerow([
-            str(data.id)[:8],
-            data.plan.title,
-            data.plan.operator.username,
-            'ممیزی املاک',
-            data.parcel_code,
-            data.owner_name,
-            data.area,
-            data.construction_year,
-            '-',
-            'تأیید شده',
-            data.created_at.strftime('%Y/%m/%d %H:%M'),
-        ])
-
-    return response
-
-@login_required
 def expert_stats_dashboard(request):
     """داشبورد آماری پیشرفته برای کارشناسان"""
     if not request.user.groups.filter(name='expert').exists():
@@ -1878,7 +1721,7 @@ def expert_stats_dashboard(request):
     from django.db.models import Count
     from datetime import datetime, timedelta
     import calendar
-    import json
+
 
     # آمار کلی قطعات
     total_features = Feature.objects.count()
@@ -1916,37 +1759,37 @@ def expert_stats_dashboard(request):
     }
     return render(request, 'core_admin/expert_stats.html', context)
 
-
 @login_required
 def expert_plan_detail_api(request, plan_id):
-    """API دریافت جزئیات کامل طرح برای مودال کارشناس"""
     from .models import ProjectPlan
-
     plan = get_object_or_404(ProjectPlan, id=plan_id)
 
     data = {
         'id': str(plan.id),
-        'feature_id': str(plan.id)[:8],
         'project': plan.title,
         'operator': plan.operator.get_full_name() or plan.operator.username,
         'recorded_at': plan.created_at.strftime('%Y/%m/%d %H:%M'),
         'status': plan.status,
-        'status_display': plan.get_status_display(),
         'review_note': plan.expert_note,
     }
 
-    # اضافه کردن فیلدهای اختصاصی طرح تفصیلی
     if hasattr(plan, 'tafsili_plan'):
         t = plan.tafsili_plan
         data.update({
+            'parcel_code': t.parcel_code or '-',
             'zone_code': t.zone_code or '-',
             'land_use_type': t.land_use_type or '-',
+            'neighborhood': t.neighborhood or '-',
             'detailed_use': t.detailed_use or '-',
-            'density': t.density or '-',
-            'floor_limit': t.floor_limit or '-',
             'street_name': t.street_name or '-',
             'street_width': t.street_width or '-',
             'ownership_type': t.ownership_type or '-',
+            'land_area': t.land_area or '-',
+            'built_area': t.built_area or '-',
+            'occupancy_rate': t.occupancy_rate or '-',
+            'floor_count': t.floor_count or '-',
+            'floor_limit': t.floor_limit or '-',
+            'density': t.density or '-',
             'building_age': t.building_age or '-',
             'facade_type': t.facade_type or '-',
             'material_type': t.material_type or '-',
@@ -1955,11 +1798,10 @@ def expert_plan_detail_api(request, plan_id):
             'upper_floor_use': t.upper_floor_use or '-',
             'ground_floor_use': t.ground_floor_use or '-',
             'dominant_use': t.dominant_use or '-',
-            'built_area': t.built_area or '-',
-            'land_area': t.land_area or '-',
-            'neighborhood': t.neighborhood or '-',
-            'parcel_code': t.parcel_code or '-',
+            'building_status': t.building_status or '-',
             'photo': t.photo.url if t.photo else None,
+            'latitude': t.location.y if t.location else None,
+            'longitude': t.location.x if t.location else None,
         })
 
     return JsonResponse(data)
@@ -1983,48 +1825,62 @@ def expert_update_plan_status(request, plan_id):
             plan = get_object_or_404(ProjectPlan, id=plan_id)
 
             if status == 'approved':
-                # ✅ فقط اینجا ذخیره کن (وقتی کارشناس تأیید کرد)
                 if plan.plan_type == 'tafsili' and hasattr(plan, 'tafsili_plan'):
-                    # چک کن قبلاً ذخیره نشده باشه
-                    if not hasattr(plan, 'final_tafsili'):
-                        FinalTafsiliData.objects.create(
-                            plan=plan,
-                            zone_code=plan.tafsili_plan.zone_code,
-                            land_use_type=plan.tafsili_plan.land_use_type,
-                            detailed_use=plan.tafsili_plan.detailed_use,
-                            density=plan.tafsili_plan.density,
-                            floor_limit=plan.tafsili_plan.floor_limit,
-                            street_name=plan.tafsili_plan.street_name,
-                            street_width=plan.tafsili_plan.street_width,
-                            ownership_type=plan.tafsili_plan.ownership_type,
-                            building_age=plan.tafsili_plan.building_age,
-                            facade_type=plan.tafsili_plan.facade_type,
-                            material_type=plan.tafsili_plan.material_type,
-                            building_quality=plan.tafsili_plan.building_quality,
-                            functional_level=plan.tafsili_plan.functional_level,
-                            upper_floor_use=plan.tafsili_plan.upper_floor_use,
-                            ground_floor_use=plan.tafsili_plan.ground_floor_use,
-                            dominant_use=plan.tafsili_plan.dominant_use,
-                            built_area=plan.tafsili_plan.built_area,
-                            land_area=plan.tafsili_plan.land_area,
-                            neighborhood=plan.tafsili_plan.neighborhood,
-                            parcel_code=plan.tafsili_plan.parcel_code,
-                            photo=plan.tafsili_plan.photo
-                        )
+                    t = plan.tafsili_plan
+
+                    # حذف نسخه قبلی
+                    FinalTafsiliData.objects.filter(plan=plan).delete()
+
+                    # ایجاد نسخه نهایی با تمام فیلدها
+                    final = FinalTafsiliData.objects.create(
+                        plan=plan,
+                        # اطلاعات پایه
+                        zone_code=t.zone_code or '',
+                        neighborhood=t.neighborhood or '',
+                        detailed_use=t.detailed_use or '',
+                        # اطلاعات شهری
+                        street_name=t.street_name or '',
+                        street_width=t.street_width,
+                        ownership_type=t.ownership_type or '',
+                        land_area=t.land_area,
+                        # اطلاعات ساختمانی
+                        density=t.density,
+                        floor_limit=t.floor_limit,
+                        built_area=t.built_area,
+                        building_age=t.building_age or '',
+                        facade_type=t.facade_type or '',
+                        material_type=t.material_type or '',
+                        building_quality=t.building_quality or '',
+                        functional_level=t.functional_level or '',
+                        floor_count=t.floor_count,  # ✅ تعداد طبقات
+                        occupancy_rate=t.occupancy_rate,  # ✅ سطح اشغال
+                        building_status=t.building_status or '',
+                        # اطلاعات کاربری
+                        upper_floor_use=t.upper_floor_use or '',
+                        ground_floor_use=t.ground_floor_use or '',
+                        dominant_use=t.dominant_use or '',
+                        description=plan.description or '',  # ✅ توضیحات
+                        # عکس و موقعیت
+                        photo=t.photo,
+                        location=t.location,
+                        latitude=t.location.y if t.location else None,  # ✅ عرض
+                        longitude=t.location.x if t.location else None,  # ✅ طول
+                    )
 
                 elif plan.plan_type == 'momayezi' and hasattr(plan, 'momayezi_plan'):
-                    if not hasattr(plan, 'final_momayezi'):
-                        FinalMomayeziData.objects.create(
-                            plan=plan,
-                            parcel_code=plan.momayezi_plan.parcel_code,
-                            ownership_type=plan.momayezi_plan.ownership_type,
-                            owner_name=plan.momayezi_plan.owner_name,
-                            building_type=plan.momayezi_plan.building_type,
-                            area=plan.momayezi_plan.area,
-                            construction_year=plan.momayezi_plan.construction_year,
-                            is_licensed=plan.momayezi_plan.is_licensed,
-                            attachment=plan.momayezi_plan.attachment
-                        )
+                    FinalMomayeziData.objects.get_or_create(
+                        plan=plan,
+                        defaults={
+                            'parcel_code': plan.momayezi_plan.parcel_code,
+                            'ownership_type': plan.momayezi_plan.ownership_type,
+                            'owner_name': plan.momayezi_plan.owner_name,
+                            'building_type': plan.momayezi_plan.building_type,
+                            'area': plan.momayezi_plan.area,
+                            'construction_year': plan.momayezi_plan.construction_year,
+                            'is_licensed': plan.momayezi_plan.is_licensed,
+                            'attachment': plan.momayezi_plan.attachment
+                        }
+                    )
 
                 plan.status = 'approved'
                 plan.expert = request.user
@@ -2033,7 +1889,6 @@ def expert_update_plan_status(request, plan_id):
                 plan.save()
 
             elif status == 'rejected':
-                # ❌ رد شده، نباید توی Final ذخیره بشه
                 plan.status = 'rejected'
                 plan.expert = request.user
                 plan.expert_note = review_note
@@ -2043,10 +1898,11 @@ def expert_update_plan_status(request, plan_id):
             return JsonResponse({'success': True})
 
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return JsonResponse({'success': False, 'error': str(e)})
 
     return JsonResponse({'success': False, 'error': 'Invalid method'})
-
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
@@ -2078,7 +1934,7 @@ admin.site.register(User, CustomUserAdmin)
 
 @login_required
 def export_full_tafsili_csv(request):
-    """خروجی CSV فقط از طرح‌هایی که کارشناس تأیید کرده است"""
+    """خروجی CSV کامل با تمام فیلدها (تعداد طبقات، سطح اشغال، توضیحات، مختصات)"""
 
     if not (request.user.groups.filter(name='expert').exists() or request.user.is_staff):
         return redirect('core_admin:login')
@@ -2088,68 +1944,99 @@ def export_full_tafsili_csv(request):
 
     writer = csv.writer(response)
 
+    # هدرهای جدید با فیلدهای مورد نیاز
     writer.writerow([
         'شناسه', 'عنوان پروژه', 'اپراتور', 'وضعیت', 'تاریخ ثبت', 'تاریخ تأیید',
-        'کد منطقه', 'نوع کاربری اراضی', 'نام محله', 'کاربری تفصیلی',
-        'نام معبر', 'عرض معبر (متر)', 'نوع مالکیت', 'مساحت عرصه (متر مربع)',
-        'تراکم ساختمانی', 'حداکثر طبقات', 'مساحت اعیانی (متر مربع)',
-        'قدمت بنا', 'نوع نما', 'مصالح ساختمانی', 'کیفیت ابنیه',
-        'سطح عملکردی', 'کد پلاک', 'کاربری طبقات بالای همکف',
-        'کاربری همکف', 'انواع کاربری (غالب)',
+        'کد منطقه', 'نام محله', 'کاربری تفصیلی',
+        'نام معبر', 'عرض معبر (متر)', 'نوع مالکیت',
+        'مساحت عرصه (متر مربع)', 'مساحت اعیانی (متر مربع)',
+        'تعداد طبقات', 'سطح اشغال (%)', 'تراکم ساختمانی',
+        'حداکثر طبقات', 'قدمت بنا', 'نوع نما',
+        'مصالح ساختمانی', 'کیفیت ابنیه', 'سطح عملکردی',
+        'کاربری طبقات بالای همکف', 'کاربری همکف', 'انواع کاربری (غالب)',
+        'توضیحات',
+        'عرض جغرافیایی', 'طول جغرافیایی'
     ])
 
-    from .models import ProjectPlan
+    from .models import FinalTafsiliData, TafsiliPlanData
+    from django.db import connection
 
-    # فقط طرح‌های تأیید شده
-    plans = ProjectPlan.objects.filter(
-        plan_type='tafsili',
-        status='approved',
-        is_final=True
-    ).select_related('operator', 'tafsili_plan').order_by('-created_at')
+    # استفاده از کوئری مستقیم برای اطمینان از گرفتن همه داده‌ها
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT 
+                f.id,
+                p.title,
+                u.username,
+                f.created_at,
+                f.zone_code,
+                f.neighborhood,
+                f.detailed_use,
+                f.street_name,
+                f.street_width,
+                f.ownership_type,
+                f.land_area,
+                f.built_area,
+                COALESCE(f.floor_count, t.floor_count) as floor_count,
+                COALESCE(f.occupancy_rate, t.occupancy_rate) as occupancy_rate,
+                f.density,
+                f.floor_limit,
+                f.building_age,
+                f.facade_type,
+                f.material_type,
+                f.building_quality,
+                f.functional_level,
+                f.upper_floor_use,
+                f.ground_floor_use,
+                f.dominant_use,
+                COALESCE(f.description, p.description) as description,
+                COALESCE(f.latitude, ST_Y(t.location)) as latitude,
+                COALESCE(f.longitude, ST_X(t.location)) as longitude
+            FROM core_admin_finaltafsilidata f
+            INNER JOIN core_admin_projectplan p ON f.plan_id = p.id
+            INNER JOIN auth_user u ON p.operator_id = u.id
+            LEFT JOIN core_admin_tafsiliplandata t ON t.plan_id = p.id
+            WHERE p.status = 'approved' AND p.plan_type = 'tafsili'
+            ORDER BY f.created_at DESC
+        """)
 
-    count = 0
-    for plan in plans:
-        t = plan.tafsili_plan
-        writer.writerow([
-            str(plan.id)[:8],
-            plan.title,
-            plan.operator.username,
-            'تأیید شده',
-            plan.created_at.strftime('%Y/%m/%d %H:%M'),
-            plan.updated_at.strftime('%Y/%m/%d %H:%M'),
-            t.zone_code or '',
-            t.land_use_type or '',
-            t.neighborhood or '',
-            t.detailed_use or '',
-            t.street_name or '',
-            t.street_width or '',
-            t.ownership_type or '',
-            t.land_area or '',
-            t.density or '',
-            t.floor_limit or '',
-            t.built_area or '',
-            t.building_age or '',
-            t.facade_type or '',
-            t.material_type or '',
-            t.building_quality or '',
-            t.functional_level or '',
-            t.parcel_code or '',
-            t.upper_floor_use or '',
-            t.ground_floor_use or '',
-            t.dominant_use or '',
-        ])
-        count += 1
+        rows = cursor.fetchall()
 
-    messages.success(request, f"{count} طرح تأیید شده با موفقیت در فایل CSV ذخیره شد")
+        for row in rows:
+            writer.writerow([
+                str(row[0])[:8] if row[0] else '',
+                row[1] or '',  # عنوان پروژه
+                row[2] or '',  # اپراتور
+                'تأیید شده',
+                row[3].strftime('%Y/%m/%d %H:%M') if row[3] else '',  # تاریخ ثبت
+                row[3].strftime('%Y/%m/%d %H:%M') if row[3] else '',  # تاریخ تأیید (همون تاریخ ثبت final)
+                row[4] or '',  # کد منطقه
+                row[5] or '',  # نام محله
+                row[6] or '',  # کاربری تفصیلی
+                row[7] or '',  # نام معبر
+                row[8] or '',  # عرض معبر
+                row[9] or '',  # نوع مالکیت
+                row[10] or '',  # مساحت عرصه
+                row[11] or '',  # مساحت اعیانی
+                row[12] or '',  # تعداد طبقات
+                f"{row[13]:.2f}" if row[13] else '',  # سطح اشغال
+                row[14] or '',  # تراکم
+                row[15] or '',  # حداکثر طبقات
+                row[16] or '',  # قدمت بنا
+                row[17] or '',  # نوع نما
+                row[18] or '',  # مصالح
+                row[19] or '',  # کیفیت ابنیه
+                row[20] or '',  # سطح عملکردی
+                row[21] or '',  # کاربری طبقات بالا
+                row[22] or '',  # کاربری همکف
+                row[23] or '',  # کاربری غالب
+                row[24] or '',  # توضیحات
+                f"{row[25]:.6f}" if row[25] else '',  # عرض جغرافیایی
+                f"{row[26]:.6f}" if row[26] else '',  # طول جغرافیایی
+            ])
+
     return response
 
-
-from django.http import JsonResponse
-
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
 
 @login_required
 def operator_profile_view(request):
@@ -2268,5 +2155,186 @@ def some_expert_view(request):
     return render(request, 'core_admin/some_page.html', context)
 
 
+@login_required
+def operator_edit_plan(request, plan_id):
+    """ویرایش طرح توسط اپراتور"""
+    if not request.user.groups.filter(name='operator').exists():
+        messages.error(request, "دسترسی غیرمجاز")
+        return redirect('core_admin:operator_login')
+
+    from .models import ProjectPlan, TafsiliPlanData
+    from django.contrib.gis.geos import Point
+
+    plan = get_object_or_404(ProjectPlan, id=plan_id, operator=request.user)
+
+    # فقط طرح‌های در انتظار و رد شده قابل ویرایش هستند
+    if plan.status not in ['pending', 'rejected']:
+        messages.error(request, "این طرح قابل ویرایش نیست")
+        return redirect('core_admin:operator_my_plans')
+
+    if request.method == 'POST':
+        try:
+            # دریافت موقعیت مکانی
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+
+            location = None
+            if latitude and longitude:
+                try:
+                    location = Point(float(longitude), float(latitude), srid=4326)
+                except:
+                    pass
+
+            # به‌روزرسانی اطلاعات طرح پایه
+            plan.title = request.POST.get('title', '')
+            plan.description = request.POST.get('description', '')
+            plan.status = 'pending'  # برگشت به حالت در انتظار بررسی
+            plan.revision_count += 1
+            plan.save()
+
+            # به‌روزرسانی اطلاعات TafsiliPlanData
+            if hasattr(plan, 'tafsili_plan'):
+                t = plan.tafsili_plan
+                t.location = location
+                t.parcel_code = request.POST.get('parcel_code', '')
+                t.zone_code = request.POST.get('zone_code', '')
+                t.neighborhood = request.POST.get('neighborhood', '')
+                t.detailed_use = request.POST.get('detailed_use', '')
+                t.street_name = request.POST.get('street_name', '')
+                t.street_width = request.POST.get('street_width') or None
+                t.ownership_type = request.POST.get('ownership_type', '')
+                t.land_area = request.POST.get('land_area') or None
+                t.built_area = request.POST.get('built_area') or None
+                t.density = request.POST.get('density') or None
+                t.floor_limit = request.POST.get('floor_limit') or None
+                t.building_age = request.POST.get('building_age', '')
+                t.facade_type = request.POST.get('facade_type', '')
+                t.material_type = request.POST.get('material_type', '')
+                t.building_quality = request.POST.get('building_quality', '')
+                t.functional_level = request.POST.get('functional_level', '')
+                t.floor_count = request.POST.get('floor_count') or None
+                t.occupancy_rate = request.POST.get('occupancy_rate') or None
+                t.building_status = request.POST.get('building_status', '')
+                t.upper_floor_use = request.POST.get('upper_floor_use', '')
+                t.ground_floor_use = request.POST.get('ground_floor_use', '')
+                t.dominant_use = request.POST.get('dominant_use', '')
+
+                if request.FILES.get('photo'):
+                    t.photo = request.FILES['photo']
+                t.save()
+
+            messages.success(request, "✅ طرح با موفقیت ویرایش شد و دوباره به کارشناس ارسال گردید.")
+            return redirect('core_admin:operator_my_plans')
+
+        except Exception as e:
+            messages.error(request, f"❌ خطا در ویرایش: {str(e)}")
+            return redirect('core_admin:operator_edit_plan', plan_id=plan_id)
+
+    # ==================== بخش GET ====================
+    # استخراج مختصات از location
+    latitude = ''
+    longitude = ''
+
+    if hasattr(plan, 'tafsili_plan') and plan.tafsili_plan and plan.tafsili_plan.location:
+        latitude = plan.tafsili_plan.location.y  # عرض
+        longitude = plan.tafsili_plan.location.x  # طول
+
+    context = {
+        'plan': plan,
+        'tafsili': plan.tafsili_plan if hasattr(plan, 'tafsili_plan') else None,
+        'latitude': latitude,
+        'longitude': longitude,
+    }
+    return render(request, 'core_admin/operator_edit_plan.html', context)
 
 
+@login_required
+def export_arcgis_csv(request):
+    """خروجی CSV مخصوص ArcGIS برای بروزرسانی قطعات"""
+
+    if not (request.user.groups.filter(name='expert').exists() or request.user.is_staff):
+        return redirect('core_admin:login')
+
+    response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+    response['Content-Disposition'] = 'attachment; filename="arcgis_export.csv"'
+
+    writer = csv.writer(response)
+
+    # هدرها - با شناسه در اولویت
+    writer.writerow([
+        'OBJECTID', 'عنوان پروژه', 'کد منطقه', 'نام محله', 'کاربری تفصیلی',
+        'نام معبر', 'عرض معبر (متر)', 'نوع مالکیت', 'مساحت عرصه (متر مربع)',
+        'مساحت اعیانی (متر مربع)', 'تعداد طبقات', 'سطح اشغال (%)', 'تراکم ساختمانی',
+        'حداکثر طبقات', 'قدمت بنا', 'نوع نما', 'مصالح ساختمانی', 'کیفیت ابنیه',
+        'سطح عملکردی', 'کاربری طبقات بالای همکف', 'کاربری همکف', 'انواع کاربری (غالب)',
+        'توضیحات', 'عرض جغرافیایی', 'طول جغرافیایی'
+    ])
+
+    from django.db import connection
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT 
+                f.id,
+                p.title,
+                f.zone_code,
+                f.neighborhood,
+                f.detailed_use,
+                f.street_name,
+                f.street_width,
+                f.ownership_type,
+                f.land_area,
+                f.built_area,
+                f.floor_count,
+                f.occupancy_rate,
+                f.density,
+                f.floor_limit,
+                f.building_age,
+                f.facade_type,
+                f.material_type,
+                f.building_quality,
+                f.functional_level,
+                f.upper_floor_use,
+                f.ground_floor_use,
+                f.dominant_use,
+                f.description,
+                f.latitude,
+                f.longitude
+            FROM core_admin_finaltafsilidata f
+            INNER JOIN core_admin_projectplan p ON f.plan_id = p.id
+            WHERE p.status = 'approved' AND p.plan_type = 'tafsili'
+            ORDER BY f.created_at DESC
+        """)
+
+        rows = cursor.fetchall()
+
+        for row in rows:
+            writer.writerow([
+                row[0],  # OBJECTID - شناسه اصلی
+                row[1] or '',
+                row[2] or '',
+                row[3] or '',
+                row[4] or '',
+                row[5] or '',
+                row[6] or '',
+                row[7] or '',
+                row[8] or '',
+                row[9] or '',
+                row[10] or '',
+                f"{row[11]:.2f}" if row[11] else '',
+                row[12] or '',
+                row[13] or '',
+                row[14] or '',
+                row[15] or '',
+                row[16] or '',
+                row[17] or '',
+                row[18] or '',
+                row[19] or '',
+                row[20] or '',
+                row[21] or '',
+                row[22] or '',
+                f"{row[23]:.6f}" if row[23] else '',
+                f"{row[24]:.6f}" if row[24] else '',
+            ])
+
+    return response

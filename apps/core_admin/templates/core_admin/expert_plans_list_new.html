@@ -66,6 +66,9 @@
     .data-table tr:hover td {
         background: #f1f5f9;
     }
+    [data-theme="dark"] .data-table tr:hover td {
+        background: #1e2538;
+    }
     .status-badge {
         display: inline-block;
         padding: 4px 12px;
@@ -73,68 +76,41 @@
         font-size: 11px;
         font-weight: 600;
     }
-    .status-pending {
-        background: #fef3c7;
-        color: #92400e;
-    }
-    .status-approved {
-        background: #d1fae5;
-        color: #065f46;
-    }
-    .status-rejected {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-    .btn-approve {
-        background: #10b981;
-        color: white;
-        border: none;
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-approved { background: #d1fae5; color: #065f46; }
+    .status-rejected { background: #fee2e2; color: #991b1b; }
+    [data-theme="dark"] .status-pending { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    [data-theme="dark"] .status-approved { background: rgba(16,185,129,0.15); color: #34d399; }
+    [data-theme="dark"] .status-rejected { background: rgba(239,68,68,0.15); color: #f87171; }
+    .btn-approve, .btn-reject, .btn-detail {
         padding: 6px 12px;
+        border: none;
         border-radius: 6px;
         cursor: pointer;
         font-size: 12px;
         margin: 2px;
         transition: all 0.2s;
     }
-    .btn-approve:hover {
-        background: #059669;
+    .btn-approve { background: #10b981; color: white; }
+    .btn-approve:hover { background: #059669; }
+    .btn-reject { background: #ef4444; color: white; }
+    .btn-reject:hover { background: #dc2626; }
+    .btn-detail { background: #3b82f6; color: white; }
+    .btn-detail:hover { background: #2563eb; }
+    .action-cell { white-space: nowrap; }
+    .empty-state { text-align: center; padding: 60px; color: #9ca3af; }
+    .location-coord {
+        font-family: monospace;
+        font-size: 10px;
+        background: #e2e8f0;
+        padding: 2px 6px;
+        border-radius: 10px;
     }
-    .btn-reject {
-        background: #ef4444;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 12px;
-        margin: 2px;
-        transition: all 0.2s;
+    [data-theme="dark"] .location-coord {
+        background: #1e2538;
     }
-    .btn-reject:hover {
-        background: #dc2626;
-    }
-    .btn-detail {
-        background: #3b82f6;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 12px;
-        margin: 2px;
-        transition: all 0.2s;
-    }
-    .btn-detail:hover {
-        background: #2563eb;
-    }
-    .action-cell {
-        white-space: nowrap;
-    }
-    .empty-state {
-        text-align: center;
-        padding: 60px;
-        color: #9ca3af;
-    }
+
+    /* مودال */
     .modal {
         display: none;
         position: fixed;
@@ -151,23 +127,14 @@
     .modal-content {
         background: white;
         border-radius: 24px;
-        padding: 28px;
-        max-width: 650px;
+        padding: 0px 28px 28px 28px;
+        max-width: 850px;
         width: 90%;
         max-height: 85vh;
         overflow-y: auto;
-        box-shadow: 0 20px 35px rgba(0,0,0,0.2);
-        animation: fadeInUp 0.3s ease;
     }
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    [data-theme="dark"] .modal-content {
+        background: #1a1f2e;
     }
     .modal-header {
         display: flex;
@@ -176,32 +143,46 @@
         margin-bottom: 20px;
         border-bottom: 2px solid #e5e7eb;
         padding-bottom: 15px;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+    }
+    [data-theme="dark"] .modal-header {
+        background: #1a1f2e;
+        border-bottom-color: #334155;
     }
     .modal-header h3 {
         margin: 0;
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
         color: #1e3c72;
+    }
+    [data-theme="dark"] .modal-header h3 {
+        color: #e8edf5;
     }
     .close-modal {
         cursor: pointer;
         font-size: 28px;
         color: #6b7280;
-        transition: color 0.2s;
     }
-    .close-modal:hover {
-        color: #ef4444;
-    }
+    .close-modal:hover { color: #ef4444; }
+
+    /* دوتایی نمایش دادن اطلاعات */
     .detail-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        gap: 16px;
     }
     .detail-item {
         background: #f8fafc;
-        padding: 12px;
+        padding: 12px 15px;
         border-radius: 12px;
-        margin-bottom: 8px;
+        break-inside: avoid;
+        transition: all 0.2s;
+    }
+    [data-theme="dark"] .detail-item {
+        background: #141824;
     }
     .detail-item.full-width {
         grid-column: span 2;
@@ -211,16 +192,22 @@
         color: #475569;
         font-size: 12px;
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
+    }
+    [data-theme="dark"] .detail-label {
+        color: #8d9ab0;
     }
     .detail-value {
         color: #1e293b;
         font-size: 13px;
         word-break: break-word;
     }
+    [data-theme="dark"] .detail-value {
+        color: #e8edf5;
+    }
     .detail-photo {
-        margin-top: 10px;
         text-align: center;
+        margin-top: 5px;
     }
     .detail-photo img {
         max-width: 100%;
@@ -237,15 +224,16 @@
         border-right: 4px solid #ef4444;
         grid-column: span 2;
     }
+    [data-theme="dark"] .rejection-box {
+        background: rgba(239,68,68,0.1);
+    }
     .rejection-box strong {
         color: #991b1b;
         display: block;
         margin-bottom: 8px;
     }
-    .rejection-box p {
-        color: #7f1d1d;
-        margin: 0;
-        line-height: 1.6;
+    [data-theme="dark"] .rejection-box strong {
+        color: #f87171;
     }
     .review-note-input {
         width: 100%;
@@ -284,9 +272,7 @@
         <select id="filterOperator">
             <option value="">همه اپراتورها</option>
             {% for op in operators %}
-            <option value="{{ op.id }}" {% if filter_operator == op.id|stringformat:"s" %}selected{% endif %}>
-                {{ op.get_full_name|default:op.username }}
-            </option>
+            <option value="{{ op.id }}" {% if filter_operator|stringformat:"s" == op.id|stringformat:"s" %}selected{% endif %}>{{ op.get_full_name|default:op.username }}</option>
             {% endfor %}
         </select>
     </div>
@@ -311,14 +297,17 @@
         <thead>
             <tr>
                 <th>ردیف</th>
-                <th>اپراتور</th>
+                <th>کد قطعه</th>
                 <th>عنوان پروژه</th>
-                <th>تاریخ ثبت</th>
+                <th>اپراتور</th>
                 <th>کد منطقه</th>
-                <th>نوع کاربری</th>
+                <th>نام محله</th>
                 <th>نام معبر</th>
                 <th>نوع مالکیت</th>
+                <th>کاربری غالب</th>
+                <th>موقعیت (GPS)</th>
                 <th>وضعیت</th>
+                <th>تاریخ ثبت</th>
                 <th>عملیات</th>
             </tr>
         </thead>
@@ -326,24 +315,29 @@
             {% for plan in data_list %}
             <tr>
                 <td style="text-align:center;">{{ forloop.counter }}</td>
-                <td>{{ plan.operator.get_full_name|default:plan.operator.username }}</td>
+                <td>{{ plan.tafsili_plan.parcel_code|default:"-" }}</td>
                 <td>{{ plan.title|truncatechars:25 }}</td>
-                <td>{{ plan.created_at|date:"Y/m/d H:i" }}</td>
+                <td>{{ plan.operator.get_full_name|default:plan.operator.username }}</td>
                 <td>{{ plan.tafsili_plan.zone_code|default:"-" }}</td>
-                <td>{{ plan.tafsili_plan.land_use_type|default:"-" }}</td>
+                <td>{{ plan.tafsili_plan.neighborhood|default:"-" }}</td>
                 <td>{{ plan.tafsili_plan.street_name|default:"-" }}</td>
                 <td>{{ plan.tafsili_plan.ownership_type|default:"-" }}</td>
+                <td>{{ plan.tafsili_plan.dominant_use|default:"-" }}</td>
                 <td>
-                    {% if plan.status == 'pending' %}
-                        <span class="status-badge status-pending">در انتظار</span>
-                    {% elif plan.status == 'approved' %}
-                        <span class="status-badge status-approved">تأیید شده</span>
+                    {% if plan.tafsili_plan.location %}
+                        <span class="location-coord">{{ plan.tafsili_plan.location.y|floatformat:4 }}, {{ plan.tafsili_plan.location.x|floatformat:4 }}</span>
                     {% else %}
-                        <span class="status-badge status-rejected">رد شده</span>
+                        -
                     {% endif %}
                 </td>
+                <td>
+                    <span class="status-badge status-{{ plan.status }}">
+                        {{ plan.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ plan.created_at|date:"Y/m/d H:i" }}</td>
                 <td class="action-cell">
-                    <button onclick="showPlanDetail('{{ plan.id }}')" class="btn-detail" title="مشاهده جزئیات">🔍</button>
+                    <button onclick="showPlanDetail('{{ plan.id }}')" class="btn-detail" title="جزئیات کامل">🔍</button>
                     {% if plan.status == 'pending' %}
                         <button onclick="showApproveModal('{{ plan.id }}')" class="btn-approve" title="تأیید">✅</button>
                         <button onclick="showRejectModal('{{ plan.id }}')" class="btn-reject" title="رد">❌</button>
@@ -352,12 +346,25 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="10" class="empty-state">هیچ اطلاعاتی ثبت نشده است</td>
+                <td colspan="13" class="empty-state">هیچ اطلاعاتی ثبت نشده است</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<!-- Pagination -->
+{% if data_list.has_other_pages %}
+<div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+    {% if data_list.has_previous %}
+        <button onclick="goToPage({{ data_list.previous_page_number }})" class="btn-filter" style="background:#6b7280;">قبلی</button>
+    {% endif %}
+    <span style="padding: 8px 16px; background: white; border-radius: 8px;">صفحه {{ data_list.number }} از {{ data_list.paginator.num_pages }}</span>
+    {% if data_list.has_next %}
+        <button onclick="goToPage({{ data_list.next_page_number }})" class="btn-filter" style="background:#6b7280;">بعدی</button>
+    {% endif %}
+</div>
+{% endif %}
 
 <!-- مودال تأیید -->
 <div id="approveModal" class="modal">
@@ -370,12 +377,12 @@
         <input type="hidden" id="approvePlanId">
         <div class="modal-buttons">
             <button onclick="confirmApprove()" class="btn-approve">بله، تأیید شود</button>
-            <button onclick="closeApproveModal()" style="padding:6px 12px; cursor:pointer;">انصراف</button>
+            <button onclick="closeApproveModal()" style="padding:6px 12px;">انصراف</button>
         </div>
     </div>
 </div>
 
-<!-- مودال رد با دلیل -->
+<!-- مودال رد -->
 <div id="rejectModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -387,27 +394,23 @@
         <input type="hidden" id="rejectPlanId">
         <div class="modal-buttons">
             <button onclick="confirmReject()" class="btn-reject">تأیید و رد شود</button>
-            <button onclick="closeRejectModal()" style="padding:6px 12px; cursor:pointer;">انصراف</button>
+            <button onclick="closeRejectModal()" style="padding:6px 12px;">انصراف</button>
         </div>
     </div>
 </div>
 
-<!-- مودال جزئیات کامل -->
+<!-- مودال جزئیات کامل و مرتب -->
 <div id="detailModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>جزئیات کامل طرح</h3>
+            <h3>📋 جزئیات کامل طرح</h3>
             <span class="close-modal" onclick="closeDetailModal()">&times;</span>
         </div>
-        <div id="modalBody">
-            <div style="text-align:center; padding:40px;">در حال بارگذاری...</div>
-        </div>
+        <div id="modalBody"><div style="text-align:center; padding:40px;">در حال بارگذاری...</div></div>
     </div>
 </div>
 
 <script>
-    let currentPlanId = null;
-
     function applyFilters() {
         const params = new URLSearchParams();
         const operator = document.getElementById('filterOperator')?.value;
@@ -416,6 +419,12 @@
         if(operator) params.append('operator', operator);
         if(project) params.append('project', project);
         if(status) params.append('status', status);
+        window.location.href = '?' + params.toString();
+    }
+
+    function goToPage(page) {
+        const params = new URLSearchParams(window.location.search);
+        params.set('page', page);
         window.location.href = '?' + params.toString();
     }
 
@@ -429,36 +438,54 @@
             .then(response => response.json())
             .then(data => {
                 let html = '<div class="detail-grid">';
-                html += '<div class="detail-item"><span class="detail-label">شناسه</span><span class="detail-value">' + (data.feature_id || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">عنوان پروژه</span><span class="detail-value">' + (data.project || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">اپراتور</span><span class="detail-value">' + (data.operator || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">تاریخ ثبت</span><span class="detail-value">' + (data.recorded_at || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">کد منطقه</span><span class="detail-value">' + (data.zone_code || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">نوع کاربری</span><span class="detail-value">' + (data.land_use_type || '-') + '</span></div>';
-                html += '<div class="detail-item full-width"><span class="detail-label">کاربری تفصیلی</span><span class="detail-value">' + (data.detailed_use || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">تراکم</span><span class="detail-value">' + (data.density || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">حداکثر طبقات</span><span class="detail-value">' + (data.floor_limit || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">نام معبر</span><span class="detail-value">' + (data.street_name || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">عرض معبر</span><span class="detail-value">' + (data.street_width || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">نوع مالکیت</span><span class="detail-value">' + (data.ownership_type || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">قدمت بنا</span><span class="detail-value">' + (data.building_age || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">نوع نما</span><span class="detail-value">' + (data.facade_type || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">مصالح ساختمانی</span><span class="detail-value">' + (data.material_type || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">کیفیت ابنیه</span><span class="detail-value">' + (data.building_quality || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">سطح عملکردی</span><span class="detail-value">' + (data.functional_level || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">کاربری طبقات بالا</span><span class="detail-value">' + (data.upper_floor_use || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">کاربری همکف</span><span class="detail-value">' + (data.ground_floor_use || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">کاربری غالب</span><span class="detail-value">' + (data.dominant_use || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">مساحت اعیانی</span><span class="detail-value">' + (data.built_area || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">مساحت عرصه</span><span class="detail-value">' + (data.land_area || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">نام محله</span><span class="detail-value">' + (data.neighborhood || '-') + '</span></div>';
-                html += '<div class="detail-item"><span class="detail-label">کد پلاک</span><span class="detail-value">' + (data.parcel_code || '-') + '</span></div>';
+
+                // بخش اول: اطلاعات پایه - ردیف 1
+                html += '<div class="detail-item"><div class="detail-label">🔢 کد قطعه</div><div class="detail-value">' + (data.parcel_code || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">📌 کد منطقه</div><div class="detail-value">' + (data.zone_code || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">🏘️ نام محله</div><div class="detail-value">' + (data.neighborhood || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">📝 کاربری تفصیلی</div><div class="detail-value">' + (data.detailed_use || '-') + '</div></div>';
+
+                // بخش دوم: اطلاعات شهری - ردیف 2
+                html += '<div class="detail-item"><div class="detail-label">🏙️ نام معبر</div><div class="detail-value">' + (data.street_name || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">📏 عرض معبر (متر)</div><div class="detail-value">' + (data.street_width || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">🏷️ نوع مالکیت</div><div class="detail-value">' + (data.ownership_type || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">📏 مساحت عرصه (متر مربع)</div><div class="detail-value">' + (data.land_area || '-') + '</div></div>';
+
+                // بخش سوم: اطلاعات ساختمانی - ردیف 3
+                html += '<div class="detail-item"><div class="detail-label">📐 مساحت اعیانی (متر مربع)</div><div class="detail-value">' + (data.built_area || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">📊 سطح اشغال (%)</div><div class="detail-value">' + (data.occupancy_rate || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">🏢 تعداد طبقات</div><div class="detail-value">' + (data.floor_count || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">🏢 حداکثر طبقات مجاز</div><div class="detail-value">' + (data.floor_limit || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">📐 تراکم ساختمانی</div><div class="detail-value">' + (data.density || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">📅 قدمت بنا</div><div class="detail-value">' + (data.building_age || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">🎨 نوع نما</div><div class="detail-value">' + (data.facade_type || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">🧱 مصالح ساختمانی</div><div class="detail-value">' + (data.material_type || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">⭐ کیفیت ابنیه</div><div class="detail-value">' + (data.building_quality || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">🎯 سطح عملکردی</div><div class="detail-value">' + (data.functional_level || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">🏗️ وضعیت ساخت</div><div class="detail-value">' + (data.building_status || '-') + '</div></div>';
+
+                // بخش چهارم: اطلاعات کاربری - ردیف 4
+                html += '<div class="detail-item"><div class="detail-label">🏪 کاربری طبقات بالای همکف</div><div class="detail-value">' + (data.upper_floor_use || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">🏪 کاربری همکف</div><div class="detail-value">' + (data.ground_floor_use || '-') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">🏪 انواع کاربری (غالب)</div><div class="detail-value">' + (data.dominant_use || '-') + '</div></div>';
+
+                // موقعیت مکانی
+                if(data.latitude && data.longitude) {
+                    html += '<div class="detail-item full-width" style="background:#e0f2fe;"><div class="detail-label">📍 موقعیت مکانی (GPS)</div><div class="detail-value">عرض: ' + data.latitude + ' | طول: ' + data.longitude + '</div></div>';
+                } else if(data.location && data.location.coordinates) {
+                    html += '<div class="detail-item full-width" style="background:#e0f2fe;"><div class="detail-label">📍 موقعیت مکانی (GPS)</div><div class="detail-value">عرض: ' + data.location.coordinates[1] + ' | طول: ' + data.location.coordinates[0] + '</div></div>';
+                }
+
+                // عکس
                 if(data.photo) {
-                    html += '<div class="detail-item full-width detail-photo"><span class="detail-label">عکس</span><img src="' + data.photo + '" onclick="window.open(this.src)"></div>';
+                    html += '<div class="detail-item full-width detail-photo"><div class="detail-label">📷 عکس قطعه</div><img src="' + data.photo + '" onclick="window.open(this.src)"></div>';
                 }
+
+                // نظر کارشناس
                 if(data.review_note) {
-                    html += '<div class="rejection-box"><strong>نظر کارشناس</strong><p>' + data.review_note + '</p></div>';
+                    html += '<div class="rejection-box"><strong>📝 نظر کارشناس</strong><p>' + data.review_note + '</p></div>';
                 }
+
                 html += '</div>';
                 modalBody.innerHTML = html;
             })
@@ -467,89 +494,33 @@
             });
     }
 
-    function closeDetailModal() {
-        document.getElementById('detailModal').style.display = 'none';
-    }
-
-    function showApproveModal(planId) {
-        document.getElementById('approvePlanId').value = planId;
-        document.getElementById('approveModal').style.display = 'flex';
-    }
-
-    function closeApproveModal() {
-        document.getElementById('approveModal').style.display = 'none';
-    }
-
-    function confirmApprove() {
-        const planId = document.getElementById('approvePlanId').value;
-        updatePlanStatus(planId, 'approved', '');
-    }
-
-    function showRejectModal(planId) {
-        document.getElementById('rejectPlanId').value = planId;
-        document.getElementById('rejectReason').value = '';
-        document.getElementById('rejectModal').style.display = 'flex';
-    }
-
-    function closeRejectModal() {
-        document.getElementById('rejectModal').style.display = 'none';
-    }
-
+    function closeDetailModal() { document.getElementById('detailModal').style.display = 'none'; }
+    function showApproveModal(id) { document.getElementById('approvePlanId').value = id; document.getElementById('approveModal').style.display = 'flex'; }
+    function closeApproveModal() { document.getElementById('approveModal').style.display = 'none'; }
+    function confirmApprove() { updatePlanStatus(document.getElementById('approvePlanId').value, 'approved', ''); }
+    function showRejectModal(id) { document.getElementById('rejectPlanId').value = id; document.getElementById('rejectReason').value = ''; document.getElementById('rejectModal').style.display = 'flex'; }
+    function closeRejectModal() { document.getElementById('rejectModal').style.display = 'none'; }
     function confirmReject() {
-        const planId = document.getElementById('rejectPlanId').value;
+        const id = document.getElementById('rejectPlanId').value;
         const reason = document.getElementById('rejectReason').value;
-        if(!reason.trim()) {
-            alert("لطفاً دلیل رد طرح را وارد کنید");
-            return;
-        }
-        updatePlanStatus(planId, 'rejected', reason);
+        if(!reason.trim()) { alert("لطفاً دلیل رد طرح را وارد کنید"); return; }
+        updatePlanStatus(id, 'rejected', reason);
     }
 
     function updatePlanStatus(planId, status, reviewNote) {
         fetch('/admin-panel/expert/update-plan-status/' + planId + '/', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
             body: JSON.stringify({status: status, review_note: reviewNote})
         })
         .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                location.reload();
-            } else {
-                alert('خطا: ' + (data.error || 'نامشخص'));
-            }
-        })
-        .catch(error => {
-            console.error('خطا:', error);
-            alert('خطا در ارتباط با سرور');
-        });
+        .then(data => { if(data.success) location.reload(); else alert('خطا: ' + (data.error || 'نامشخص')); })
+        .catch(error => { alert('خطا در ارتباط با سرور'); });
     }
 
-    // بستن مودال با کلیک خارج
-    window.onclick = function(event) {
-        if(event.target.classList.contains('modal')) {
-            event.target.style.display = 'none';
-        }
-    }
-
-    // بستن مودال با دکمه Escape
-    document.addEventListener('keydown', function(e) {
-        if(e.key === 'Escape') {
-            document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
-        }
-    });
-
-    // جستجو با Enter
-    const filterProject = document.getElementById('filterProject');
-    if(filterProject) {
-        filterProject.addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') applyFilters();
-        });
-    }
+    window.onclick = function(e) { if(e.target.classList.contains('modal')) e.target.style.display = 'none'; }
+    document.addEventListener('keydown', function(e) { if(e.key === 'Escape') document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); });
+    document.getElementById('filterProject')?.addEventListener('keypress', function(e) { if(e.key === 'Enter') applyFilters(); });
 </script>
-
 
 {% endblock %}
