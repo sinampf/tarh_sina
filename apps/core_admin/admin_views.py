@@ -1227,7 +1227,7 @@ def expert_review_plan(request, plan_id):
         return redirect('core_admin:expert_login')
 
     from .models import (
-        ProjectPlan, TafsiliPlanData,  MomayeziPlanData,
+        ProjectPlan, TafsiliPlanData, MomayeziPlanData,
         FinalTafsiliData, FinalMomayeziData, PlanRevisionHistory
     )
 
@@ -1249,7 +1249,24 @@ def expert_review_plan(request, plan_id):
             try:
                 # بررسی اینکه قبلاً ذخیره نشده باشد
                 if plan.plan_type == 'tafsili' and plan_data and not hasattr(plan, 'final_tafsili'):
-                    FinalTafsiliData.objects.create(
+
+                    # ========== دیباگ: بررسی مقدار parcel_code ==========
+                    print(f"=== DEBUG expert_review_plan ===")
+                    print(f"Plan ID: {plan.id}")
+                    print(f"plan_data.parcel_code: '{plan_data.parcel_code}'")
+                    print(f"Type of parcel_code: {type(plan_data.parcel_code)}")
+
+                    # ========== راه حل: اگر parcel_code خالی بود، مقدار پیش‌فرض بده ==========
+                    parcel_code_value = plan_data.parcel_code
+                    if not parcel_code_value or str(parcel_code_value).strip() == '':
+                        # گزینه 1: از ID طرح استفاده کن
+                        parcel_code_value = f"P{str(plan.id)[:8]}"
+                        print(f"parcel_code was empty! Using fallback: '{parcel_code_value}'")
+
+                        # گزینه 2: (اختیاری) می‌توانی از کاربر بخواهی اصلاح کند
+                        # messages.warning(request, "⚠️ کد شناسه قطعه خالی است. یک کد موقت اختصاص داده شد.")
+
+                    final = FinalTafsiliData.objects.create(
                         plan=plan,
                         zone_code=plan_data.zone_code,
                         land_use_type=plan_data.land_use_type,
@@ -1270,15 +1287,28 @@ def expert_review_plan(request, plan_id):
                         built_area=plan_data.built_area,
                         land_area=plan_data.land_area,
                         neighborhood=plan_data.neighborhood,
-                        parcel_code=plan_data.parcel_code,
+                        parcel_code=parcel_code_value,  # ← استفاده از مقدار اصلاح شده
                         photo=plan_data.photo
                     )
+
+                    print(f"FinalTafsiliData created with parcel_code: '{final.parcel_code}'")
+                    print(f"====================================")
+
                     messages.success(request, "✅ طرح تفصیلی تأیید و در پایگاه داده ذخیره شد.")
 
                 elif plan.plan_type == 'momayezi' and plan_data and not hasattr(plan, 'final_momayezi'):
+                    # همان دیباگ برای momayezi
+                    print(f"=== DEBUG Momayezi ===")
+                    print(f"plan_data.parcel_code: '{plan_data.parcel_code}'")
+
+                    parcel_code_value = plan_data.parcel_code
+                    if not parcel_code_value or str(parcel_code_value).strip() == '':
+                        parcel_code_value = f"M{str(plan.id)[:8]}"
+                        print(f"Using fallback: '{parcel_code_value}'")
+
                     FinalMomayeziData.objects.create(
                         plan=plan,
-                        parcel_code=plan_data.parcel_code,
+                        parcel_code=parcel_code_value,
                         ownership_type=plan_data.ownership_type,
                         owner_name=plan_data.owner_name,
                         building_type=plan_data.building_type,
@@ -1287,6 +1317,7 @@ def expert_review_plan(request, plan_id):
                         is_licensed=plan_data.is_licensed,
                         attachment=plan_data.attachment
                     )
+                    print(f"====================================")
                     messages.success(request, "✅ ممیزی املاک تأیید و در پایگاه داده ذخیره شد.")
                 else:
                     messages.info(request, "ℹ️ این طرح قبلاً در دیتابیس نهایی ذخیره شده است.")
@@ -1934,7 +1965,7 @@ admin.site.register(User, CustomUserAdmin)
 
 @login_required
 def export_full_tafsili_csv(request):
-    """خروجی CSV کامل با تمام فیلدها (تعداد طبقات، سطح اشغال، توضیحات، مختصات)"""
+    """خروجی CSV کامل با کد شناسه قطعه به عنوان OBJECTID"""
 
     if not (request.user.groups.filter(name='expert').exists() or request.user.is_staff):
         return redirect('core_admin:login')
@@ -1944,24 +1975,40 @@ def export_full_tafsili_csv(request):
 
     writer = csv.writer(response)
 
-    # هدرهای جدید با فیلدهای مورد نیاز
     writer.writerow([
-        'شناسه', 'عنوان پروژه', 'اپراتور', 'وضعیت', 'تاریخ ثبت', 'تاریخ تأیید',
-        'کد منطقه', 'نام محله', 'کاربری تفصیلی',
-        'نام معبر', 'عرض معبر (متر)', 'نوع مالکیت',
-        'مساحت عرصه (متر مربع)', 'مساحت اعیانی (متر مربع)',
-        'تعداد طبقات', 'سطح اشغال (%)', 'تراکم ساختمانی',
-        'حداکثر طبقات', 'قدمت بنا', 'نوع نما',
-        'مصالح ساختمانی', 'کیفیت ابنیه', 'سطح عملکردی',
-        'کاربری طبقات بالای همکف', 'کاربری همکف', 'انواع کاربری (غالب)',
+        'کد_شناسه_قطعه',
+        'عنوان_پروژه',
+        'اپراتور',
+        'وضعیت',
+        'تاریخ_ثبت',
+        'تاریخ_تأیید',
+        'کد_منطقه',
+        'نام_محله',
+        'کاربری_تفصیلی',
+        'نام_معبر',
+        'عرض_معبر_متر',
+        'نوع_مالکیت',
+        'مساحت_عرصه_مترمربع',
+        'مساحت_اعیانی_مترمربع',
+        'تعداد_طبقات',
+        'سطح_اشغال_درصد',
+        'تراکم_ساختمانی',
+        'حداکثر_طبقات',
+        'قدمت_بنا',
+        'نوع_نما',
+        'مصالح_ساختمانی',
+        'کیفیت_ابنیه',
+        'سطح_عملکردی',
+        'کاربری_طبقات_بالای_همکف',
+        'کاربری_همکف',
+        'انواع_کاربری_غالب',
         'توضیحات',
-        'عرض جغرافیایی', 'طول جغرافیایی'
+        'عرض_جغرافیایی',
+        'طول_جغرافیایی'
     ])
 
-    from .models import FinalTafsiliData, TafsiliPlanData
     from django.db import connection
 
-    # استفاده از کوئری مستقیم برای اطمینان از گرفتن همه داده‌ها
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT 
@@ -1991,7 +2038,8 @@ def export_full_tafsili_csv(request):
                 f.dominant_use,
                 COALESCE(f.description, p.description) as description,
                 COALESCE(f.latitude, ST_Y(t.location)) as latitude,
-                COALESCE(f.longitude, ST_X(t.location)) as longitude
+                COALESCE(f.longitude, ST_X(t.location)) as longitude,
+                t.parcel_code
             FROM core_admin_finaltafsilidata f
             INNER JOIN core_admin_projectplan p ON f.plan_id = p.id
             INNER JOIN auth_user u ON p.operator_id = u.id
@@ -2003,36 +2051,57 @@ def export_full_tafsili_csv(request):
         rows = cursor.fetchall()
 
         for row in rows:
+            # ساخت OBJECTID بر اساس parcel_code
+            parcel_code = row[27] if len(row) > 27 and row[27] and str(row[27]).strip() else ''
+
+            if parcel_code:
+                object_id = parcel_code
+            else:
+                zone_code = row[4] if row[4] else 'UNKNOWN'
+                object_id = f"{zone_code}_{row[0]}"
+
+            # تابع کمکی برای تبدیل عدد به رشته با فرمت مناسب
+            def format_number(value):
+                if value is None:
+                    return ''
+                try:
+                    if isinstance(value, (int, float)):
+                        if isinstance(value, float):
+                            return f"{value:.2f}" if value == int(value) else f"{value:.2f}"
+                        return str(value)
+                    return str(value)
+                except (ValueError, TypeError):
+                    return str(value)
+
             writer.writerow([
-                str(row[0])[:8] if row[0] else '',
-                row[1] or '',  # عنوان پروژه
+                object_id,
+                row[1] or '',  # عنوان
                 row[2] or '',  # اپراتور
                 'تأیید شده',
-                row[3].strftime('%Y/%m/%d %H:%M') if row[3] else '',  # تاریخ ثبت
-                row[3].strftime('%Y/%m/%d %H:%M') if row[3] else '',  # تاریخ تأیید (همون تاریخ ثبت final)
-                row[4] or '',  # کد منطقه
-                row[5] or '',  # نام محله
-                row[6] or '',  # کاربری تفصیلی
-                row[7] or '',  # نام معبر
-                row[8] or '',  # عرض معبر
-                row[9] or '',  # نوع مالکیت
-                row[10] or '',  # مساحت عرصه
-                row[11] or '',  # مساحت اعیانی
-                row[12] or '',  # تعداد طبقات
-                f"{row[13]:.2f}" if row[13] else '',  # سطح اشغال
-                row[14] or '',  # تراکم
-                row[15] or '',  # حداکثر طبقات
-                row[16] or '',  # قدمت بنا
-                row[17] or '',  # نوع نما
-                row[18] or '',  # مصالح
-                row[19] or '',  # کیفیت ابنیه
-                row[20] or '',  # سطح عملکردی
-                row[21] or '',  # کاربری طبقات بالا
-                row[22] or '',  # کاربری همکف
-                row[23] or '',  # کاربری غالب
-                row[24] or '',  # توضیحات
-                f"{row[25]:.6f}" if row[25] else '',  # عرض جغرافیایی
-                f"{row[26]:.6f}" if row[26] else '',  # طول جغرافیایی
+                row[3].strftime('%Y/%m/%d %H:%M') if row[3] else '',
+                row[3].strftime('%Y/%m/%d %H:%M') if row[3] else '',
+                row[4] or '',
+                row[5] or '',
+                row[6] or '',
+                row[7] or '',
+                row[8] or '',
+                row[9] or '',
+                format_number(row[10]),  # تعداد طبقات
+                format_number(row[11]),  # سطح اشغال
+                format_number(row[12]),  # تراکم
+                format_number(row[13]),  # حداکثر طبقات
+                row[14] or '',
+                row[15] or '',
+                row[16] or '',
+                row[17] or '',
+                row[18] or '',
+                row[19] or '',
+                row[20] or '',
+                row[21] or '',
+                row[22] or '',
+                row[23] or '',
+                format_number(row[24]),  # عرض جغرافیایی
+                format_number(row[25]),  # طول جغرافیایی
             ])
 
     return response
@@ -2250,7 +2319,7 @@ def operator_edit_plan(request, plan_id):
 
 @login_required
 def export_arcgis_csv(request):
-    """خروجی CSV مخصوص ArcGIS برای بروزرسانی قطعات"""
+    """خروجی CSV با OBJECTID = کد شناسه قطعه - مرتب شده بر اساس تاریخ آپلود"""
 
     if not (request.user.groups.filter(name='expert').exists() or request.user.is_staff):
         return redirect('core_admin:login')
@@ -2260,81 +2329,83 @@ def export_arcgis_csv(request):
 
     writer = csv.writer(response)
 
-    # هدرها - با شناسه در اولویت
     writer.writerow([
-        'OBJECTID', 'عنوان پروژه', 'کد منطقه', 'نام محله', 'کاربری تفصیلی',
-        'نام معبر', 'عرض معبر (متر)', 'نوع مالکیت', 'مساحت عرصه (متر مربع)',
-        'مساحت اعیانی (متر مربع)', 'تعداد طبقات', 'سطح اشغال (%)', 'تراکم ساختمانی',
-        'حداکثر طبقات', 'قدمت بنا', 'نوع نما', 'مصالح ساختمانی', 'کیفیت ابنیه',
-        'سطح عملکردی', 'کاربری طبقات بالای همکف', 'کاربری همکف', 'انواع کاربری (غالب)',
-        'توضیحات', 'عرض جغرافیایی', 'طول جغرافیایی'
+        'OBJECTID',
+        'عنوان_پروژه',
+        'کد_منطقه',
+        'نام_محله',
+        'کاربری_تفصیلی',
+        'نام_معبر',
+        'عرض_معبر_متر',
+        'نوع_مالکیت',
+        'مساحت_عرصه_مترمربع',
+        'مساحت_اعیانی_مترمربع',
+        'تعداد_طبقات',
+        'سطح_اشغال_درصد',
+        'تراکم_ساختمانی',
+        'حداکثر_طبقات',
+        'قدمت_بنا',
+        'نوع_نما',
+        'مصالح_ساختمانی',
+        'کیفیت_ابنیه',
+        'سطح_عملکردی',
+        'کاربری_طبقات_بالا',
+        'کاربری_همکف',
+        'کاربری_غالب',
+        'توضیحات',
+        'عرض_جغرافیایی',
+        'طول_جغرافیایی',
+        'تاریخ_آپلود'  # اضافه کردن ستون تاریخ برای شفافیت
     ])
 
-    from django.db import connection
+    from apps.core_admin.models import FinalTafsiliData
 
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT 
-                f.id,
-                p.title,
-                f.zone_code,
-                f.neighborhood,
-                f.detailed_use,
-                f.street_name,
-                f.street_width,
-                f.ownership_type,
-                f.land_area,
-                f.built_area,
-                f.floor_count,
-                f.occupancy_rate,
-                f.density,
-                f.floor_limit,
-                f.building_age,
-                f.facade_type,
-                f.material_type,
-                f.building_quality,
-                f.functional_level,
-                f.upper_floor_use,
-                f.ground_floor_use,
-                f.dominant_use,
-                f.description,
-                f.latitude,
-                f.longitude
-            FROM core_admin_finaltafsilidata f
-            INNER JOIN core_admin_projectplan p ON f.plan_id = p.id
-            WHERE p.status = 'approved' AND p.plan_type = 'tafsili'
-            ORDER BY f.created_at DESC
-        """)
+    # ========== مرتب‌سازی بر اساس تاریخ آپلود ==========
+    # برای جدیدترین اول: order_by('-created_at')
+    # برای قدیمی‌ترین اول: order_by('created_at')
 
-        rows = cursor.fetchall()
+    queryset = FinalTafsiliData.objects.filter(
+        plan__status='approved',
+        plan__plan_type='tafsili'
+    ).select_related('plan').order_by('-created_at')  # جدیدترین اول
 
-        for row in rows:
-            writer.writerow([
-                row[0],  # OBJECTID - شناسه اصلی
-                row[1] or '',
-                row[2] or '',
-                row[3] or '',
-                row[4] or '',
-                row[5] or '',
-                row[6] or '',
-                row[7] or '',
-                row[8] or '',
-                row[9] or '',
-                row[10] or '',
-                f"{row[11]:.2f}" if row[11] else '',
-                row[12] or '',
-                row[13] or '',
-                row[14] or '',
-                row[15] or '',
-                row[16] or '',
-                row[17] or '',
-                row[18] or '',
-                row[19] or '',
-                row[20] or '',
-                row[21] or '',
-                row[22] or '',
-                f"{row[23]:.6f}" if row[23] else '',
-                f"{row[24]:.6f}" if row[24] else '',
-            ])
+    for item in queryset:
+        object_id = item.parcel_code if item.parcel_code else ''
+
+        if not object_id and hasattr(item.plan, 'tafsili_plan') and item.plan.tafsili_plan:
+            object_id = item.plan.tafsili_plan.parcel_code or ''
+
+        if not object_id:
+            zone = item.zone_code if item.zone_code else 'UNKNOWN'
+            object_id = f"{zone}_{item.id}"
+
+        writer.writerow([
+            object_id,
+            item.plan.title or '',
+            item.zone_code or '',
+            item.neighborhood or '',
+            item.detailed_use or '',
+            item.street_name or '',
+            item.street_width or '',
+            item.ownership_type or '',
+            item.land_area or '',
+            item.built_area or '',
+            item.floor_count or '',
+            item.occupancy_rate or '',
+            item.density or '',
+            item.floor_limit or '',
+            item.building_age or '',
+            item.facade_type or '',
+            item.material_type or '',
+            item.building_quality or '',
+            item.functional_level or '',
+            item.upper_floor_use or '',
+            item.ground_floor_use or '',
+            item.dominant_use or '',
+            item.description or '',
+            f"{item.latitude:.6f}" if item.latitude else '',
+            f"{item.longitude:.6f}" if item.longitude else '',
+            item.created_at.strftime('%Y/%m/%d %H:%M:%S') if item.created_at else '',  # تاریخ آپلود
+        ])
 
     return response

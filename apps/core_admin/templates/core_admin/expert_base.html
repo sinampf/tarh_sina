@@ -83,11 +83,9 @@
             --scrollbar-track:#f1f5f9;
             --scrollbar-thumb:#c8d0de;
 
-            /* Header gradient */
             --header-bg:      linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%);
             --sidebar-logo-bg:rgba(20,83,45,0.08);
 
-            /* Badge */
             --badge-pending-bg:  #fef9c3;
             --badge-pending-txt: #92400e;
             --badge-approved-bg: #dcfce7;
@@ -97,7 +95,7 @@
         }
 
         /* ============================================
-           DARK MODE — دارک مود قوی و زیبا
+           DARK MODE
         ============================================ */
         [data-theme="dark"] {
             --primary:        #4ade80;
@@ -148,11 +146,9 @@
             --scrollbar-track:#111827;
             --scrollbar-thumb:#2a3550;
 
-            /* Header در دارک مود */
             --header-bg:      linear-gradient(135deg, #0d1525 0%, #111d35 50%, #0f1b30 100%);
             --sidebar-logo-bg:rgba(74,222,128,0.08);
 
-            /* Badge */
             --badge-pending-bg:  rgba(251,191,36,0.12);
             --badge-pending-txt: #fbbf24;
             --badge-approved-bg: rgba(52,211,153,0.12);
@@ -197,7 +193,6 @@
             transition: background 0.35s ease, box-shadow 0.35s ease;
         }
 
-        /* خطوط شبکه‌ای پشت هدر */
         .expert-header::before {
             content: '';
             position: absolute;
@@ -209,7 +204,6 @@
             pointer-events: none;
         }
 
-        /* خط پایینی گلو */
         .expert-header::after {
             content: '';
             position: absolute;
@@ -319,7 +313,7 @@
         }
 
         /* ============================================
-           THEME TOGGLE BUTTON — دکمه تغییر تم
+           THEME TOGGLE BUTTON
         ============================================ */
         .theme-toggle {
             position: relative;
@@ -341,7 +335,6 @@
             background: rgba(255,255,255,0.18);
         }
 
-        /* گوی داخل toggle */
         .toggle-knob {
             position: absolute;
             right: 3px;
@@ -375,7 +368,6 @@
         [data-theme="dark"] .icon-sun  { opacity: 0; transform: rotate(30deg) scale(0.7); }
         [data-theme="dark"] .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
 
-        /* متن کوچک کنار toggle */
         .toggle-label {
             position: absolute;
             font-size: 9px;
@@ -423,7 +415,6 @@
                         box-shadow 0.35s ease, transform 0.3s cubic-bezier(0.4,0,0.2,1);
         }
 
-        /* لوگو / نام سیستم در سایدبار */
         .sidebar-header {
             display: flex;
             align-items: center;
@@ -502,13 +493,8 @@
             border-radius: var(--radius-sm);
         }
 
-        .sidebar-link:hover {
-            color: var(--primary);
-        }
-
-        .sidebar-link:hover::before {
-            opacity: 1;
-        }
+        .sidebar-link:hover { color: var(--primary); }
+        .sidebar-link:hover::before { opacity: 1; }
 
         .sidebar-link.active {
             background: var(--primary);
@@ -576,9 +562,7 @@
             margin-top: 16px;
         }
 
-        .logout-sidebar-link:hover {
-            background: var(--danger-bg);
-        }
+        .logout-sidebar-link:hover { background: var(--danger-bg); }
 
         [data-theme="dark"] .logout-sidebar-link:hover {
             background: rgba(248,113,113,0.1);
@@ -609,7 +593,7 @@
         }
 
         /* ============================================
-           CARDS — تمامی کارت‌ها
+           CARDS
         ============================================ */
         .card,
         .stat-card,
@@ -659,16 +643,12 @@
             box-shadow: var(--shadow-focus);
         }
 
-        /* placeholder */
         ::placeholder { color: var(--text-3); }
 
         /* ============================================
            LABELS, HEADINGS, TEXT
         ============================================ */
-        label {
-            color: var(--text-2);
-            transition: color 0.3s;
-        }
+        label { color: var(--text-2); transition: color 0.3s; }
 
         h1, h2, h3, h4, h5, h6,
         .page-title, .section-title, .card-title {
@@ -684,10 +664,7 @@
         /* ============================================
            TABLES
         ============================================ */
-        table {
-            background: var(--card-bg);
-            transition: background 0.35s;
-        }
+        table { background: var(--card-bg); transition: background 0.35s; }
 
         th {
             background: var(--table-head-bg) !important;
@@ -705,13 +682,8 @@
             transition: background 0.2s, color 0.35s;
         }
 
-        tbody tr:nth-child(even) td {
-            background: var(--table-row-even);
-        }
-
-        tbody tr:hover td {
-            background: var(--table-row-hover) !important;
-        }
+        tbody tr:nth-child(even) td { background: var(--table-row-even); }
+        tbody tr:hover td { background: var(--table-row-hover) !important; }
 
         /* ============================================
            BADGES / STATUS
@@ -820,30 +792,15 @@
             backdrop-filter: blur(12px);
         }
 
-        .toast-success {
-            border-right-color: var(--success);
-            background: var(--success-bg);
-        }
+        .toast-success { border-right-color: var(--success); background: var(--success-bg); }
+        .toast-error   { border-right-color: var(--danger);  background: var(--danger-bg); }
+        .toast-warning { border-right-color: var(--warning); background: var(--warning-bg); }
+        .toast-info    { border-right-color: var(--info);    background: var(--info-bg); }
 
-        .toast-error {
-            border-right-color: var(--danger);
-            background: var(--danger-bg);
-        }
-
-        .toast-warning {
-            border-right-color: var(--warning);
-            background: var(--warning-bg);
-        }
-
-        .toast-info {
-            border-right-color: var(--info);
-            background: var(--info-bg);
-        }
-
-        [data-theme="dark"] .toast-success { background: rgba(52,211,153,0.08); border-color: var(--border-md); border-right-color: var(--success); }
+        [data-theme="dark"] .toast-success { background: rgba(52,211,153,0.08);  border-color: var(--border-md); border-right-color: var(--success); }
         [data-theme="dark"] .toast-error   { background: rgba(248,113,113,0.08); border-color: var(--border-md); border-right-color: var(--danger); }
-        [data-theme="dark"] .toast-warning { background: rgba(251,191,36,0.08); border-color: var(--border-md); border-right-color: var(--warning); }
-        [data-theme="dark"] .toast-info    { background: rgba(96,165,250,0.08); border-color: var(--border-md); border-right-color: var(--info); }
+        [data-theme="dark"] .toast-warning { background: rgba(251,191,36,0.08);  border-color: var(--border-md); border-right-color: var(--warning); }
+        [data-theme="dark"] .toast-info    { background: rgba(96,165,250,0.08);  border-color: var(--border-md); border-right-color: var(--info); }
 
         .toast-icon { font-size: 20px; flex-shrink: 0; }
 
@@ -864,10 +821,7 @@
             border-radius: 4px;
         }
 
-        .toast-close:hover {
-            color: var(--text-1);
-            background: var(--border);
-        }
+        .toast-close:hover { color: var(--text-1); background: var(--border); }
 
         @keyframes slideInRight {
             from { transform: translateX(calc(100% + 20px)); opacity: 0; }
@@ -956,10 +910,11 @@
         }
 
         .crop-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
-        .crop-btn-primary  { background: var(--info); color: #fff; }
-        .crop-btn-secondary{ background: var(--text-3); color: #fff; }
-        .crop-btn-success  { background: var(--success); color: #fff; }
-        .crop-btn-danger   { background: var(--danger); color: #fff; }
+        .crop-btn-primary   { background: var(--info);    color: #fff; }
+        .crop-btn-secondary { background: var(--surface-2); color: var(--text-1);
+                              border: 1px solid var(--border-md); }
+        .crop-btn-success   { background: var(--success); color: #fff; }
+        .crop-btn-danger    { background: var(--danger);  color: #fff; }
 
         .crop-note {
             font-size: 11.5px;
@@ -1021,7 +976,6 @@
             }
 
             .expert-sidebar.open { transform: translateX(0); }
-
             .sidebar-overlay.open { display: block; }
 
             .expert-content {
@@ -1038,22 +992,24 @@
             .crop-btn { padding: 7px 12px; font-size: 11px; }
         }
 
-        /* ============================================
+        /* ============================================================
            DARK MODE — AGGRESSIVE OVERRIDES
-           پوشش کامل تمام باکس‌ها و عناصر صفحه پروفایل
-           و سایر صفحاتی که رنگ hardcode دارند
-        ============================================ */
+           ✅ FIX: از background (shorthand) به جای background-color
+              استفاده می‌کنیم تا gradient ها هم override بشن
+        ============================================================ */
 
-        /* هر دیو / سکشن / آرتیکل که background سفید داره */
+        /* هر دیو / سکشن / آرتیکل — پاک کردن background */
         [data-theme="dark"] .expert-content div,
         [data-theme="dark"] .expert-content section,
         [data-theme="dark"] .expert-content article,
         [data-theme="dark"] .expert-content aside,
         [data-theme="dark"] .expert-content form {
-            background-color: transparent;
+            background: transparent;
         }
 
         /* ─── کلاس‌های رایج کارت و باکس ─── */
+        /* ✅ FIX: background (shorthand) به جای background-color
+           تا gradient های hardcode شده هم از بین برن             */
         [data-theme="dark"] .expert-content .card,
         [data-theme="dark"] .expert-content [class*="card"],
         [data-theme="dark"] .expert-content [class*="-card"],
@@ -1083,23 +1039,43 @@
         [data-theme="dark"] .expert-content [class*="summary"],
         [data-theme="dark"] .expert-content [class*="chart"],
         [data-theme="dark"] .expert-content [class*="grid"] {
-            background-color: var(--card-bg) !important;
+            background: var(--card-bg) !important;      /* ← shorthand: gradient هم kill میشه */
             border-color: var(--border-md) !important;
             color: var(--text-1) !important;
         }
 
-        /* ─── استثناء: بج‌ها و badge ها رنگ خودشون رو حفظ کنن ─── */
+        /* ✅ FIX اصلی: profile-header که gradient داشت
+           باید با gradient دارک مود جایگزین بشه نه حذف بشه  */
+        [data-theme="dark"] .expert-content .profile-header,
+        [data-theme="dark"] .expert-content [class*="profile-header"] {
+            background: linear-gradient(135deg, var(--surface-2) 0%, var(--card-bg) 100%) !important;
+            border: 1px solid var(--border-md) !important;
+        }
+
+        [data-theme="dark"] .expert-content .profile-header h2,
+        [data-theme="dark"] .expert-content .profile-header p {
+            color: var(--text-1) !important;
+        }
+
+        /* ✅ FIX: tab-btn.active که background: white داشت */
+        [data-theme="dark"] .expert-content .tab-btn.active,
+        [data-theme="dark"] .expert-content [class*="tab-btn"].active,
+        [data-theme="dark"] .expert-content [class*="tab"][class*="active"] {
+            background: var(--card-bg) !important;
+            color: var(--primary) !important;
+        }
+
+        /* ─── badge / status — از override بالا مستثنا هستند ─── */
         [data-theme="dark"] .expert-content [class*="badge"],
         [data-theme="dark"] .expert-content [class*="status"],
         [data-theme="dark"] .expert-content [class*="tag"],
         [data-theme="dark"] .expert-content [class*="chip"],
-        [data-theme="dark"] .expert-content [class*="label"],
         [data-theme="dark"] .expert-content [class*="btn"],
         [data-theme="dark"] .expert-content [class*="button"] {
-            /* به CSS variables خودشون defer می‌کنن */
+            /* defer به CSS variable های خودشون */
         }
 
-        /* ─── باکس‌هایی که background مستقیم سفید گرفتن ─── */
+        /* ─── inline style: background سفید ─── */
         [data-theme="dark"] .expert-content *[style*="background: white"],
         [data-theme="dark"] .expert-content *[style*="background:#fff"],
         [data-theme="dark"] .expert-content *[style*="background: #fff"],
@@ -1110,7 +1086,7 @@
         [data-theme="dark"] .expert-content *[style*="background-color: #ffffff"],
         [data-theme="dark"] .expert-content *[style*="background:#ffffff"],
         [data-theme="dark"] .expert-content *[style*="background: #ffffff"] {
-            background-color: var(--card-bg) !important;
+            background: var(--card-bg) !important;
         }
 
         /* ─── متون ─── */
@@ -1150,7 +1126,7 @@
         [data-theme="dark"] .expert-content input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
         [data-theme="dark"] .expert-content select,
         [data-theme="dark"] .expert-content textarea {
-            background-color: var(--input-bg) !important;
+            background: var(--input-bg) !important;
             color: var(--text-1) !important;
             border-color: var(--input-border) !important;
         }
@@ -1160,7 +1136,6 @@
             color: var(--text-3) !important;
         }
 
-        /* ─── select options ─── */
         [data-theme="dark"] .expert-content select option {
             background: var(--card-bg-2) !important;
             color: var(--text-1) !important;
@@ -1198,7 +1173,7 @@
             color: var(--text-2) !important;
         }
 
-        /* ─── Divider / خط جداکننده ─── */
+        /* ─── Divider ─── */
         [data-theme="dark"] .expert-content hr,
         [data-theme="dark"] .expert-content [class*="divider"],
         [data-theme="dark"] .expert-content [class*="separator"] {
@@ -1206,7 +1181,7 @@
             background: var(--border) !important;
         }
 
-        /* ─── shadow باکس‌ها ─── */
+        /* ─── shadow ─── */
         [data-theme="dark"] .expert-content [class*="shadow"],
         [data-theme="dark"] .expert-content [style*="box-shadow"] {
             box-shadow: var(--shadow-md) !important;
@@ -1231,15 +1206,15 @@
             border-color: var(--border-md) !important;
         }
 
-        /* ─── آیکون‌های رنگی با کلاس text-* (Bootstrap-style) ─── */
-        [data-theme="dark"] .expert-content .text-muted   { color: var(--text-3) !important; }
-        [data-theme="dark"] .expert-content .text-dark    { color: var(--text-1) !important; }
+        /* ─── Bootstrap-style ─── */
+        [data-theme="dark"] .expert-content .text-muted     { color: var(--text-3) !important; }
+        [data-theme="dark"] .expert-content .text-dark      { color: var(--text-1) !important; }
         [data-theme="dark"] .expert-content .text-secondary { color: var(--text-2) !important; }
         [data-theme="dark"] .expert-content .bg-white,
-        [data-theme="dark"] .expert-content .bg-light     { background: var(--card-bg) !important; }
-        [data-theme="dark"] .expert-content .border       { border-color: var(--border-md) !important; }
-        [data-theme="dark"] .expert-content .border-bottom { border-bottom-color: var(--border-md) !important; }
-        [data-theme="dark"] .expert-content .border-top   { border-top-color: var(--border-md) !important; }
+        [data-theme="dark"] .expert-content .bg-light       { background: var(--card-bg) !important; }
+        [data-theme="dark"] .expert-content .border         { border-color: var(--border-md) !important; }
+        [data-theme="dark"] .expert-content .border-bottom  { border-bottom-color: var(--border-md) !important; }
+        [data-theme="dark"] .expert-content .border-top     { border-top-color: var(--border-md) !important; }
 
         /* ─── badge / status ─── */
         [data-theme="dark"] .expert-content .status-pending,
@@ -1300,7 +1275,7 @@
             color: var(--info) !important;
         }
 
-        /* ─── Scrollbar داخل content ─── */
+        /* ─── Scrollbar ─── */
         [data-theme="dark"] .expert-content ::-webkit-scrollbar-track {
             background: var(--scrollbar-track);
         }
@@ -1309,7 +1284,7 @@
             background: var(--scrollbar-thumb);
         }
 
-        /* ─── Leaflet map (اگر نقشه داری) ─── */
+        /* ─── Leaflet ─── */
         [data-theme="dark"] .expert-content .leaflet-container {
             background: #1a2236 !important;
         }
@@ -1323,7 +1298,7 @@
         }
 
         /* ============================================
-           TRANSITION برای همه عناصر در تغییر تم
+           TRANSITION
         ============================================ */
         *, *::before, *::after {
             transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow;
@@ -1331,7 +1306,6 @@
             transition-timing-function: ease;
         }
 
-        /* غیرفعال کردن transition برای انیمیشن‌ها و transform‌ها */
         .toast, .toast *, .expert-avatar, .theme-toggle .toggle-knob,
         .sidebar-link, .crop-btn, .btn-primary, .btn-outline {
             transition-property: background-color, border-color, color, transform, box-shadow, opacity;
@@ -1354,7 +1328,6 @@
     </div>
 
     <div class="expert-header-user">
-        <!-- دکمه تغییر تم -->
         <button class="theme-toggle" id="themeToggleBtn" title="تغییر تم روشن / تاریک" aria-label="toggle theme">
             <div class="toggle-knob">
                 <span class="icon-sun">☀️</span>
@@ -1377,14 +1350,12 @@
     </div>
 </header>
 
-<!-- فرم مخفی آپلود عکس -->
 <form id="avatarUploadForm" method="post" enctype="multipart/form-data"
       action="{% url 'core_admin:expert_profile' %}" style="display:none;">
     {% csrf_token %}
     <input type="file" id="avatarFileInput" name="avatar" accept="image/jpeg,image/png,image/jpg">
 </form>
 
-<!-- دکمه موبایل منو -->
 <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -1393,7 +1364,6 @@
 ============================== -->
 <div class="expert-layout">
 
-    <!-- سایدبار -->
     <aside class="expert-sidebar" id="expertSidebar">
 
         <div class="sidebar-header">
@@ -1464,7 +1434,6 @@
         </ul>
     </aside>
 
-    <!-- محتوای اصلی -->
     <main class="expert-content">
         {% block content %}{% endblock %}
     </main>
@@ -1494,17 +1463,13 @@
     </div>
 </div>
 
-<!-- Toast container -->
 <div id="toastContainer" class="toast-container"></div>
-
 
 <!-- ==============================
      JAVASCRIPT
 ============================== -->
 <script>
-    /* ─────────────────────────────────────────
-       تم: ذخیره و بازیابی
-    ───────────────────────────────────────── */
+    /* ── تم: ذخیره و بازیابی ── */
     (function () {
         const saved = localStorage.getItem('expert-theme');
         if (saved) {
@@ -1523,9 +1488,7 @@
 
     document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
 
-    /* ─────────────────────────────────────────
-       Toast notifications
-    ───────────────────────────────────────── */
+    /* ── Toast ── */
     function showToast(message, type) {
         const container = document.getElementById('toastContainer');
         if (!container) return;
@@ -1548,7 +1511,6 @@
         }, 4500);
     }
 
-    /* نمایش پیام‌های Django */
     function showMessagesFromDjango() {
         {% if messages %}
             {% for message in messages %}
@@ -1560,9 +1522,7 @@
         {% endif %}
     }
 
-    /* ─────────────────────────────────────────
-       آپلود عکس پروفایل + Cropper.js
-    ───────────────────────────────────────── */
+    /* ── آپلود عکس پروفایل + Cropper.js ── */
     let cropper = null;
 
     function triggerAvatarUpload() {
@@ -1608,11 +1568,11 @@
         reader.readAsDataURL(file);
     });
 
-    document.getElementById('zoomInBtn')?.addEventListener('click',    () => cropper?.zoom(0.1));
-    document.getElementById('zoomOutBtn')?.addEventListener('click',   () => cropper?.zoom(-0.1));
-    document.getElementById('rotateLeftBtn')?.addEventListener('click',() => cropper?.rotate(-45));
+    document.getElementById('zoomInBtn')?.addEventListener('click',     () => cropper?.zoom(0.1));
+    document.getElementById('zoomOutBtn')?.addEventListener('click',    () => cropper?.zoom(-0.1));
+    document.getElementById('rotateLeftBtn')?.addEventListener('click', () => cropper?.rotate(-45));
     document.getElementById('rotateRightBtn')?.addEventListener('click',() => cropper?.rotate(45));
-    document.getElementById('resetBtn')?.addEventListener('click',     () => cropper?.reset());
+    document.getElementById('resetBtn')?.addEventListener('click',      () => cropper?.reset());
 
     document.getElementById('cropCancelBtn')?.addEventListener('click', () => {
         document.getElementById('cropModal').style.display = 'none';
@@ -1665,9 +1625,7 @@
         if (e.target === this) document.getElementById('cropCancelBtn').click();
     });
 
-    /* ─────────────────────────────────────────
-       سایدبار موبایل
-    ───────────────────────────────────────── */
+    /* ── سایدبار موبایل ── */
     function toggleSidebar() {
         const sidebar = document.getElementById('expertSidebar');
         const overlay = document.getElementById('sidebarOverlay');
@@ -1680,9 +1638,7 @@
         document.getElementById('sidebarOverlay')?.classList.remove('open');
     }
 
-    /* ─────────────────────────────────────────
-       init
-    ───────────────────────────────────────── */
+    /* ── init ── */
     document.addEventListener('DOMContentLoaded', function () {
         showMessagesFromDjango();
         if (typeof map !== 'undefined' && map) setTimeout(() => map.invalidateSize(), 100);

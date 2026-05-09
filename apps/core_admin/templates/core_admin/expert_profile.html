@@ -19,7 +19,7 @@
        PROFILE HEADER
     ============================================ */
     .profile-header {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid, var(--primary)) 100%);
         border-radius: 20px;
         padding: 30px;
         color: white;
@@ -27,11 +27,17 @@
         text-align: center;
         position: relative;
         transition: all 0.3s ease;
+        border: 1px solid transparent;
     }
 
     [data-theme="dark"] .profile-header {
-        background: linear-gradient(135deg, #1a1f2e 0%, #141824 100%) !important;
-        border: 1px solid var(--border) !important;
+        background: linear-gradient(135deg, var(--surface-2) 0%, var(--card-bg) 100%);
+        border-color: var(--border);
+    }
+
+    [data-theme="dark"] .profile-header h2,
+    [data-theme="dark"] .profile-header p {
+        color: var(--text-1);
     }
 
     /* ============================================
@@ -49,9 +55,13 @@
         height: 120px;
         border-radius: 50%;
         object-fit: cover;
-        border: 4px solid white;
-        background: rgba(255,255,255,0.2);
+        border: 4px solid rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.2);
         transition: opacity 0.2s;
+    }
+
+    [data-theme="dark"] .profile-avatar {
+        border-color: var(--border);
     }
 
     .avatar-container:hover .profile-avatar {
@@ -69,7 +79,7 @@
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0, 0, 0, 0.5);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -83,17 +93,18 @@
         width: 120px;
         height: 120px;
         border-radius: 50%;
-        background: rgba(255,255,255,0.2);
+        background: rgba(255, 255, 255, 0.2);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 48px;
-        border: 4px solid white;
+        border: 4px solid rgba(255, 255, 255, 0.9);
     }
 
     [data-theme="dark"] .avatar-placeholder {
-        background: rgba(255,255,255,0.1) !important;
-        color: var(--text-2) !important;
+        background: var(--surface-2);
+        border-color: var(--border);
+        color: var(--text-2);
     }
 
     /* ============================================
@@ -102,7 +113,7 @@
     .profile-card {
         background: var(--card-bg);
         border-radius: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         transition: all 0.3s ease;
         border: 1px solid var(--border);
@@ -118,14 +129,10 @@
         transition: all 0.3s ease;
     }
 
-    [data-theme="dark"] .card-tabs {
-        background: var(--card-bg) !important;
-    }
-
     .tab-btn {
         flex: 1;
         padding: 15px;
-        background: none;
+        background: transparent;
         border: none;
         cursor: pointer;
         font-size: 16px;
@@ -133,16 +140,13 @@
         color: var(--text-2);
         transition: all 0.3s;
         position: relative;
+        font-family: inherit;
     }
 
+    /* ✅ FIX: به جای white از var(--card-bg) استفاده می‌کنیم */
     .tab-btn.active {
         color: var(--primary);
-        background: white;
-    }
-
-    [data-theme="dark"] .tab-btn.active {
-        background: var(--card-bg) !important;
-        color: var(--primary) !important;
+        background: var(--card-bg);
     }
 
     .tab-btn.active::after {
@@ -172,7 +176,7 @@
 
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+        to   { opacity: 1; transform: translateY(0); }
     }
 
     /* ============================================
@@ -199,7 +203,7 @@
         font-size: 14px;
         transition: all 0.3s;
         font-family: inherit;
-        background: var(--input-bg);
+        background: var(--input-bg, var(--card-bg));
         color: var(--text-1);
     }
 
@@ -207,13 +211,15 @@
     .form-group textarea:focus {
         outline: none;
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px var(--primary-glow);
+        box-shadow: 0 0 0 3px var(--primary-glow, rgba(99, 102, 241, 0.15));
     }
 
     .form-group input[readonly],
     .form-group input:disabled {
         background: var(--surface-2);
+        color: var(--text-3);
         cursor: not-allowed;
+        opacity: 0.8;
     }
 
     /* ============================================
@@ -229,7 +235,7 @@
        SUBMIT BUTTON
     ============================================ */
     .btn-submit {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid, var(--primary)) 100%);
         color: white;
         border: none;
         padding: 12px 30px;
@@ -237,20 +243,22 @@
         font-size: 16px;
         font-weight: 600;
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: transform 0.2s, opacity 0.2s;
         width: 100%;
+        font-family: inherit;
     }
 
     .btn-submit:hover {
         transform: translateY(-2px);
+        opacity: 0.92;
     }
 
     /* ============================================
        INFO BOX
     ============================================ */
     .info-box {
-        background: var(--success-bg);
-        border-right: 4px solid var(--success);
+        background: var(--success-bg, rgba(16, 185, 129, 0.08));
+        border-right: 4px solid var(--success, #10b981);
         padding: 15px;
         border-radius: 12px;
         margin-bottom: 20px;
@@ -261,24 +269,25 @@
 
     .info-icon {
         font-size: 24px;
+        flex-shrink: 0;
     }
 
     .info-text {
         flex: 1;
         font-size: 14px;
-        color: var(--success);
+        color: var(--success, #10b981);
     }
 
     /* ============================================
        WARNING INFO BOX
     ============================================ */
     .info-box-warning {
-        background: var(--warning-bg);
-        border-right-color: var(--warning);
+        background: var(--warning-bg, rgba(245, 158, 11, 0.08));
+        border-right-color: var(--warning, #f59e0b);
     }
 
     .info-text-warning {
-        color: var(--warning);
+        color: var(--warning, #f59e0b);
     }
 
     /* ============================================
@@ -288,6 +297,7 @@
         font-size: 12px;
         color: var(--text-3);
         margin-top: 5px;
+        line-height: 1.8;
     }
 
     /* ============================================
@@ -300,7 +310,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.85);
+        background: rgba(0, 0, 0, 0.85);
         z-index: 10000;
         align-items: center;
         justify-content: center;
@@ -314,14 +324,14 @@
         max-width: 90%;
         max-height: 90%;
         overflow: auto;
-        box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.4);
         animation: modalFadeIn 0.3s ease;
         border: 1px solid var(--border);
     }
 
     @keyframes modalFadeIn {
         from { opacity: 0; transform: scale(0.95); }
-        to { opacity: 1; transform: scale(1); }
+        to   { opacity: 1; transform: scale(1); }
     }
 
     .crop-modal h3 {
@@ -366,14 +376,15 @@
         font-family: inherit;
     }
 
-    .crop-btn-primary { background: #2563eb; color: white; }
-    .crop-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
-    .crop-btn-secondary { background: #6b7280; color: white; }
-    .crop-btn-secondary:hover { background: #4b5563; }
-    .crop-btn-success { background: #10b981; color: white; }
-    .crop-btn-success:hover { background: #059669; }
-    .crop-btn-danger { background: #ef4444; color: white; }
-    .crop-btn-danger:hover { background: #dc2626; }
+    /* ✅ FIX: دکمه‌های کراپ با opacity برای دارک مود سازگار شدن */
+    .crop-btn-primary   { background: #2563eb; color: #fff; }
+    .crop-btn-primary:hover   { background: #1d4ed8; transform: translateY(-1px); }
+    .crop-btn-secondary { background: var(--surface-2); color: var(--text-1); border: 1px solid var(--border); }
+    .crop-btn-secondary:hover { background: var(--border); }
+    .crop-btn-success   { background: #10b981; color: #fff; }
+    .crop-btn-success:hover   { background: #059669; }
+    .crop-btn-danger    { background: #ef4444; color: #fff; }
+    .crop-btn-danger:hover    { background: #dc2626; }
 
     .crop-note {
         font-size: 12px;
@@ -402,6 +413,7 @@
         .avatar-placeholder {
             width: 90px;
             height: 90px;
+            font-size: 36px;
         }
     }
 </style>
@@ -451,7 +463,7 @@
                 <div class="form-group">
                     <label>نام کاربری</label>
                     <input type="text" value="{{ user.username }}" readonly disabled>
-                    <small style="color:var(--text-3); display:block; margin-top:5px;">نام کاربری قابل تغییر نیست</small>
+                    <small style="color: var(--text-3); display: block; margin-top: 5px;">نام کاربری قابل تغییر نیست</small>
                 </div>
 
                 <div class="form-group">
@@ -524,17 +536,17 @@
 <!-- مودال برش عکس -->
 <div id="cropModal" class="crop-modal">
     <div class="crop-modal-content">
-        <h3 style="margin-bottom: 20px;">✂️ تنظیم و برش عکس پروفایل</h3>
+        <h3>✂️ تنظیم و برش عکس پروفایل</h3>
         <div class="crop-image-container">
             <img id="cropImage" src="">
         </div>
         <div class="crop-buttons">
-            <button type="button" class="crop-btn crop-btn-primary" id="zoomInBtn">🔍 زوم +</button>
-            <button type="button" class="crop-btn crop-btn-primary" id="zoomOutBtn">🔍 زوم -</button>
+            <button type="button" class="crop-btn crop-btn-primary"   id="zoomInBtn">🔍 زوم +</button>
+            <button type="button" class="crop-btn crop-btn-primary"   id="zoomOutBtn">🔍 زوم -</button>
             <button type="button" class="crop-btn crop-btn-secondary" id="rotateLeftBtn">↩️ چرخش چپ</button>
             <button type="button" class="crop-btn crop-btn-secondary" id="rotateRightBtn">↪️ چرخش راست</button>
-            <button type="button" class="crop-btn crop-btn-danger" id="resetBtn">⟳ ریست</button>
-            <button type="button" class="crop-btn crop-btn-success" id="cropConfirmBtn">✅ تأیید و برش</button>
+            <button type="button" class="crop-btn crop-btn-danger"    id="resetBtn">⟳ ریست</button>
+            <button type="button" class="crop-btn crop-btn-success"   id="cropConfirmBtn">✅ تأیید و برش</button>
             <button type="button" class="crop-btn crop-btn-secondary" id="cropCancelBtn">❌ انصراف</button>
         </div>
         <div class="crop-note">
@@ -548,9 +560,9 @@
     let currentFile = null;
 
     function switchTab(tab) {
-        const infoTab = document.getElementById('info-tab');
+        const infoTab     = document.getElementById('info-tab');
         const passwordTab = document.getElementById('password-tab');
-        const btns = document.querySelectorAll('.tab-btn');
+        const btns        = document.querySelectorAll('.tab-btn');
 
         if (tab === 'info') {
             btns[0].classList.add('active');
@@ -572,11 +584,8 @@
         const toast = document.createElement('div');
         toast.className = 'toast toast-' + type;
 
-        let icon = '';
-        if (type === 'success') icon = '✅';
-        else if (type === 'error') icon = '❌';
-        else if (type === 'warning') icon = '⚠️';
-        else icon = 'ℹ️';
+        const icons = { success: '✅', error: '❌', warning: '⚠️' };
+        const icon  = icons[type] || 'ℹ️';
 
         toast.innerHTML = `
             <div class="toast-icon">${icon}</div>
@@ -593,12 +602,13 @@
         }, 4000);
     }
 
-    // کلیک روی آواتار برای آپلود عکس
-    document.getElementById('avatarClick').addEventListener('click', function() {
-        const input = document.createElement('input');
-        input.type = 'file';
+    /* ── آپلود و کراپ آواتار ── */
+    document.getElementById('avatarClick').addEventListener('click', function () {
+        const input  = document.createElement('input');
+        input.type   = 'file';
         input.accept = 'image/jpeg,image/png,image/jpg';
-        input.onchange = function(e) {
+
+        input.onchange = function (e) {
             const file = e.target.files[0];
             if (!file) return;
             if (!file.type.match('image.*')) {
@@ -606,23 +616,26 @@
                 return;
             }
             currentFile = file;
-            const reader = new FileReader();
-            reader.onload = function(event) {
+
+            const reader  = new FileReader();
+            reader.onload = function (event) {
                 const cropImage = document.getElementById('cropImage');
-                cropImage.src = event.target.result;
-                const modal = document.getElementById('cropModal');
+                cropImage.src   = event.target.result;
+
+                const modal        = document.getElementById('cropModal');
                 modal.style.display = 'flex';
+
                 if (cropper) cropper.destroy();
                 cropper = new Cropper(cropImage, {
-                    aspectRatio: 1,
-                    viewMode: 2,
-                    dragMode: 'move',
-                    cropBoxMovable: true,
+                    aspectRatio:      1,
+                    viewMode:         2,
+                    dragMode:         'move',
+                    cropBoxMovable:   true,
                     cropBoxResizable: true,
-                    zoomable: true,
-                    movable: true,
-                    rotatable: true,
-                    autoCropArea: 1,
+                    zoomable:         true,
+                    movable:          true,
+                    rotatable:        true,
+                    autoCropArea:     1,
                 });
             };
             reader.readAsDataURL(file);
@@ -630,69 +643,65 @@
         input.click();
     });
 
-    document.getElementById('zoomInBtn')?.addEventListener('click', () => cropper?.zoom(0.1));
-    document.getElementById('zoomOutBtn')?.addEventListener('click', () => cropper?.zoom(-0.1));
-    document.getElementById('rotateLeftBtn')?.addEventListener('click', () => cropper?.rotate(-45));
+    document.getElementById('zoomInBtn')?.addEventListener('click',      () => cropper?.zoom(0.1));
+    document.getElementById('zoomOutBtn')?.addEventListener('click',     () => cropper?.zoom(-0.1));
+    document.getElementById('rotateLeftBtn')?.addEventListener('click',  () => cropper?.rotate(-45));
     document.getElementById('rotateRightBtn')?.addEventListener('click', () => cropper?.rotate(45));
-    document.getElementById('resetBtn')?.addEventListener('click', () => cropper?.reset());
+    document.getElementById('resetBtn')?.addEventListener('click',       () => cropper?.reset());
 
     document.getElementById('cropCancelBtn')?.addEventListener('click', () => {
         document.getElementById('cropModal').style.display = 'none';
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
+        if (cropper) { cropper.destroy(); cropper = null; }
     });
 
     document.getElementById('cropConfirmBtn')?.addEventListener('click', () => {
         if (!cropper) return;
 
         const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
-        canvas.toBlob(function(blob) {
+        canvas.toBlob(function (blob) {
             const formData = new FormData();
             formData.append('avatar', blob, 'avatar.jpg');
 
             fetch("{% url 'core_admin:expert_upload_avatar' %}", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token|escapejs }}'
-                }
+                method:  'POST',
+                body:    formData,
+                headers: { 'X-CSRFToken': '{{ csrf_token|escapejs }}' }
             })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
                 if (data.success) {
+                    const ts        = '?t=' + Date.now();
                     const avatarImg = document.getElementById('currentAvatar');
+
                     if (avatarImg) {
-                        avatarImg.src = data.url + '?t=' + new Date().getTime();
+                        avatarImg.src = data.url + ts;
                     } else {
-                        const avatarContainer = document.getElementById('avatarClick');
-                        avatarContainer.innerHTML = `<img src="${data.url}?t=${new Date().getTime()}" class="profile-avatar" alt="avatar" id="currentAvatar"><div class="edit-overlay">📷 ویرایش</div>`;
+                        document.getElementById('avatarClick').innerHTML =
+                            `<img src="${data.url}${ts}" class="profile-avatar" alt="avatar" id="currentAvatar">
+                             <div class="edit-overlay">📷 ویرایش</div>`;
                     }
 
                     const headerAvatar = document.querySelector('.expert-avatar');
                     if (headerAvatar) {
-                        headerAvatar.innerHTML = `<img src="${data.url}?t=${new Date().getTime()}" alt="avatar">`;
+                        headerAvatar.innerHTML = `<img src="${data.url}${ts}" alt="avatar">`;
                     }
 
                     showToast('عکس پروفایل با موفقیت بروزرسانی شد', 'success');
                     document.getElementById('cropModal').style.display = 'none';
-                    if (cropper) {
-                        cropper.destroy();
-                        cropper = null;
-                    }
+                    if (cropper) { cropper.destroy(); cropper = null; }
+
                 } else {
                     showToast('خطا: ' + (data.error || 'مشخص نیست'), 'error');
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
+            .catch(err => {
+                console.error('Error:', err);
                 showToast('خطا در ارتباط با سرور', 'error');
             });
         }, 'image/jpeg');
     });
 
-    document.getElementById('cropModal')?.addEventListener('click', function(e) {
+    document.getElementById('cropModal')?.addEventListener('click', function (e) {
         if (e.target === this) document.getElementById('cropCancelBtn').click();
     });
 </script>
